@@ -1,0 +1,20 @@
+{
+  "mcp": {
+    "graft": {
+      "type": "local",
+      "command": [
+        "powershell.exe",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "D:\\high-quality\\scripts\\Invoke-WorkspaceNodeTool.ps1",
+        "npx",
+        "--no-install",
+        "graft",
+        "mcp"
+      ],
+      "enabled": true
+    }
+  }
+}

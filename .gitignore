@@ -1,0 +1,8 @@
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
+
+# Workspace-local tool state and generated dependencies.
+/node_modules/
+/.cache/
+/.tmp/
+/.tools/

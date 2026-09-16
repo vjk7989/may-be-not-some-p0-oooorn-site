@@ -1,0 +1,13 @@
+{
+  "name": "high-quality",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "graft:build": "graft build",
+    "graft:check": "graft check",
+    "graft:viz": "graft viz"
+  },
+  "devDependencies": {
+    "@nanonets/graft": "0.18.0"
+  }
+}
