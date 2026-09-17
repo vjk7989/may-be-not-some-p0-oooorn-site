@@ -733,7 +733,9 @@ writes elsewhere. It deliberately does not alter user or machine settings.
   `914CD106F10D35AB078366412092B4ADE763E57C00A2ADAC27E3FDBF545B2FD5`.
 - **Validation:** The focused favicon browser check passes 1/1, the combined
   Playwright suite passes 44/44, the aggregate test command passes, and the
-  GitHub Pages validator passes.
+  GitHub Pages validator passes. Commit `f18058f` deployed successfully in
+  GitHub Actions run `35268875126`; the live versioned favicon URL returns HTTP
+  200 with 27,986 bytes and is self-contained.
 - **Affected paths:** `public/brand/buckleson-icon-v2.svg`,
   `src/app/layout.tsx`, `tests/e2e/production-website.spec.ts`,
   `tests/Validate-GitHubPages.ps1`

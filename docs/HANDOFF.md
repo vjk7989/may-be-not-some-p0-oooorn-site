@@ -9,9 +9,7 @@ disable-model-invocation: true
 
 ## Next-session focus
 
-The favicon visibility fix is implemented and locally verified. Push the
-pending commit to `main`, wait for the GitHub Pages workflow, and verify the
-versioned favicon on the live project URL. After that, ask the user which site
+The favicon visibility fix is deployed and verified. Ask the user which site
 section they want to work on next; do not begin another visual, copy,
 structural, or dependency change until they select it.
 
@@ -22,9 +20,9 @@ structural, or dependency change until they select it.
   The verified live site is
   <https://vjk7989.github.io/may-be-not-some-p0-oooorn-site/>.
 - GitHub Actions run
-  <https://github.com/vjk7989/may-be-not-some-p0-oooorn-site/actions/runs/35265549056>
+  <https://github.com/vjk7989/may-be-not-some-p0-oooorn-site/actions/runs/35268875126>
   completed successfully. At verification time, the deployed code SHA was
-  `b4c8d87a70261abee8d391a5e4f1e25474d70902`.
+  `f18058f4b7d7bdf35fe37478c08d4b1fb18ef935`.
 - The repository is configured for a static Next.js export under the project
   base path `/may-be-not-some-p0-oooorn-site`. The Pages workflow and base-path
   behavior are covered by
@@ -55,8 +53,8 @@ structural, or dependency change until they select it.
   [`tests/FAVICON_VISIBILITY_TEST_MATRIX.md`](../tests/FAVICON_VISIBILITY_TEST_MATRIX.md).
   Consult those sources rather than duplicating their detail here.
 - All favicon-focused validation and the relevant regression tests are green.
-  The change had not yet been pushed or verified on the live GitHub Pages site
-  at the time this handoff was written.
+  It is deployed at commit `f18058f4b7d7bdf35fe37478c08d4b1fb18ef935`;
+  local and remote state match.
 - `PlatformShowcase` is implemented and its intended desktop/mobile,
   interaction, fallback, and accessibility behavior has been independently
   exercised. Its bounded acceptance record is
@@ -74,8 +72,13 @@ structural, or dependency change until they select it.
 
 - The `main` deployment commit, successful workflow run, live project URL,
   base-path routing, and published assets were verified.
-- The favicon change still requires a new push, successful Pages deployment,
-  and live-browser verification; the deployment record above predates it.
+- The favicon deployment completed successfully in GitHub Actions run
+  <https://github.com/vjk7989/may-be-not-some-p0-oooorn-site/actions/runs/35268875126>.
+  The live asset at
+  <https://vjk7989.github.io/may-be-not-some-p0-oooorn-site/brand/buckleson-icon-v2.svg>
+  returned HTTP 200 with the expected 27,986-byte, self-contained payload.
+  Because browser chrome can retain a tab icon independently of page caching,
+  the new filename may require opening the site in a new tab once.
 - The deterministic GitHub Pages validation and broader regression gates pass,
   except for the separately authorized Lighthouse LCP exception. Do not round
   that measurement into compliance or weaken its threshold.
@@ -85,8 +88,6 @@ structural, or dependency change until they select it.
 
 ## Suggested skills
 
-- `computer-use` — use for live-browser favicon verification after the Pages
-  deployment completes.
 - `impeccable` — use for the next user-selected frontend critique or polish
   pass.
 - `emil-design-eng` — use for interaction detail, hierarchy, and restrained UI
@@ -96,7 +97,6 @@ structural, or dependency change until they select it.
 
 ## Blockers and deferred decisions
 
-- The favicon fix is pending push and live GitHub Pages verification.
 - The next site section has not yet been selected by the user.
 - A custom production domain remains a separate future decision; the current
   target is the GitHub Pages project site.
