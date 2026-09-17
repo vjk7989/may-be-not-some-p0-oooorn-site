@@ -1,0 +1,76 @@
+export const articleMetadata = {
+  slug: "llm-data-leakage",
+  title: "LLM Data Leakage: How Sensitive Information Reaches AI Systems",
+  seoTitle: "LLM Data Leakage Guide",
+  description: "Learn where LLM data leakage happens and how minimization, isolation, access control, output checks, and monitoring can reduce exposure.",
+  publishedAt: "2026-09-16",
+  primaryKeyword: "LLM data leakage",
+  relatedTerms: ["LLM data security", "sensitive information disclosure", "AI data protection"],
+  relatedHref: "/services/",
+};
+
+# LLM Data Leakage: How Sensitive Information Reaches AI Systems
+
+LLM data leakage occurs when sensitive information reaches an unauthorized person, system, model, or destination through a language-model workflow. The leak may appear in a response, a log, a retrieval result, a tool call, an analytics platform, or a copied conversation. It can be accidental, caused by weak architecture, or encouraged by an attacker.
+
+Reducing leakage begins with a simple principle: sensitive data that a task does not need should not enter the workflow. Once information is included in a prompt or connected context, downstream controls still matter, but the exposure surface has already grown.
+
+## Find every place data can enter
+
+Inventory more than user prompts. LLM applications often combine system instructions, conversation history, retrieved documents, database records, tool results, uploaded files, and metadata. Each source may contain personal data, credentials, business secrets, source code, or regulated information.
+
+Map the destination as well. Record the model endpoint, provider settings, region, caches, traces, support tooling, evaluation datasets, and downstream applications. Buckleson's [AI security and custom AI services](/services/) use this end-to-end view to identify where controls can reduce unnecessary exposure.
+
+## Minimize before inference
+
+Start by defining what the use case actually needs. A model writing a delivery update may need an order status and expected date, but not a full customer profile. Select fields explicitly rather than sending entire records.
+
+Use redaction, masking, tokenization, or substitution where appropriate. Test these controls against free text, tables, attachments, multiple languages, and identifiers with unusual formats. A pattern that catches standard payment cards may miss an internal account number or a secret embedded in source code.
+
+Do not treat masking as irreversible anonymization without evidence. Combinations of ordinary fields can re-identify a person. Data owners and privacy teams should review which transformations are suitable for each use case.
+
+## Enforce tenant and user boundaries
+
+Retrieval systems can leak data even when the model behaves exactly as asked. Apply authorization before retrieval, not after the model writes a response. Every query should carry the authenticated identity and tenant scope. Indexes, caches, and embeddings should preserve those boundaries.
+
+Test for cross-tenant references, guessed document identifiers, stale permissions, shared caches, and overbroad service accounts. Restrict the agent's tools to the same or narrower scope than the requesting user. A tool should never inherit broad backend access merely because the user interface is restricted.
+
+## Treat prompts as an untrusted channel
+
+Attackers may ask directly for sensitive content or embed instructions in documents an agent reads. The [OWASP guidance on sensitive information disclosure](https://genai.owasp.org/llmrisk/llm02-sensitive-information-disclosure/) explains why both model behavior and application design matter.
+
+Separate trusted instructions from untrusted content, but enforce important rules outside the model. A data-access layer should deny an unauthorized record even if the model produces a convincing request. Use narrow, typed tools and validate every identifier, query scope, and destination.
+
+## Check outputs before they travel
+
+Inspect model responses for sensitive values that should not leave the approved boundary. The check should be appropriate to the destination: an internal analyst interface and a public message have different rules. When the response becomes structured input for another system, validate its schema and escape it for that context.
+
+Avoid automatically forwarding raw output into email, tickets, chat rooms, or other agents. Re-evaluate identity, permissions, and data classification at each handoff. A multi-agent label does not make content trusted.
+
+## Secure logs, traces, and evaluation data
+
+Observability is valuable, but full prompts and responses can become a second sensitive-data store. Decide which fields are necessary for debugging and security investigations. Redact or tokenize where possible, restrict access, encrypt storage using the platform's supported controls, and set retention periods.
+
+Review who can export traces or use them to build evaluation and fine-tuning datasets. Remove secrets and personal data before reuse. Deleting a record from the application while retaining it indefinitely in an evaluation corpus undermines the original privacy decision.
+
+## Manage provider and model settings
+
+Maintain an approved inventory of models and endpoints. Document retention, training-use settings, location, subprocessors, and contract terms for each deployment. Route requests according to data class and purpose, and prevent silent fallback to an unapproved endpoint.
+
+Provider controls can help, but the application remains responsible for what it sends and how it handles results. The [OpenAI safety best-practices guide](https://platform.openai.com/docs/guides/safety-best-practices) emphasizes constrained inputs, validated outputs, and human oversight as parts of a broader safety approach.
+
+## Prepare for an exposure event
+
+Detection and recovery should be planned before launch. Useful signals include unusual retrieval volume, repeated access denials, unexpected destinations, secrets in responses, cross-tenant identifiers, and large trace exports. Define who can suspend the agent, revoke credentials, disable a connector, preserve evidence, and notify affected owners.
+
+Record enough information to reconstruct the path without storing unnecessary sensitive content. Tamper-evident records may support audit and verification of execution events. They do not provide confidentiality by themselves, and they do not demonstrate that a model output was correct.
+
+## Test the actual data path
+
+Create canary values that look like sensitive records but have no real impact. Place them in authorized and unauthorized sources, then verify retrieval, model output, tool calls, logs, and exports. Test permission changes, deleted records, stale caches, malformed inputs, and indirect prompt injection.
+
+Repeat these tests when the model, retrieval index, connector, logging platform, or policy changes. Leakage risk is shaped by system composition, so a previously safe evaluation may not cover a new workflow.
+
+LLM data leakage cannot be reduced by a single prompt rule. Data minimization, identity-aware retrieval, output controls, protected observability, and rehearsed response work together. These measures support safer use while keeping the remaining risk visible.
+
+[Book a 30-minute security assessment](https://cal.com/buckleson-group/30min) to trace sensitive data through your AI workflow and find its highest-priority exposure points.

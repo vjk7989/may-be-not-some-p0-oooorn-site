@@ -6,3 +6,9 @@
 /.cache/
 /.tmp/
 /.tools/
+/.next/
+/out/
+/.artifacts/
+/.sites-runtime/
+/.lighthouseci/
+*.tsbuildinfo

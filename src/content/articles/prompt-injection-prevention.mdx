@@ -1,0 +1,68 @@
+export const articleMetadata = {
+  slug: "prompt-injection-prevention",
+  title: "Prompt Injection Prevention for AI Agents",
+  seoTitle: "Prompt Injection Prevention for AI Agents",
+  description: "A practical approach to prompt injection prevention using input boundaries, tool controls, least privilege, approvals, and monitoring.",
+  publishedAt: "2026-09-16",
+  primaryKeyword: "prompt injection prevention",
+  relatedTerms: ["indirect prompt injection", "AI prompt security", "LLM prompt injection"],
+  relatedHref: "/services/",
+};
+
+# Prompt Injection Prevention for AI Agents
+
+Prompt injection happens when untrusted text changes how a language-model application behaves. The instruction may come directly from a user or indirectly from a webpage, document, email, database record, or tool response. In an AI agent, the effect can extend beyond a misleading answer: the injected instruction may influence a tool call or expose data from connected systems.
+
+Prompt injection prevention is therefore not a single filter. It is a layered design that assumes some hostile instructions will reach the model and limits what can happen next. The [OWASP guidance on prompt injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) similarly treats the problem as a system risk rather than something a stronger prompt can eliminate.
+
+## Understand the two common paths
+
+Direct injection arrives through a channel intended for user instructions. A person may ask the model to ignore its rules, reveal hidden context, or take an action outside the task. Indirect injection is embedded in content the application retrieves. An agent summarizing a webpage, for example, may encounter text written to manipulate the agent rather than inform the reader.
+
+Both paths exploit a basic difficulty: a language model processes instructions and content in the same general medium. Formatting can help the model distinguish sources, but formatting alone is not a security boundary.
+
+## Reduce the amount of untrusted context
+
+Only retrieve information needed for the current task. Narrow search scopes, cap document counts, and prefer relevant excerpts over entire files. Remove active markup and hidden text where it is not required. Track the source and trust level of every context segment so later policy can distinguish internal instructions from external material.
+
+Before inference, scan for secrets and sensitive fields that the task does not need. Buckleson's [secure inference services](/services/) address these controls around the inference path. The objective is to control and protect data before, during, and after a model request using the available infrastructure, without implying stronger runtime-isolation properties.
+
+## Keep authority outside the prompt
+
+System prompts should describe desired behavior, but they should not be the only thing preventing a dangerous action. Define permissions in ordinary application policy. If an agent can search customer records but cannot export them, the export restriction should be enforced by the tool or gateway even if the model asks otherwise.
+
+Give tools narrow, typed interfaces. Avoid a generic “run any command” tool when the use case needs three known operations. Validate identifiers, destinations, quantities, and file paths before execution. Reject unexpected fields. Use service identities and short-lived credentials with the smallest practical scope.
+
+## Separate planning from execution
+
+Let the model propose an action, then evaluate that proposal independently. Convert it into structured data and check the actor, operation, target, data classification, destination, and risk level. This creates a point where deterministic controls can deny, transform, or require approval.
+
+For sensitive actions, show the reviewer the real effect rather than the model's explanation. “Send 2,418 customer records to this external address” is more useful than “complete the requested export.” Approval must bind to the exact action so an altered request cannot reuse a previous decision.
+
+## Handle tool results as untrusted input
+
+Injection can travel through the output of a tool. A search result, support ticket, or repository file may contain instructions aimed at the agent. Mark tool results as data, apply the same provenance and content controls used for retrieved documents, and avoid passing one tool's raw response directly into a high-authority step.
+
+Multi-agent handoffs need the same treatment. One agent's message should not gain trust merely because it came from another model. Authenticate the sending component, constrain the message schema, and re-evaluate permissions at the receiving boundary.
+
+## Detect suspicious sequences
+
+Monitoring should focus on behavior, not only banned phrases. Useful signals include attempts to access hidden prompts, sudden tool changes, repeated denials, requests for unrelated secrets, unusual encoding, destination changes, or a high rate of actions in a short period.
+
+Keep enough evidence to investigate: input source, retrieved resources, policy decision, requested tool, sanitized parameters, approval outcome, and execution status. Avoid placing secrets or full sensitive prompts in logs. Tamper-evident evidence can support audit, but it cannot show that every model decision was truthful or safe.
+
+## Test with realistic attacks
+
+Create tests for the exact channels your application uses. Put hostile instructions in PDFs, HTML, email bodies, image metadata if it is processed, database text, and tool responses. Try instruction conflicts in multiple languages and simple obfuscation. Verify that the application limits context, protects sensitive data, denies unauthorized tools, and records the result.
+
+Also test ordinary content that resembles an attack. Overly aggressive blocking can make the product unusable or prevent security teams from analyzing malicious samples. The best response may be isolation, lower authority, or human review rather than a universal block.
+
+## Plan for failure and recovery
+
+Assume a control will eventually miss something. Use reversible operations where possible. Add rate and value limits, idempotency keys, transaction review, credential revocation, and clear stop controls. If an agent begins an unexpected action sequence, operators should be able to suspend execution without losing the evidence needed to understand it.
+
+The [OpenAI safety best-practices guide](https://platform.openai.com/docs/guides/safety-best-practices) recommends red-teaming, human oversight, and constraining inputs and outputs. Those practices become more important as an application gains tools and authority.
+
+Prompt injection prevention works when the system remains safe enough even after the model sees a hostile instruction. Strong prompts are useful, but least privilege, structured tools, policy checks, approvals, and recovery determine the practical impact.
+
+[Book a 30-minute security assessment](https://cal.com/buckleson-group/30min) to review the injection paths and execution boundaries in your AI workflow.

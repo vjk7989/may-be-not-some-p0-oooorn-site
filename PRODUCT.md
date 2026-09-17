@@ -10,7 +10,7 @@ Enterprise AI, security, compliance, data, and platform leaders evaluating how t
 
 ## Product Purpose
 
-Buckleson helps companies, organizations, and users adopt AI more safely. It provides a trust and execution layer around AI infrastructure: controlling access and actions, protecting sensitive data around inference, and preserving verifiable evidence through the in-house Hyper-0x blockchain. Website success means a first-time visitor can explain what Buckleson does after the first screen and can reach the relevant product, service, risk resource, or security-assessment contact path.
+Buckleson helps companies, organizations, and individual users adopt AI more safely. It provides a trust and execution layer around AI infrastructure: controlling access and actions, protecting sensitive data around inference, and preserving verifiable evidence through the in-house Hyper-0x blockchain. Website success means a first-time visitor can explain what Buckleson does after the first screen and can reach the relevant product, service, risk resource, or security-assessment contact path.
 
 ## Brand Personality
 
@@ -18,21 +18,21 @@ Assured, precise, infrastructural. The voice is plain-spoken and technically cre
 
 ## Brand Assets
 
-- Official Buckleson logo: `dist/assets/brand/buckleson-logo.jpg`.
+- Official Buckleson logo: `public/brand/buckleson-logo.jpg`.
 - The project-local file is an exact copy of the user-supplied 322 × 308 JPEG;
   SHA-256: `19C1C8EA72D395660AD59BFB05BBBD02F3473DE2C614D4740B3B2F67C1CD3481`.
-- The logo is registered for future section-by-section design work and is not
-  yet wired into the current wireframe.
+- The logo is used in the production header, footer, and risk boundary.
 - For informative use, use alt text `Buckleson logo`. When adjacent visible
   text already identifies Buckleson and the image is decorative, use `alt=""`.
   Never use the filename as alt text.
 - Preserve the supplied artwork and proportions. Do not redraw, recolor,
-  stretch, crop, or add effects unless the user explicitly approves a variant.
-- Official Hyper-0x logo: `dist/assets/brand/hyper-0x-logo.png`.
+  stretch, or crop it. The approved presentation variant rounds only the outer
+  canvas edges in rendered logo instances and the favicon while keeping the
+  source JPEG byte-for-byte unchanged.
+- Official Hyper-0x logo: `public/brand/hyper-0x-logo.png`.
 - The project-local file is an exact copy of the user-supplied 1254 × 1254 PNG;
   SHA-256: `D54E012E3A323D284E5CF0AB9A41522F89A92B3AA3DF4D10316E5A06B267B6F8`.
-- The Hyper-0x logo is registered for future section-by-section design work
-  and is not yet placed or wired into the current wireframe.
+- The Hyper-0x logo is used in the production homepage and products page.
 - When it conveys product identity, use alt text `Hyper-0x logo`. When the same
   adjacent visible text already identifies Hyper-0x and the image is
   decorative, use `alt=""`.

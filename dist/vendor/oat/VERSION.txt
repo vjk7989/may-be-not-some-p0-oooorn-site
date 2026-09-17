@@ -1,3 +1,0 @@
-Oat UI gh-pages revision: 6ec225a8971fa38d2cfc5444d21e0c65487c7a4e
-Source: https://github.com/knadh/oat
-License: MIT; see LICENSE in this directory.

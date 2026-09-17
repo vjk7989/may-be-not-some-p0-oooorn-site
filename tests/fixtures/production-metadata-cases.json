@@ -1,0 +1,32 @@
+[
+  {
+    "name": "valid base metadata",
+    "route": "/products",
+    "html": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Buckleson AI Security Products</title><meta name=\"description\" content=\"Explore Buckleson controls for sensitive data, AI permissions, controlled execution, audit evidence, and safer enterprise AI adoption.\"><meta name=\"robots\" content=\"index, follow\"><link rel=\"canonical\" href=\"https://buckleson.example/products\"><script type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@type\":\"WebPage\",\"name\":\"Buckleson AI Security Products\"}</script></head><body><header></header><main id=\"main-content\"><h1>Products</h1></main><footer></footer></body></html>",
+    "expectedIssues": []
+  },
+  {
+    "name": "missing canonical",
+    "route": "/products",
+    "html": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"><title>Buckleson AI Security Products</title><meta name=\"description\" content=\"Explore Buckleson controls for sensitive data, AI permissions, controlled execution, audit evidence, and safer enterprise AI adoption.\"><meta name=\"robots\" content=\"index, follow\"></head><body><main><h1>Products</h1></main></body></html>",
+    "expectedIssues": ["canonical-count"]
+  },
+  {
+    "name": "local canonical is rejected",
+    "route": "/products",
+    "html": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"><title>Buckleson AI Security Products</title><meta name=\"description\" content=\"Explore Buckleson controls for sensitive data, AI permissions, controlled execution, audit evidence, and safer enterprise AI adoption.\"><meta name=\"robots\" content=\"index, follow\"><link rel=\"canonical\" href=\"http://127.0.0.1:4173/products\"></head><body><main><h1>Products</h1></main></body></html>",
+    "expectedIssues": ["canonical-invalid"]
+  },
+  {
+    "name": "duplicate h1 and short description",
+    "route": "/about",
+    "html": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"><title>About Buckleson AI Security</title><meta name=\"description\" content=\"Too short.\"><meta name=\"robots\" content=\"index, follow\"><link rel=\"canonical\" href=\"https://buckleson.example/about\"></head><body><main><h1>About</h1><h1>Mission</h1></main></body></html>",
+    "expectedIssues": ["description-length", "h1-count"]
+  },
+  {
+    "name": "malformed and unsafe json ld",
+    "route": "/blog/example",
+    "html": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"><title>Example AI Security Article | Buckleson</title><meta name=\"description\" content=\"A sufficiently detailed article description about practical controls for enterprise AI agents, sensitive data, tools, and actions.\"><meta name=\"robots\" content=\"index, follow\"><link rel=\"canonical\" href=\"https://buckleson.example/blog/example\"><script type=\"application/ld+json\">{\"@type\":\"Article\",\"headline\":\"<unsafe>\"</script></head><body><main><h1>Example AI Security Article</h1></main></body></html>",
+    "expectedIssues": ["jsonld-raw-angle", "jsonld-invalid"]
+  }
+]

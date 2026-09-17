@@ -11,9 +11,16 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $workspaceRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
-$requiredRoot = [IO.Path]::GetFullPath('D:\high-quality')
-if (-not $workspaceRoot.Equals($requiredRoot, [StringComparison]::OrdinalIgnoreCase)) {
-    throw "Workspace Node tools may run only from $requiredRoot; resolved $workspaceRoot"
+if ($IsWindows) {
+    $requiredRoot = [IO.Path]::GetFullPath('D:\high-quality')
+    if (-not $workspaceRoot.Equals($requiredRoot, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Workspace Node tools may run only from $requiredRoot; resolved $workspaceRoot"
+    }
+} elseif ($env:GITHUB_WORKSPACE) {
+    $requiredRoot = [IO.Path]::GetFullPath($env:GITHUB_WORKSPACE)
+    if (-not $workspaceRoot.Equals($requiredRoot, [StringComparison]::Ordinal)) {
+        throw "CI Node tools may run only from $requiredRoot; resolved $workspaceRoot"
+    }
 }
 
 $cachePath = Join-Path $workspaceRoot '.cache\npm'
@@ -27,13 +34,11 @@ $env:NPM_CONFIG_USERCONFIG = $userConfigPath
 $env:TEMP = $tempPath
 $env:TMP = $tempPath
 
-$nodeDirectory = Join-Path (
-    [Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFiles)
-) 'nodejs'
-$commandPath = Join-Path $nodeDirectory ($Tool + '.cmd')
-
-if (-not (Test-Path -LiteralPath $commandPath -PathType Leaf)) {
-    throw "Unsupported or unavailable Node tool: $Tool"
+$commandPath = if ($IsWindows) {
+    $nodeDirectory = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFiles)) 'nodejs'
+    Join-Path $nodeDirectory ($Tool + '.cmd')
+} else {
+    (Get-Command $Tool -CommandType Application -ErrorAction Stop).Source
 }
 
 & $commandPath @ToolArguments

@@ -1,0 +1,75 @@
+export const articleMetadata = {
+  slug: "ai-agent-security",
+  title: "AI Agent Security: A Practical Guide to Data, Tools, and Actions",
+  seoTitle: "AI Agent Security Guide",
+  description: "Learn how to secure AI agents with least privilege, data controls, approval gates, monitoring, and evidence without slowing useful work.",
+  publishedAt: "2026-09-16",
+  primaryKeyword: "AI agent security",
+  relatedTerms: ["agentic AI security", "AI agent risks", "AI agent controls"],
+  relatedHref: "/services/",
+};
+
+# AI Agent Security: A Practical Guide to Data, Tools, and Actions
+
+AI agent security is the practice of controlling what an AI agent can access, decide, and do across a real system. It is different from checking whether a chatbot gives a good answer. An agent may read files, call tools, query databases, send messages, or trigger business workflows. That ability creates value, but it also turns an incorrect or manipulated response into a possible action.
+
+The practical goal is not to make an agent impossible to deceive. No single control can promise that. The goal is to limit the effect of mistakes and attacks, keep sensitive information within approved boundaries, and retain enough evidence to understand what happened.
+
+## Start with the agent's real operating path
+
+Security teams need a concrete map before choosing controls. Document where the agent receives instructions, which models it uses, what data enters prompts, which tools it can call, and where its outputs go. Include indirect inputs such as retrieved web pages, uploaded documents, emails, and records pulled from internal systems.
+
+This map often reveals that the model is only one part of the risk. The surrounding execution path includes identity, permissions, connectors, retrieval stores, tool definitions, approval logic, logging, and downstream applications. Buckleson's [AI security and secure inference services](/services/) focus on these operational boundaries rather than treating model behavior as the only control point.
+
+## Give every agent the least privilege it needs
+
+An agent should begin with no authority and receive only the minimum access needed for its assigned task. This is the same principle used for users and services, applied to autonomous and semi-autonomous software.
+
+Useful controls include:
+
+- separate read and write permissions;
+- restrict each tool to specific resources and operations;
+- issue short-lived credentials instead of embedding long-lived secrets;
+- limit the number or value of actions within a session;
+- require explicit approval for destructive, financial, legal, or external actions; and
+- isolate agents that serve different teams or data classifications.
+
+Do not assume that a well-written system prompt replaces these boundaries. Prompt instructions can guide behavior, but enforcement should live outside the model wherever possible.
+
+## Treat all retrieved content as untrusted
+
+An agent can encounter hostile instructions inside a document, webpage, message, or tool result. That content may try to redirect the agent, extract sensitive data, or cause an unauthorized tool call. The [OWASP GenAI Security Project](https://genai.owasp.org/) documents prompt injection and excessive agency among the important risks for language-model applications.
+
+Separate trusted instructions from untrusted content. Label their origins, reduce unnecessary context, and prevent retrieved text from silently changing permissions. Before an agent uses a tool, validate the proposed action against policy using structured fields rather than free-form text alone.
+
+## Protect data before it reaches the model
+
+Good AI agent security includes decisions about what data should enter an inference request at all. Classify inputs, remove or mask unnecessary sensitive fields, and select an approved model or endpoint for each data class. Apply output checks before responses are stored, displayed, or passed to another system.
+
+This is especially important in multi-agent systems. A response that is safe for one component may expose information when forwarded to another agent with a different audience. Track data lineage across handoffs, not only at the first prompt.
+
+## Put policy between intent and execution
+
+The most important checkpoint is often the moment between an agent proposing an action and the system executing it. Translate the proposal into a structured request: actor, purpose, target, operation, data scope, and expected result. Then evaluate it against deterministic policy.
+
+Low-risk, reversible operations may proceed automatically. High-impact operations should require a human decision or a stronger verification step. A denial should be clear and should not reveal hidden policy or sensitive data. Repeated denials, unusual tool sequences, and unexpected destination changes should create security signals.
+
+## Preserve useful evidence
+
+Logs should make an agent's execution understandable without collecting more sensitive information than necessary. Record the requesting identity, policy decision, tool selected, sanitized parameters, approval state, result status, and correlation identifiers. Protect the integrity of this evidence and define retention by business and regulatory need.
+
+Tamper-evident records can support later verification and audit. They do not prove that a model response was correct, and they do not replace access control or privacy protection. Buckleson's [Hyper-0x product direction](/products/) uses blockchain as infrastructure for execution evidence, audit, verification, and settlement within those limits.
+
+## Test the full workflow, not only the prompt
+
+Evaluation should cover normal tasks and adversarial cases. Test direct and indirect prompt injection, requests for hidden data, attempts to invoke unapproved tools, malformed tool parameters, repeated actions, and failures during approval or execution. Include recovery: can the system stop safely, revoke credentials, and explain which actions completed?
+
+The [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework) offers a useful structure for governing, mapping, measuring, and managing AI risk. Apply that structure to the whole agent workflow and assign owners for model behavior, infrastructure, data, security, and business outcomes.
+
+## A practical rollout sequence
+
+Begin with a narrow, observable use case. Use read-only access where possible, fixed tool allowlists, small data scopes, and human approval for consequential actions. Measure denials, overrides, failures, and unexpected paths. Expand authority only when evidence shows that controls and recovery procedures work as intended.
+
+AI agent security is strongest when it is layered: constrained identity, protected data, explicit policy, controlled execution, monitoring, and review. These measures help reduce risk; they do not remove the need for responsible deployment and ongoing testing.
+
+[Book a 30-minute security assessment](https://cal.com/buckleson-group/30min) to map an agent workflow and identify its highest-impact control points.
