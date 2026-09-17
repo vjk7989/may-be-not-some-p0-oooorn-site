@@ -101,6 +101,16 @@ if (-not [uri]::TryCreate($SiteUrl, [uriKind]::Absolute, [ref]$siteUri) -or
 }
 
 $resolvedWorkflow = [System.IO.Path]::GetFullPath($WorkflowPath)
+$wrapperPath = Join-Path $PSScriptRoot '..\scripts\Invoke-WorkspaceNodeTool.ps1'
+if (-not (Test-Path -LiteralPath $wrapperPath -PathType Leaf)) {
+    Add-Failure "Missing workspace Node wrapper: $wrapperPath"
+} else {
+    $wrapper = Get-Content -LiteralPath $wrapperPath -Raw -Encoding utf8
+    if ($wrapper -notmatch 'Get-Command\s+\$Tool[\s\S]*?Select-Object\s+-First\s+1') {
+        Add-Failure 'Workspace Node wrapper must select exactly the first PATH executable in CI'
+    }
+}
+
 if (-not (Test-Path -LiteralPath $resolvedWorkflow -PathType Leaf)) {
     Add-Failure "Missing GitHub Pages workflow: $resolvedWorkflow"
 } else {

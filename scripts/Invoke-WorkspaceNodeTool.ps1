@@ -38,7 +38,8 @@ $commandPath = if ($IsWindows) {
     $nodeDirectory = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFiles)) 'nodejs'
     Join-Path $nodeDirectory ($Tool + '.cmd')
 } else {
-    (Get-Command $Tool -CommandType Application -ErrorAction Stop).Source
+    (Get-Command $Tool -CommandType Application -ErrorAction Stop |
+        Select-Object -First 1).Source
 }
 
 & $commandPath @ToolArguments
