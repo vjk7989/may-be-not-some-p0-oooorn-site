@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [`${siteConfig.siteUrl}/brand/buckleson-logo.jpg`],
   },
-  icons: { icon: withBasePath("/brand/buckleson-icon.svg") },
+  icons: { icon: withBasePath("/brand/buckleson-icon-v2.svg") },
   robots: { index: true, follow: true },
 };
 

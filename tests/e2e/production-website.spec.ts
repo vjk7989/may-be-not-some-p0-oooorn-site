@@ -351,7 +351,7 @@ test("Buckleson logo rounding preserves original bytes and rendered proportions"
   }
 });
 
-test("favicon metadata uses a safe local rounded wrapper around the original logo", async ({
+test("favicon metadata uses a visible self-contained versioned icon", async ({
   page,
   request,
 }) => {
@@ -359,18 +359,56 @@ test("favicon metadata uses a safe local rounded wrapper around the original log
   const icon = page.locator('link[rel~="icon"]');
   await expect(icon).toHaveCount(1);
   const href = await icon.getAttribute("href");
-  expect(href).toBe("/brand/buckleson-icon.svg");
+  expect(href).toMatch(/^(?:\/may-be-not-some-p0-oooorn-site)?\/brand\/buckleson-icon-v2\.svg$/);
 
   const response = await request.get(href!);
   expect(response.ok()).toBeTruthy();
   expect(response.headers()["content-type"]).toContain("image/svg+xml");
   const svg = await response.text();
+  expect(svg.length).toBeGreaterThan(1_000);
+  expect(svg).toMatch(/<svg\b[^>]*\bviewBox=["'][^"']+["']/i);
   expect(svg).toMatch(/<clipPath\b/i);
   expect(svg).toMatch(/<rect\b[^>]*\brx=["'][^"']+["']/i);
   expect(svg).toMatch(
-    /<image\b[^>]*(?:href|xlink:href)=["'](?:\.\/)?buckleson-logo\.jpg["'][^>]*preserveAspectRatio=["']xMidYMid meet["']/i,
+    /<image\b[^>]*(?:href|xlink:href)=["']data:image\/jpeg;base64,[A-Za-z0-9+/=]+["'][^>]*preserveAspectRatio=["']xMidYMid meet["']/i,
   );
-  expect(svg).not.toMatch(/<script\b|\bon\w+\s*=|<foreignObject\b|(?:href|xlink:href)=["']https?:/i);
+  expect(svg).not.toMatch(
+    /<script\b|\bon\w+\s*=|<foreignObject\b|(?:href|xlink:href)=["'](?:https?:|\/|\.\.?\/|file:)/i,
+  );
+
+  const rendering = await page.evaluate(async (iconHref) => {
+    const image = new Image();
+    image.src = iconHref;
+    await image.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = 64;
+    canvas.height = 64;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) throw new Error("Canvas 2D context unavailable");
+    context.drawImage(image, 0, 0, 64, 64);
+    const pixels = context.getImageData(0, 0, 64, 64).data;
+    let darkest = 255;
+    let lightest = 0;
+    let opaque = 0;
+    for (let index = 0; index < pixels.length; index += 4) {
+      if (pixels[index + 3] === 0) continue;
+      opaque += 1;
+      const luminance =
+        0.2126 * pixels[index] + 0.7152 * pixels[index + 1] + 0.0722 * pixels[index + 2];
+      darkest = Math.min(darkest, luminance);
+      lightest = Math.max(lightest, luminance);
+    }
+    return {
+      width: image.naturalWidth,
+      height: image.naturalHeight,
+      opaque,
+      contrastRange: lightest - darkest,
+    };
+  }, href!);
+  expect(rendering.width).toBeGreaterThan(0);
+  expect(rendering.height).toBeGreaterThan(0);
+  expect(rendering.opaque).toBeGreaterThan(64 * 64 * 0.5);
+  expect(rendering.contrastRange).toBeGreaterThan(180);
 
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",

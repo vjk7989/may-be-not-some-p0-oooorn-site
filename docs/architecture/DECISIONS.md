@@ -709,6 +709,36 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 - **References:** `tests/GITHUB_PAGES_TEST_MATRIX.md`,
   `tests/Validate-GitHubPages.ps1`, D-020, D-023, D-026
 
+### D-034 — Embed the official raster in a versioned favicon wrapper
+
+- **Date:** 2026-09-18
+- **Status:** Accepted
+- **Context:** The existing `buckleson-icon.svg` referenced the official JPEG
+  through an external relative URL. Browsers could load the SVG favicon without
+  resolving that dependent raster request, leaving the browser-tab icon
+  effectively invisible.
+- **Decision:** Point favicon metadata to the versioned
+  `public/brand/buckleson-icon-v2.svg`. The replacement keeps the same rounded
+  clip and embeds the byte-unchanged official Buckleson JPEG as a `data:` URI
+  instead of depending on a second favicon fetch. The new filename also
+  cache-busts previously cached invisible favicon metadata and content.
+- **Rationale:** A self-contained, inert SVG is the smallest reliable fix. It
+  preserves the approved source artwork and rounded presentation while removing
+  browser-dependent relative-resource loading from the favicon path.
+- **Consequences:** Future favicon changes must remain self-contained and use a
+  new versioned URL when cached browser state must be invalidated. The canonical
+  JPEG remains unchanged at SHA-256
+  `19C1C8EA72D395660AD59BFB05BBBD02F3473DE2C614D4740B3B2F67C1CD3481`.
+  The generated v2 SVG is 27,987 bytes with SHA-256
+  `914CD106F10D35AB078366412092B4ADE763E57C00A2ADAC27E3FDBF545B2FD5`.
+- **Validation:** The focused favicon browser check passes 1/1, the combined
+  Playwright suite passes 44/44, the aggregate test command passes, and the
+  GitHub Pages validator passes.
+- **Affected paths:** `public/brand/buckleson-icon-v2.svg`,
+  `src/app/layout.tsx`, `tests/e2e/production-website.spec.ts`,
+  `tests/Validate-GitHubPages.ps1`
+- **References:** `tests/FAVICON_VISIBILITY_TEST_MATRIX.md`, D-031, D-033
+
 ## Compact codebase map
 
 | Path | Purpose | Current status |
@@ -754,7 +784,7 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `src/lib/json-ld.tsx` | Typed structured-data serialization and `<` escaping boundary | Active |
 | `src/content/articles/` | Six original local MDX articles | Active; no runtime fetch |
 | `public/brand/` | Byte-preserved official Buckleson and Hyper-0x source artwork | Active; hash validated |
-| `public/brand/buckleson-icon.svg` | Local safe favicon wrapper that rounds the unchanged Buckleson JPEG | Active; HTTP 200 |
+| `public/brand/buckleson-icon-v2.svg` | Versioned, self-contained favicon wrapper embedding the unchanged Buckleson JPEG under the rounded clip | Active; focused browser check and Pages validation passing |
 | `public/.nojekyll` | Prevents GitHub Pages/Jekyll from filtering Next static-export paths | Active; copied into `out/` |
 | `out/` | Generated deployable static export | Build output; not source |
 | `tests/PRODUCTION_WEBSITE_TEST_MATRIX.md` | Current risk-based production acceptance contract | Active |

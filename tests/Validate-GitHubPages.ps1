@@ -198,6 +198,35 @@ if (-not (Test-Path -LiteralPath $resolvedOut -PathType Container)) {
         }
     }
 
+    if ($pages.ContainsKey('/')) {
+        $iconReferences = @()
+        foreach ($attrs in (Get-TagAttributes $pages['/'] 'link')) {
+            $rel = Get-Attribute $attrs 'rel'
+            if (@($rel -split '\s+') -contains 'icon') {
+                $iconReferences += (Get-Attribute $attrs 'href')
+            }
+        }
+        $expectedIconReference = "$BasePath/brand/buckleson-icon-v2.svg"
+        if ($iconReferences.Count -ne 1 -or $iconReferences[0] -ne $expectedIconReference) {
+            Add-Failure "Home favicon must reference exactly '$expectedIconReference'; received '$($iconReferences -join ', ')'"
+        }
+
+        $exportedIcon = Join-Path $resolvedOut 'brand\buckleson-icon-v2.svg'
+        if (-not (Test-Path -LiteralPath $exportedIcon -PathType Leaf) -or
+            (Get-Item -LiteralPath $exportedIcon -ErrorAction SilentlyContinue).Length -eq 0) {
+            Add-Failure 'Missing or empty self-contained exported favicon: out/brand/buckleson-icon-v2.svg'
+        } else {
+            $iconSvg = Get-Content -LiteralPath $exportedIcon -Raw -Encoding utf8
+            if ($iconSvg -notmatch '<svg\b[^>]*\bviewBox=[\x22\x27][^\x22\x27]+[\x22\x27]' -or
+                $iconSvg -notmatch '<image\b[^>]*(?:href|xlink:href)=[\x22\x27]data:image/jpeg;base64,[A-Za-z0-9+/=]+[\x22\x27]') {
+                Add-Failure 'Exported favicon must be a self-contained SVG with an inline JPEG payload'
+            }
+            if ($iconSvg -match '<script\b|\bon\w+\s*=|<foreignObject\b|(?:href|xlink:href)=[\x22\x27](?:https?:|/|\.\.?/|file:)') {
+                Add-Failure 'Exported favicon contains executable or external-resource markup'
+            }
+        }
+    }
+
     $robotsPath = Join-Path $resolvedOut 'robots.txt'
     if (-not (Test-Path -LiteralPath $robotsPath -PathType Leaf)) {
         Add-Failure 'Missing out/robots.txt'
