@@ -741,6 +741,46 @@ writes elsewhere. It deliberately does not alter user or machine settings.
   `tests/Validate-GitHubPages.ps1`
 - **References:** `tests/FAVICON_VISIBILITY_TEST_MATRIX.md`, D-031, D-033
 
+### D-035 — Use shared CSS-only electric-violet navigation cells
+
+- **Date:** 2026-09-18
+- **Status:** Accepted with the pre-existing Lighthouse LCP exception recorded
+  in D-033
+- **Context:** The shared glass header needed a more compact, squared visual
+  rhythm and clear interactive feedback while preserving the established route
+  order, mobile Sheet, no-JavaScript recovery, accessibility, and static Pages
+  architecture.
+- **Decision:** Keep the translucent header as a moderately rounded rectangular
+  shell and render every desktop and mobile destination, including Contact Us,
+  through one `nav-cell`/`NavLabel` presentation. Each label has one semantic
+  copy plus an `aria-hidden` duplicate. CSS pseudo-elements, transforms, and
+  opacity provide the electric-violet fill, vertical label roll, and press
+  feedback without a motion dependency. Inactive cells transition from a
+  white translucent surface to violet; the `aria-current="page"` cell remains
+  violet in every state. Mobile links retain touch-sized rectangular cells;
+  no-JavaScript links remain native; reduced-motion, reduced-transparency, and
+  increased-contrast preferences retain immediate, legible states; wrapping
+  prevents header overflow and reflow failures at supported viewport and zoom
+  sizes.
+- **Rationale:** Shared semantic markup and CSS-only motion are the smallest
+  implementation that gives every navigation surface the same state language
+  without duplicating behavior or adding client runtime weight.
+- **Consequences:** New header destinations must use `NavLabel` and the
+  `nav-cell` state contract. The duplicated label must remain hidden from the
+  accessibility tree, focus indication must stay above the animated fill, and
+  current-route styling must never reverse to white on interaction.
+- **Validation:** Design lint, lint, typecheck, unit, build, content, links, and
+  SEO checks pass. Focused navbar coverage passes 34/34, combined E2E passes
+  47/47, and dedicated Axe coverage passes 11/11. Lighthouse meets every
+  configured budget except mobile LCP, whose median remains approximately
+  2.611 s—the same pre-existing D-033 baseline—so the performance gate is not
+  recorded as passing. A `preload: false` experiment worsened the median to
+  approximately 2.835 s and was reverted.
+- **Affected paths:** `src/components/site-header.tsx`, `src/app/globals.css`,
+  `tests/GLASS_NAVBAR_TEST_MATRIX.md`,
+  `tests/e2e/production-website.spec.ts`
+- **References:** `tests/GLASS_NAVBAR_TEST_MATRIX.md`, D-030, D-033
+
 ## Compact codebase map
 
 | Path | Purpose | Current status |
@@ -774,8 +814,8 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `src/app/blog/[slug]/page.tsx` | Six statically generated MDX article routes, article metadata, and structured data | Active |
 | `src/app/robots.ts` | Static crawl policy metadata route | Active |
 | `src/app/sitemap.ts` | Static sitemap for pages and articles | Active |
-| `src/app/globals.css` | Production tokens, responsive layouts, focus styles, funnel motion, shared-navbar glass/fallbacks, and reduced-motion behavior | Active |
-| `src/components/site-header.tsx` | Shared ordered desktop, mobile Sheet, and no-JavaScript navigation shell | Active |
+| `src/app/globals.css` | Production tokens, responsive layouts, focus styles, funnel motion, electric-violet navigation cells, glass/preference fallbacks, and reduced-motion behavior | Active |
+| `src/components/site-header.tsx` | Shared ordered desktop, mobile Sheet, and no-JavaScript navigation shell with semantic rolling-label cells | Active |
 | `src/components/platform-showcase.tsx` | One-open product disclosure with keyboard, pointer, mobile, reduced-motion, and no-JavaScript paths | Active |
 | `src/components/` | Shared assessment CTA, logo, status, risk funnel, header, and local UI primitives | Active |
 | `src/lib/types.ts` | Static public-content interfaces | Active |
@@ -791,9 +831,9 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `out/` | Generated deployable static export | Build output; not source |
 | `tests/PRODUCTION_WEBSITE_TEST_MATRIX.md` | Current risk-based production acceptance contract | Active |
 | `tests/Validate-ProductionWebsite.ps1` | Deterministic route, content, asset, link, metadata, SEO, and claim validator | Passing |
-| `tests/e2e/production-website.spec.ts` | Responsive, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Passing 31/31; dedicated a11y 11/11 |
+| `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Combined E2E passing 47/47; dedicated a11y 11/11 |
 | `tests/e2e/platform-panels.spec.ts` | Focused PlatformShowcase state, keyboard, mobile, no-JavaScript, reduced-motion, and layout coverage | Passing as part of 44/44 combined E2E |
-| `tests/GLASS_NAVBAR_TEST_MATRIX.md` | Focused material, fallback, navigation, responsive, and accessibility contract for the shared navbar | Active; final runner totals pending |
+| `tests/GLASS_NAVBAR_TEST_MATRIX.md` | Focused geometry, material, violet interaction, active-route, fallback, responsive, and accessibility contract for the shared navbar | Active; focused coverage passing 34/34 |
 | `tests/LOGO_ROUNDING_TEST_MATRIX.md` | Source-integrity, rounded presentation, favicon safety, metadata, and logo-semantics contract | Active; passing |
 | `tests/PLATFORM_PANELS_TEST_MATRIX.md` | Focused progressive-disclosure acceptance and applicability contract | Active; passing |
 | `tests/GITHUB_PAGES_TEST_MATRIX.md` | Repository identity, deployment, routing, asset, metadata, security, and live-provenance contract | Active |

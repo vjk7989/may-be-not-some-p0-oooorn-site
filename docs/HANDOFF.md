@@ -5,100 +5,69 @@ argument-hint: "What will the next session be used for?"
 disable-model-invocation: true
 ---
 
-# Buckleson GitHub Pages deployment handoff
+# Electric-violet navbar handoff
 
 ## Next-session focus
 
-The favicon visibility fix is deployed and verified. Ask the user which site
-section they want to work on next; do not begin another visual, copy,
-structural, or dependency change until they select it.
+Review the implemented shared navbar with the user and make only requested
+visual or interaction refinements. Then decide explicitly whether the
+pre-existing Lighthouse LCP debt should become a separate performance task;
+do not treat that debt as part of the completed navbar interaction.
 
-## Deployment state
+## Current state
 
-- The repository is
-  <https://github.com/vjk7989/may-be-not-some-p0-oooorn-site> on branch `main`.
-  The verified live site is
-  <https://vjk7989.github.io/may-be-not-some-p0-oooorn-site/>.
-- GitHub Actions run
-  <https://github.com/vjk7989/may-be-not-some-p0-oooorn-site/actions/runs/35268875126>
-  completed successfully. At verification time, the deployed code SHA was
-  `f18058f4b7d7bdf35fe37478c08d4b1fb18ef935`.
-- The repository is configured for a static Next.js export under the project
-  base path `/may-be-not-some-p0-oooorn-site`. The Pages workflow and base-path
-  behavior are covered by
-  [`tests/GITHUB_PAGES_TEST_MATRIX.md`](../tests/GITHUB_PAGES_TEST_MATRIX.md);
-  use that artifact and the relevant entries in
-  [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) as the sources
-  of truth rather than reconstructing their detail here.
-- GitHub Pages had to be enabled once for the repository before the workflow
-  could publish. The workspace Node-tool wrapper also required a Linux scalar
-  handling fix for the Actions runner. Preserve both pieces of deployment
-  context when diagnosing future publishing failures.
-- The user explicitly authorized proceeding despite the Lighthouse LCP result
-  of approximately 2.611 seconds exceeding the 2.5-second project threshold.
-  Record this as a narrow, user-authorized deployment exception, not as a
-  passing performance gate. All other relevant functional, accessibility,
-  build, content, SEO, link, static-export, and GitHub Pages validation gates
-  pass.
+- The shared desktop and mobile navigation now uses compact, moderately
+  rounded cells with an electric-violet fill, vertically rolling duplicate
+  label, press feedback, and a violet-invariant current-page state.
+- Navigation order, routes, the mobile Sheet, Contact Us destination,
+  no-JavaScript recovery, focus behavior, reduced-motion handling, glass
+  fallbacks, and GitHub Pages static-export compatibility are preserved.
+- The durable decision and implementation constraints are recorded in D-035
+  in [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md). The bounded
+  acceptance contract is
+  [`tests/GLASS_NAVBAR_TEST_MATRIX.md`](../tests/GLASS_NAVBAR_TEST_MATRIX.md).
+  Use those artifacts and the current `git diff` rather than reconstructing
+  implementation detail here.
 
-## Current implementation state
+## Changed files
 
-- The site is a statically exported Next.js App Router implementation using
-  TypeScript, React Server Components, and Tailwind CSS v4.
-- The favicon fix uses a versioned, self-contained icon while leaving the
-  source logo unchanged. The relevant rationale and constraints are recorded
-  in decision D-034 in
-  [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md), and the
-  acceptance record is
-  [`tests/FAVICON_VISIBILITY_TEST_MATRIX.md`](../tests/FAVICON_VISIBILITY_TEST_MATRIX.md).
-  Consult those sources rather than duplicating their detail here.
-- All favicon-focused validation and the relevant regression tests are green.
-  It is deployed at commit `f18058f4b7d7bdf35fe37478c08d4b1fb18ef935`;
-  local and remote state match.
-- `PlatformShowcase` is implemented and its intended desktop/mobile,
-  interaction, fallback, and accessibility behavior has been independently
-  exercised. Its bounded acceptance record is
-  [`tests/PLATFORM_PANELS_TEST_MATRIX.md`](../tests/PLATFORM_PANELS_TEST_MATRIX.md);
-  consult that matrix instead of duplicating cases here.
-- The established navbar, homepage, logo treatment, content, metadata, and
-  static-export decisions remain documented in
-  [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md). Relevant test
-  matrices under [`tests`](../tests) remain the acceptance records.
-- `SITE_URL` remains the build-time canonical-domain setting. During live
-  verification, distinguish the GitHub Pages project URL from any future custom
-  production-domain decision.
+- `src/components/site-header.tsx`
+- `src/app/globals.css`
+- `tests/e2e/production-website.spec.ts`
+- `tests/GLASS_NAVBAR_TEST_MATRIX.md`
+- `docs/architecture/DECISIONS.md`
+- `docs/HANDOFF.md`
 
-## Deployment verification record
+The changes are currently uncommitted. Inspect `git diff` for the authoritative
+patch before further edits.
 
-- The `main` deployment commit, successful workflow run, live project URL,
-  base-path routing, and published assets were verified.
-- The favicon deployment completed successfully in GitHub Actions run
-  <https://github.com/vjk7989/may-be-not-some-p0-oooorn-site/actions/runs/35268875126>.
-  The live asset at
-  <https://vjk7989.github.io/may-be-not-some-p0-oooorn-site/brand/buckleson-icon-v2.svg>
-  returned HTTP 200 with the expected 27,986-byte, self-contained payload.
-  Because browser chrome can retain a tab icon independently of page caching,
-  the new filename may require opening the site in a new tab once.
-- The deterministic GitHub Pages validation and broader regression gates pass,
-  except for the separately authorized Lighthouse LCP exception. Do not round
-  that measurement into compliance or weaken its threshold.
-- For the next user-selected section, follow the repository's independent test
-  design, bounded implementation, test-runner, architecture-record, and handoff
-  workflow.
+## Validation record
+
+- Functional validation is green: design lint, lint, typecheck, unit, build,
+  content, links, and SEO checks pass.
+- Focused navbar Playwright coverage passes 34/34; combined E2E passes 47/47;
+  the dedicated Axe slice passes 11/11.
+- Lighthouse is not green. All configured Lighthouse budgets pass except the
+  mobile LCP budget: the current median is approximately 2.611 seconds against
+  the 2.5-second limit. This matches the pre-existing D-033 baseline and must
+  not be reported as a passing performance gate.
+- A `preload: false` experiment worsened the Lighthouse median to approximately
+  2.835 seconds and was reverted. Do not reintroduce it without new evidence.
+- Browser checks must run against a freshly started static preview after the
+  latest build. A previously running server can retain stale exported files or
+  occupy the expected port and produce misleading failures or measurements.
 
 ## Suggested skills
 
-- `impeccable` — use for the next user-selected frontend critique or polish
-  pass.
-- `emil-design-eng` — use for interaction detail, hierarchy, and restrained UI
-  refinement.
-- `apple-design` — use if the selected section involves translucent materials,
-  depth, motion, gestures, or reduced-motion behavior.
+- `impeccable` — review the navbar’s hierarchy, polish, responsive behavior,
+  and accessibility before making any user-requested refinement.
+- `emil-design-eng` — refine hover, focus, press, and label-roll motion without
+  adding a dependency or ornamental motion.
+- `apple-design` — use only if further work changes the glass material, depth,
+  or reduced-motion behavior.
 
-## Blockers and deferred decisions
+## Deferred decision
 
-- The next site section has not yet been selected by the user.
-- A custom production domain remains a separate future decision; the current
-  target is the GitHub Pages project site.
-- Backend contact handling, CMS, analytics, authentication, payments, and
-  runtime data fetching remain out of scope.
+- The only known non-green gate is the pre-existing mobile LCP budget. Treat a
+  new optimization pass as separate scope, preserve the 2.5-second threshold,
+  and compare any experiment with fresh-server three-run medians.

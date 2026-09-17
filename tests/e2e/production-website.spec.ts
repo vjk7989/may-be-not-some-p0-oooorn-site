@@ -32,8 +32,8 @@ const headerNavigation = [
 
 async function expectHeaderLinks(links: Locator) {
   await expect(links).toHaveCount(headerNavigation.length);
-  await expect(links).toHaveText(headerNavigation.map(({ label }) => label));
   for (const [index, item] of headerNavigation.entries()) {
+    await expect(links.nth(index)).toHaveAccessibleName(item.label);
     await expect(links.nth(index)).toHaveAttribute("href", item.href);
   }
 }
@@ -169,7 +169,7 @@ test("desktop header exposes the exact requested navigation", async ({ page }) =
   ).not.toHaveAttribute("target", "_blank");
 });
 
-test("desktop header is a sticky floating glass pill with immediate feedback", async ({ page }) => {
+test("desktop header is a sticky rounded rectangle with animated navigation cells", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
 
@@ -210,7 +210,8 @@ test("desktop header is a sticky floating glass pill with immediate feedback", a
   expect(1440 - material.right).toBeGreaterThanOrEqual(16);
   expect(material.top).toBeGreaterThanOrEqual(8);
   expect(material.width).toBeLessThan(1408);
-  expect(material.borderRadius).toBeGreaterThanOrEqual(20);
+  expect(material.borderRadius).toBeGreaterThanOrEqual(10);
+  expect(material.borderRadius).toBeLessThanOrEqual(20);
   expect(material.alpha).toBeGreaterThan(0.35);
   expect(material.alpha).toBeLessThan(0.96);
   expect(
@@ -218,15 +219,40 @@ test("desktop header is a sticky floating glass pill with immediate feedback", a
   ).toMatch(/blur\([^)]*[1-9][\d.]*px\)/);
   expect(material.boxShadow).not.toBe("none");
 
+  const cells = navigation.locator("a.nav-cell");
+  await expect(cells).toHaveCount(headerNavigation.length);
   const home = navigation.getByRole("link", { name: "Home", exact: true });
-  await home.focus();
-  await expect(home).toBeFocused();
-  const focus = await home.evaluate((element) => {
+  const about = navigation.getByRole("link", { name: "About", exact: true });
+  const activeColor = await home.evaluate((element) => getComputedStyle(element).color);
+  const inactiveColor = await about.evaluate((element) => getComputedStyle(element).color);
+
+  for (const cell of [home, about]) {
+    const geometry = await cell.evaluate((element) => {
+      const styles = getComputedStyle(element);
+      const bounds = element.getBoundingClientRect();
+      return {
+        radius: Number.parseFloat(styles.borderTopLeftRadius),
+        width: bounds.width,
+        height: bounds.height,
+      };
+    });
+    expect(geometry.radius).toBeGreaterThanOrEqual(6);
+    expect(geometry.radius).toBeLessThanOrEqual(14);
+    expect(geometry.width).toBeGreaterThan(geometry.height);
+  }
+
+  await about.focus();
+  await expect(about).toBeFocused();
+  await expect.poll(() => about.evaluate((element) => getComputedStyle(element).color)).toBe(
+    activeColor,
+  );
+  const focus = await about.evaluate((element) => {
     const styles = getComputedStyle(element);
     return {
       outlineStyle: styles.outlineStyle,
       outlineWidth: Number.parseFloat(styles.outlineWidth),
       boxShadow: styles.boxShadow,
+      color: styles.color,
     };
   });
   expect(
@@ -234,6 +260,50 @@ test("desktop header is a sticky floating glass pill with immediate feedback", a
       focus.boxShadow !== "none",
     `navigation focus is not visibly styled: ${JSON.stringify(focus)}`,
   ).toBeTruthy();
+
+  const labels = about.locator(".nav-label");
+  await expect(labels.locator(".nav-label-base")).toHaveCount(1);
+  await expect(labels.locator('.nav-label-hover[aria-hidden="true"]')).toHaveCount(1);
+
+  await about.evaluate((element) => (element as HTMLElement).blur());
+  await page.mouse.move(0, 0);
+  await expect.poll(() => about.evaluate((element) => getComputedStyle(element).color)).toBe(
+    inactiveColor,
+  );
+  const inactiveRest = await about.evaluate((element) => {
+    const styles = getComputedStyle(element);
+    const fill = getComputedStyle(element, "::before");
+    return { color: styles.color, background: styles.backgroundColor, fillTransform: fill.transform };
+  });
+  const aboutBounds = await about.boundingBox();
+  expect(aboutBounds).not.toBeNull();
+  await page.mouse.move(
+    aboutBounds!.x + aboutBounds!.width / 2,
+    aboutBounds!.y + aboutBounds!.height / 2,
+  );
+  await expect.poll(() => about.evaluate((element) => getComputedStyle(element).color)).toBe(
+    activeColor,
+  );
+  const inactiveHover = await about.evaluate((element) => {
+    const styles = getComputedStyle(element);
+    const fill = getComputedStyle(element, "::before");
+    return { color: styles.color, background: styles.backgroundColor, fillTransform: fill.transform };
+  });
+  expect(inactiveHover.color).toBe(focus.color);
+  expect(inactiveHover.fillTransform).not.toBe(inactiveRest.fillTransform);
+
+  const activeRest = await home.evaluate((element) => {
+    const styles = getComputedStyle(element);
+    return { background: styles.backgroundColor, color: styles.color };
+  });
+  const homeBounds = await home.boundingBox();
+  expect(homeBounds).not.toBeNull();
+  await page.mouse.move(homeBounds!.x + homeBounds!.width / 2, homeBounds!.y + homeBounds!.height / 2);
+  const activeHover = await home.evaluate((element) => {
+    const styles = getComputedStyle(element);
+    return { background: styles.backgroundColor, color: styles.color };
+  });
+  expect(activeHover).toEqual(activeRest);
 
   const beforePress = await home.evaluate((element) => getComputedStyle(element).transform);
   const bounds = await home.boundingBox();
@@ -269,13 +339,25 @@ test("glass navbar CSS includes preference and capability fallbacks", async () =
     /@media\s*\(prefers-contrast:\s*more\)\s*\{[\s\S]*?\.header-inner\s*\{[\s\S]*?(?:border|outline)\s*:/i,
   );
   expect(css).toMatch(
-    /@media\s*\(hover:\s*hover\)\s+and\s+\(pointer:\s*fine\)\s*\{[\s\S]*?\.desktop-navigation[^{}]*:hover/i,
+    /@media\s*\(hover:\s*hover\)\s+and\s+\(pointer:\s*fine\)\s*\{[\s\S]*?\.nav-cell:hover/i,
   );
   expect(css).toMatch(
-    /\.desktop-navigation[^{}]*:active\s*\{[^{}]*transform\s*:\s*scale\((?:0\.9[5-9]|\.9[5-9])\)/i,
+    /\.nav-cell:active\s*\{[^{}]*transform\s*:\s*scale\((?:0\.9[5-9]|\.9[5-9])\)/i,
   );
   expect(css).toMatch(
     /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?transition-duration\s*:\s*0\.0*1ms\s*!important/i,
+  );
+  expect(css).toMatch(
+    /\.nav-cell(?:\[[^\]]+\])?::before\s*\{[^{}]*background(?:-color)?\s*:\s*(?:var\(--primary\)|#(?:6d28d9|7c3aed|8b5cf6))/i,
+  );
+  expect(css).toMatch(
+    /\.nav-cell\s*\{[^{}]*overflow\s*:\s*hidden[^{}]*\}/i,
+  );
+  expect(css).toMatch(
+    /\.nav-label-(?:base|hover)\s*\{[^{}]*transition[^{}]*transform/i,
+  );
+  expect(css).toMatch(
+    /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?\.nav-(?:cell|label)[^{}]*\{[^{}]*transition(?:-duration)?\s*:/i,
   );
 });
 
@@ -438,6 +520,29 @@ test("mobile header preserves navigation order and active route semantics", asyn
       "aria-current",
       "page",
     );
+    const cells = navigation.locator("a.nav-cell");
+    await expect(cells).toHaveCount(headerNavigation.length);
+    for (let index = 0; index < headerNavigation.length; index += 1) {
+      const cell = cells.nth(index);
+      const bounds = await cell.boundingBox();
+      expect(bounds, `${headerNavigation[index].label} must have a touch target`).not.toBeNull();
+      expect(bounds!.height).toBeGreaterThanOrEqual(44);
+    }
+
+    const current = navigation.getByRole("link", { name: "About", exact: true });
+    const inactive = navigation.getByRole("link", { name: "Products", exact: true });
+    const [currentStyles, inactiveStyles] = await Promise.all([
+      current.evaluate((element) => {
+        const styles = getComputedStyle(element);
+        return { background: styles.backgroundColor, color: styles.color };
+      }),
+      inactive.evaluate((element) => {
+        const styles = getComputedStyle(element);
+        return { background: styles.backgroundColor, color: styles.color };
+      }),
+    ]);
+    expect(currentStyles.background).not.toBe(inactiveStyles.background);
+    expect(currentStyles.color).not.toBe(inactiveStyles.color);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
@@ -457,6 +562,96 @@ test("blog articles keep Blog as the sole current header destination", async ({ 
     "aria-current",
     "page",
   );
+});
+
+test("every internal route exposes exactly one current destination", async ({ page }) => {
+  const expectations = [
+    ["/", "Home"],
+    ["/about/", "About"],
+    ["/products/", "Products"],
+    ["/services/", "Services"],
+    ["/blog/", "Blog"],
+    ["/blog/prompt-injection-prevention/", "Blog"],
+  ] as const;
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const [route, label] of expectations) {
+    await page.goto(route);
+    const navigation = page.getByRole("navigation", {
+      name: "Primary navigation",
+      exact: true,
+    });
+    await expect(navigation.locator('[aria-current="page"]')).toHaveCount(1);
+    await expect(navigation.getByRole("link", { name: label, exact: true })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await expect(
+      navigation.getByRole("link", { name: "Contact Us", exact: true }),
+    ).not.toHaveAttribute("aria-current", "page");
+  }
+});
+
+test("reduced motion preserves navbar state without traveling labels", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const navigation = page.getByRole("navigation", {
+    name: "Primary navigation",
+    exact: true,
+  });
+  const about = navigation.getByRole("link", { name: "About", exact: true });
+  await about.hover();
+  const state = await about.evaluate((element) => {
+    const styles = getComputedStyle(element);
+    const base = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-base")!);
+    const hover = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-hover")!);
+    return {
+      transitionDuration: styles.transitionDuration,
+      baseDuration: base.transitionDuration,
+      hoverDuration: hover.transitionDuration,
+      color: styles.color,
+    };
+  });
+  for (const duration of [state.transitionDuration, state.baseDuration, state.hoverDuration]) {
+    const seconds = duration.split(",").map((value) => {
+      const normalized = value.trim();
+      return normalized.endsWith("ms")
+        ? Number.parseFloat(normalized) / 1000
+        : Number.parseFloat(normalized);
+    });
+    expect(seconds.every((value) => value <= 0.001)).toBeTruthy();
+  }
+  expect(state.color).toBeTruthy();
+  await expect(about).toBeVisible();
+});
+
+test("two-hundred-percent text sizing retains an operable header without overflow", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = "200%";
+  });
+
+  const trigger = page.locator("button.mobile-menu-trigger");
+  const desktop = page.getByRole("navigation", {
+    name: "Primary navigation",
+    exact: true,
+  });
+  const usablePath = (await trigger.isVisible()) || (await desktop.isVisible());
+  expect(usablePath).toBeTruthy();
+  if (await trigger.isVisible()) {
+    await trigger.click();
+    await expect(
+      page.getByRole("navigation", { name: "Mobile navigation", exact: true }),
+    ).toBeVisible();
+  }
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(1);
 });
 
 test.describe("navigation without JavaScript", () => {

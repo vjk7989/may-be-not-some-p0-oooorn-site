@@ -20,6 +20,17 @@ function isCurrent(pathname: string, href: string) {
   return pathname === href || (href !== "/" && pathname.startsWith(href));
 }
 
+function NavLabel({ children }: { children: string }) {
+  return (
+    <span className="nav-label">
+      <span className="nav-label-base">{children}</span>
+      <span className="nav-label-hover" aria-hidden="true">
+        {children}
+      </span>
+    </span>
+  );
+}
+
 export function SiteHeader() {
   const pathname = usePathname();
 
@@ -32,14 +43,15 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
+              className="nav-cell"
               aria-current={isCurrent(pathname, item.href) ? "page" : undefined}
             >
-              {item.label}
+              <NavLabel>{item.label}</NavLabel>
             </Link>
           ))}
-          <Button asChild size="sm" className="desktop-assessment">
-            <a href={siteConfig.calendarUrl}>Contact Us</a>
-          </Button>
+          <a href={siteConfig.calendarUrl} className="nav-cell desktop-assessment">
+            <NavLabel>Contact Us</NavLabel>
+          </a>
         </nav>
 
         <Sheet>
@@ -65,17 +77,18 @@ export function SiteHeader() {
                 <SheetClose asChild key={item.href}>
                   <Link
                     href={item.href}
+                    className="nav-cell"
                     aria-current={
                       isCurrent(pathname, item.href) ? "page" : undefined
                     }
                   >
-                    {item.label}
+                    <NavLabel>{item.label}</NavLabel>
                   </Link>
                 </SheetClose>
               ))}
-              <Button asChild className="mt-auto w-full">
-                <a href={siteConfig.calendarUrl}>Contact Us</a>
-              </Button>
+              <a href={siteConfig.calendarUrl} className="nav-cell mobile-assessment">
+                <NavLabel>Contact Us</NavLabel>
+              </a>
             </nav>
           </SheetContent>
         </Sheet>
