@@ -169,7 +169,7 @@ test("desktop header exposes the exact requested navigation", async ({ page }) =
   ).not.toHaveAttribute("target", "_blank");
 });
 
-test("desktop header is a sticky rounded rectangle with animated navigation cells", async ({ page }) => {
+test("desktop header keeps one glass shell with animated unboxed navigation links", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
 
@@ -225,26 +225,53 @@ test("desktop header is a sticky rounded rectangle with animated navigation cell
   const about = navigation.getByRole("link", { name: "About", exact: true });
   const activeColor = await home.evaluate((element) => getComputedStyle(element).color);
   const inactiveColor = await about.evaluate((element) => getComputedStyle(element).color);
+  expect(activeColor).toBe("rgb(109, 40, 217)");
+  expect(inactiveColor).not.toBe(activeColor);
 
   for (const cell of [home, about]) {
-    const geometry = await cell.evaluate((element) => {
+    const presentation = await cell.evaluate((element) => {
       const styles = getComputedStyle(element);
       const bounds = element.getBoundingClientRect();
       return {
-        radius: Number.parseFloat(styles.borderTopLeftRadius),
+        background: styles.backgroundColor,
+        borderStyle: styles.borderTopStyle,
+        borderWidth: Number.parseFloat(styles.borderTopWidth),
+        boxShadow: styles.boxShadow,
         width: bounds.width,
         height: bounds.height,
       };
     });
-    expect(geometry.radius).toBeGreaterThanOrEqual(6);
-    expect(geometry.radius).toBeLessThanOrEqual(14);
-    expect(geometry.width).toBeGreaterThan(geometry.height);
+    expect(presentation.background).toBe("rgba(0, 0, 0, 0)");
+    expect(presentation.borderStyle === "none" || presentation.borderWidth === 0).toBeTruthy();
+    expect(presentation.boxShadow).toBe("none");
+    expect(presentation.height).toBeGreaterThanOrEqual(40);
+    expect(presentation.width).toBeGreaterThan(presentation.height);
   }
+
+  const labels = about.locator(".nav-label");
+  const baseLabel = labels.locator(".nav-label-base");
+  const hoverLabel = labels.locator('.nav-label-hover[aria-hidden="true"]');
+  await expect(baseLabel).toHaveCount(1);
+  await expect(hoverLabel).toHaveCount(1);
+  const restLabels = await about.evaluate((element) => {
+    const base = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-base")!);
+    const hover = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-hover")!);
+    return {
+      baseColor: base.color,
+      baseTransform: base.transform,
+      hoverColor: hover.color,
+      hoverTransform: hover.transform,
+    };
+  });
+  expect(restLabels.baseColor).toBe(inactiveColor);
 
   await about.focus();
   await expect(about).toBeFocused();
-  await expect.poll(() => about.evaluate((element) => getComputedStyle(element).color)).toBe(
+  await expect.poll(() => hoverLabel.evaluate((element) => getComputedStyle(element).color)).toBe(
     activeColor,
+  );
+  await expect.poll(() => hoverLabel.evaluate((element) => getComputedStyle(element).transform)).not.toBe(
+    restLabels.hoverTransform,
   );
   const focus = await about.evaluate((element) => {
     const styles = getComputedStyle(element);
@@ -252,7 +279,7 @@ test("desktop header is a sticky rounded rectangle with animated navigation cell
       outlineStyle: styles.outlineStyle,
       outlineWidth: Number.parseFloat(styles.outlineWidth),
       boxShadow: styles.boxShadow,
-      color: styles.color,
+      background: styles.backgroundColor,
     };
   });
   expect(
@@ -260,50 +287,54 @@ test("desktop header is a sticky rounded rectangle with animated navigation cell
       focus.boxShadow !== "none",
     `navigation focus is not visibly styled: ${JSON.stringify(focus)}`,
   ).toBeTruthy();
-
-  const labels = about.locator(".nav-label");
-  await expect(labels.locator(".nav-label-base")).toHaveCount(1);
-  await expect(labels.locator('.nav-label-hover[aria-hidden="true"]')).toHaveCount(1);
+  expect(focus.background).toBe("rgba(0, 0, 0, 0)");
 
   await about.evaluate((element) => (element as HTMLElement).blur());
   await page.mouse.move(0, 0);
-  await expect.poll(() => about.evaluate((element) => getComputedStyle(element).color)).toBe(
-    inactiveColor,
-  );
-  const inactiveRest = await about.evaluate((element) => {
-    const styles = getComputedStyle(element);
-    const fill = getComputedStyle(element, "::before");
-    return { color: styles.color, background: styles.backgroundColor, fillTransform: fill.transform };
-  });
   const aboutBounds = await about.boundingBox();
   expect(aboutBounds).not.toBeNull();
   await page.mouse.move(
     aboutBounds!.x + aboutBounds!.width / 2,
     aboutBounds!.y + aboutBounds!.height / 2,
   );
-  await expect.poll(() => about.evaluate((element) => getComputedStyle(element).color)).toBe(
+  await expect.poll(() => hoverLabel.evaluate((element) => getComputedStyle(element).color)).toBe(
     activeColor,
   );
   const inactiveHover = await about.evaluate((element) => {
     const styles = getComputedStyle(element);
-    const fill = getComputedStyle(element, "::before");
-    return { color: styles.color, background: styles.backgroundColor, fillTransform: fill.transform };
+    const base = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-base")!);
+    const hover = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-hover")!);
+    return {
+      background: styles.backgroundColor,
+      baseTransform: base.transform,
+      hoverColor: hover.color,
+      hoverTransform: hover.transform,
+    };
   });
-  expect(inactiveHover.color).toBe(focus.color);
-  expect(inactiveHover.fillTransform).not.toBe(inactiveRest.fillTransform);
+  expect(inactiveHover.background).toBe("rgba(0, 0, 0, 0)");
+  expect(inactiveHover.hoverColor).toBe(activeColor);
+  expect(inactiveHover.baseTransform).not.toBe(restLabels.baseTransform);
+  expect(inactiveHover.hoverTransform).not.toBe(restLabels.hoverTransform);
 
   const activeRest = await home.evaluate((element) => {
     const styles = getComputedStyle(element);
-    return { background: styles.backgroundColor, color: styles.color };
+    const base = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-base")!);
+    const hover = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-hover")!);
+    return { background: styles.backgroundColor, baseColor: base.color, hoverColor: hover.color };
   });
   const homeBounds = await home.boundingBox();
   expect(homeBounds).not.toBeNull();
   await page.mouse.move(homeBounds!.x + homeBounds!.width / 2, homeBounds!.y + homeBounds!.height / 2);
   const activeHover = await home.evaluate((element) => {
     const styles = getComputedStyle(element);
-    return { background: styles.backgroundColor, color: styles.color };
+    const base = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-base")!);
+    const hover = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-hover")!);
+    return { background: styles.backgroundColor, baseColor: base.color, hoverColor: hover.color };
   });
   expect(activeHover).toEqual(activeRest);
+  expect(activeRest.background).toBe("rgba(0, 0, 0, 0)");
+  expect(activeRest.baseColor).toBe(activeColor);
+  expect(activeRest.hoverColor).toBe(activeColor);
 
   const beforePress = await home.evaluate((element) => getComputedStyle(element).transform);
   const bounds = await home.boundingBox();
@@ -347,11 +378,12 @@ test("glass navbar CSS includes preference and capability fallbacks", async () =
   expect(css).toMatch(
     /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?transition-duration\s*:\s*0\.0*1ms\s*!important/i,
   );
+  expect(css).not.toMatch(/\.nav-cell(?:::[a-z-]+|\[[^\]]+\]::[a-z-]+)\s*\{/i);
   expect(css).toMatch(
-    /\.nav-cell(?:\[[^\]]+\])?::before\s*\{[^{}]*background(?:-color)?\s*:\s*(?:var\(--primary\)|#(?:6d28d9|7c3aed|8b5cf6))/i,
+    /\.nav-cell\[aria-current=["']page["']\]\s*\{[^{}]*color\s*:\s*(?:var\(--primary\)|#(?:6d28d9|7c3aed|8b5cf6))/i,
   );
   expect(css).toMatch(
-    /\.nav-cell\s*\{[^{}]*overflow\s*:\s*hidden[^{}]*\}/i,
+    /\.nav-label\s*\{[^{}]*overflow\s*:\s*hidden[^{}]*\}/i,
   );
   expect(css).toMatch(
     /\.nav-label-(?:base|hover)\s*\{[^{}]*transition[^{}]*transform/i,
@@ -522,11 +554,28 @@ test("mobile header preserves navigation order and active route semantics", asyn
     );
     const cells = navigation.locator("a.nav-cell");
     await expect(cells).toHaveCount(headerNavigation.length);
+    const navigationBounds = await navigation.boundingBox();
+    expect(navigationBounds).not.toBeNull();
     for (let index = 0; index < headerNavigation.length; index += 1) {
       const cell = cells.nth(index);
       const bounds = await cell.boundingBox();
       expect(bounds, `${headerNavigation[index].label} must have a touch target`).not.toBeNull();
       expect(bounds!.height).toBeGreaterThanOrEqual(44);
+      expect(bounds!.width).toBeGreaterThanOrEqual(navigationBounds!.width - 2);
+      const presentation = await cell.evaluate((element) => {
+        const styles = getComputedStyle(element);
+        return {
+          background: styles.backgroundColor,
+          borderStyle: styles.borderTopStyle,
+          borderWidth: Number.parseFloat(styles.borderTopWidth),
+          boxShadow: styles.boxShadow,
+        };
+      });
+      expect(presentation.background).toBe("rgba(0, 0, 0, 0)");
+      expect(
+        presentation.borderStyle === "none" || presentation.borderWidth === 0,
+      ).toBeTruthy();
+      expect(presentation.boxShadow).toBe("none");
     }
 
     const current = navigation.getByRole("link", { name: "About", exact: true });
@@ -541,8 +590,10 @@ test("mobile header preserves navigation order and active route semantics", asyn
         return { background: styles.backgroundColor, color: styles.color };
       }),
     ]);
-    expect(currentStyles.background).not.toBe(inactiveStyles.background);
+    expect(currentStyles.background).toBe("rgba(0, 0, 0, 0)");
+    expect(inactiveStyles.background).toBe("rgba(0, 0, 0, 0)");
     expect(currentStyles.color).not.toBe(inactiveStyles.color);
+    expect(currentStyles.color).toBe("rgb(109, 40, 217)");
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
@@ -552,16 +603,18 @@ test("mobile header preserves navigation order and active route semantics", asyn
 
 test("blog articles keep Blog as the sole current header destination", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/blog/ai-agent-security/");
-  const navigation = page.getByRole("navigation", {
-    name: "Primary navigation",
-    exact: true,
-  });
-  await expect(navigation.locator('[aria-current="page"]')).toHaveCount(1);
-  await expect(navigation.getByRole("link", { name: "Blog", exact: true })).toHaveAttribute(
-    "aria-current",
-    "page",
-  );
+  for (const route of routes.filter((route) => route.startsWith("/blog/"))) {
+    await page.goto(`${route}/`);
+    const navigation = page.getByRole("navigation", {
+      name: "Primary navigation",
+      exact: true,
+    });
+    await expect(navigation.locator('[aria-current="page"]')).toHaveCount(1);
+    await expect(navigation.getByRole("link", { name: "Blog", exact: true })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+  }
 });
 
 test("every internal route exposes exactly one current destination", async ({ page }) => {
@@ -611,6 +664,12 @@ test("reduced motion preserves navbar state without traveling labels", async ({ 
       baseDuration: base.transitionDuration,
       hoverDuration: hover.transitionDuration,
       color: styles.color,
+      background: styles.backgroundColor,
+      baseColor: base.color,
+      baseTransform: base.transform,
+      hoverDisplay: hover.display,
+      hoverOpacity: hover.opacity,
+      hoverTransform: hover.transform,
     };
   });
   for (const duration of [state.transitionDuration, state.baseDuration, state.hoverDuration]) {
@@ -622,7 +681,12 @@ test("reduced motion preserves navbar state without traveling labels", async ({ 
     });
     expect(seconds.every((value) => value <= 0.001)).toBeTruthy();
   }
-  expect(state.color).toBeTruthy();
+  expect(state.color).toBe("rgb(109, 40, 217)");
+  expect(state.background).toBe("rgba(0, 0, 0, 0)");
+  expect(state.baseColor).toBe("rgb(109, 40, 217)");
+  expect(state.baseTransform).toBe("none");
+  expect(state.hoverTransform).toBe("none");
+  expect(state.hoverDisplay === "none" || Number(state.hoverOpacity) === 0).toBeTruthy();
   await expect(about).toBeVisible();
 });
 
@@ -676,6 +740,20 @@ test.describe("navigation without JavaScript", () => {
       for (let index = 0; index < headerNavigation.length; index += 1) {
         const link = links.nth(index);
         await expect(link).toBeVisible();
+        const presentation = await link.evaluate((element) => {
+          const styles = getComputedStyle(element);
+          return {
+            background: styles.backgroundColor,
+            borderStyle: styles.borderTopStyle,
+            borderWidth: Number.parseFloat(styles.borderTopWidth),
+            boxShadow: styles.boxShadow,
+          };
+        });
+        expect(presentation.background).toBe("rgba(0, 0, 0, 0)");
+        expect(
+          presentation.borderStyle === "none" || presentation.borderWidth === 0,
+        ).toBeTruthy();
+        expect(presentation.boxShadow).toBe("none");
         await link.focus();
         await expect(link).toBeFocused();
       }

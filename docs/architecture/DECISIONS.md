@@ -18,7 +18,7 @@ Last updated: 2026-09-18
 - Graft configuration is present in `package.json`, `package-lock.json`, `opencode.json`, `.gitignore`, and `graft/`.
 - Production gates currently pass for design-system linting, ESLint,
   TypeScript, unit and contract checks, static build, content, links, SEO,
-  Playwright end-to-end coverage (44/44), and the dedicated accessibility slice
+  Playwright end-to-end coverage (47/47), and the dedicated accessibility slice
   (11/11). The latest isolated Lighthouse LCP is approximately 2.611 s against
   the active 2.5 s budget; publication carries the explicit user-authorized
   exception recorded in D-033. See
@@ -744,8 +744,9 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 ### D-035 — Use shared CSS-only electric-violet navigation cells
 
 - **Date:** 2026-09-18
-- **Status:** Accepted with the pre-existing Lighthouse LCP exception recorded
-  in D-033
+- **Status:** Accepted historically; its boxed-cell presentation is superseded
+  by D-036. The pre-existing Lighthouse LCP exception remains recorded in
+  D-033.
 - **Context:** The shared glass header needed a more compact, squared visual
   rhythm and clear interactive feedback while preserving the established route
   order, mobile Sheet, no-JavaScript recovery, accessibility, and static Pages
@@ -781,6 +782,45 @@ writes elsewhere. It deliberately does not alter user or machine settings.
   `tests/e2e/production-website.spec.ts`
 - **References:** `tests/GLASS_NAVBAR_TEST_MATRIX.md`, D-030, D-033
 
+### D-036 — Use unboxed rolling labels inside one glass navigation shell
+
+- **Date:** 2026-09-18
+- **Status:** Accepted; supersedes the boxed-cell presentation in D-035
+- **Context:** The user approved the navbar's single rounded rectangular glass
+  shell but clarified that individual destinations must not look like separate
+  square buttons. The desired reference behavior is the vertical label motion,
+  not a filled cell around every link.
+- **Decision:** Preserve one moderately rounded glass header shell and make all
+  desktop and mobile navigation targets transparent, borderless, and
+  shadowless. Retain the shared semantic label plus one `aria-hidden` duplicate
+  and animate only their vertical transforms. Inactive labels transition from
+  ink to electric violet on hover or keyboard focus; the current-route label
+  remains electric violet before, during, and after interaction. Mobile
+  destinations remain full-width, touch-sized, unboxed targets. Reduced-motion
+  presentation hides the duplicate and keeps one static, immediately colored
+  label. The interaction adds no dependency, persistent state, network I/O, or
+  client runtime beyond the existing header behavior.
+- **Rationale:** Removing per-link surfaces matches the approved visual intent
+  while preserving the existing navigation semantics, route state, generous
+  hit areas, and CSS-only motion architecture.
+- **Consequences:** New header destinations must use the rolling-label contract
+  without adding per-item fill, borders, or shadows. Focus indication remains
+  visible outside the label, Contact Us uses the same unboxed treatment, and
+  no-JavaScript, contrast, transparency, zoom, and reduced-motion fallbacks
+  remain required regression boundaries.
+- **Validation:** Focused navbar coverage passes 34/34, the standalone combined
+  E2E suite passes 47/47, and dedicated Axe coverage passes 11/11. The first
+  aggregate run encountered one non-navbar transient PlatformShowcase assertion;
+  independent analysis classified it outside this change, its exact focused
+  test passed 10/10, and the aggregate E2E rerun passed 47/47. Design lint,
+  lint, typecheck, unit, build, content, links, SEO, static validation, and Graft
+  checks pass. The known mobile Lighthouse LCP of approximately 2.611 s remains
+  separate, above the 2.5 s budget, and is not recorded as green.
+- **Affected paths:** `src/components/site-header.tsx`, `src/app/globals.css`,
+  `tests/GLASS_NAVBAR_TEST_MATRIX.md`,
+  `tests/e2e/production-website.spec.ts`
+- **References:** `tests/GLASS_NAVBAR_TEST_MATRIX.md`, D-030, D-033, D-035
+
 ## Compact codebase map
 
 | Path | Purpose | Current status |
@@ -814,8 +854,8 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `src/app/blog/[slug]/page.tsx` | Six statically generated MDX article routes, article metadata, and structured data | Active |
 | `src/app/robots.ts` | Static crawl policy metadata route | Active |
 | `src/app/sitemap.ts` | Static sitemap for pages and articles | Active |
-| `src/app/globals.css` | Production tokens, responsive layouts, focus styles, funnel motion, electric-violet navigation cells, glass/preference fallbacks, and reduced-motion behavior | Active |
-| `src/components/site-header.tsx` | Shared ordered desktop, mobile Sheet, and no-JavaScript navigation shell with semantic rolling-label cells | Active |
+| `src/app/globals.css` | Production tokens, responsive layouts, focus styles, funnel motion, unboxed electric-violet label motion, glass/preference fallbacks, and reduced-motion behavior | Active |
+| `src/components/site-header.tsx` | Shared ordered desktop, mobile Sheet, and no-JavaScript navigation within one glass shell, using semantic unboxed rolling labels | Active |
 | `src/components/platform-showcase.tsx` | One-open product disclosure with keyboard, pointer, mobile, reduced-motion, and no-JavaScript paths | Active |
 | `src/components/` | Shared assessment CTA, logo, status, risk funnel, header, and local UI primitives | Active |
 | `src/lib/types.ts` | Static public-content interfaces | Active |
@@ -832,8 +872,8 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `tests/PRODUCTION_WEBSITE_TEST_MATRIX.md` | Current risk-based production acceptance contract | Active |
 | `tests/Validate-ProductionWebsite.ps1` | Deterministic route, content, asset, link, metadata, SEO, and claim validator | Passing |
 | `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Combined E2E passing 47/47; dedicated a11y 11/11 |
-| `tests/e2e/platform-panels.spec.ts` | Focused PlatformShowcase state, keyboard, mobile, no-JavaScript, reduced-motion, and layout coverage | Passing as part of 44/44 combined E2E |
-| `tests/GLASS_NAVBAR_TEST_MATRIX.md` | Focused geometry, material, violet interaction, active-route, fallback, responsive, and accessibility contract for the shared navbar | Active; focused coverage passing 34/34 |
+| `tests/e2e/platform-panels.spec.ts` | Focused PlatformShowcase state, keyboard, mobile, no-JavaScript, reduced-motion, and layout coverage | Passing as part of 47/47 combined E2E |
+| `tests/GLASS_NAVBAR_TEST_MATRIX.md` | Focused single-shell geometry, unboxed label motion, active-route, fallback, responsive, and accessibility contract for the shared navbar | Active; focused coverage passing 34/34 |
 | `tests/LOGO_ROUNDING_TEST_MATRIX.md` | Source-integrity, rounded presentation, favicon safety, metadata, and logo-semantics contract | Active; passing |
 | `tests/PLATFORM_PANELS_TEST_MATRIX.md` | Focused progressive-disclosure acceptance and applicability contract | Active; passing |
 | `tests/GITHUB_PAGES_TEST_MATRIX.md` | Repository identity, deployment, routing, asset, metadata, security, and live-provenance contract | Active |

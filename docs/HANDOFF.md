@@ -5,69 +5,67 @@ argument-hint: "What will the next session be used for?"
 disable-model-invocation: true
 ---
 
-# Electric-violet navbar handoff
+# Unboxed rolling navbar handoff
 
 ## Next-session focus
 
-Review the implemented shared navbar with the user and make only requested
-visual or interaction refinements. Then decide explicitly whether the
-pre-existing Lighthouse LCP debt should become a separate performance task;
-do not treat that debt as part of the completed navbar interaction.
+Review the completed unboxed rolling navbar with the user and continue only
+with requested refinements. The implementation is ready for commit/push once
+the user approves it; treat the known Lighthouse LCP debt as separate scope.
 
 ## Current state
 
-- The shared desktop and mobile navigation now uses compact, moderately
-  rounded cells with an electric-violet fill, vertically rolling duplicate
-  label, press feedback, and a violet-invariant current-page state.
-- Navigation order, routes, the mobile Sheet, Contact Us destination,
-  no-JavaScript recovery, focus behavior, reduced-motion handling, glass
-  fallbacks, and GitHub Pages static-export compatibility are preserved.
-- The durable decision and implementation constraints are recorded in D-035
-  in [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md). The bounded
-  acceptance contract is
+- The outer sticky glass navbar remains a single rounded rectangle. Desktop,
+  mobile Sheet, and no-JavaScript destinations are now transparent,
+  borderless, and shadowless rather than individually boxed.
+- Hover and keyboard focus retain the vertical rolling-label interaction and
+  settle in electric violet. The current route remains violet in every state;
+  Contact Us uses the same unboxed treatment.
+- D-036 in [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) is the
+  durable implementation decision and supersedes D-035's boxed-cell visual
+  treatment. The bounded acceptance contract is
   [`tests/GLASS_NAVBAR_TEST_MATRIX.md`](../tests/GLASS_NAVBAR_TEST_MATRIX.md).
-  Use those artifacts and the current `git diff` rather than reconstructing
-  implementation detail here.
+  Use those artifacts and the current `git diff` for implementation detail.
 
-## Changed files
+## Changed files and repository state
 
-- `src/components/site-header.tsx`
 - `src/app/globals.css`
 - `tests/e2e/production-website.spec.ts`
 - `tests/GLASS_NAVBAR_TEST_MATRIX.md`
 - `docs/architecture/DECISIONS.md`
 - `docs/HANDOFF.md`
 
-The changes are currently uncommitted. Inspect `git diff` for the authoritative
-patch before further edits.
+The work is uncommitted. Inspect `git diff` before further edits; it is the
+authoritative patch. No component contract or dependency changed.
 
 ## Validation record
 
-- Functional validation is green: design lint, lint, typecheck, unit, build,
-  content, links, and SEO checks pass.
-- Focused navbar Playwright coverage passes 34/34; combined E2E passes 47/47;
-  the dedicated Axe slice passes 11/11.
-- Lighthouse is not green. All configured Lighthouse budgets pass except the
-  mobile LCP budget: the current median is approximately 2.611 seconds against
-  the 2.5-second limit. This matches the pre-existing D-033 baseline and must
-  not be reported as a passing performance gate.
-- A `preload: false` experiment worsened the Lighthouse median to approximately
-  2.835 seconds and was reverted. Do not reintroduce it without new evidence.
-- Browser checks must run against a freshly started static preview after the
-  latest build. A previously running server can retain stale exported files or
-  occupy the expected port and produce misleading failures or measurements.
+- Focused navbar coverage passes 34/34, the combined E2E suite passes 47/47,
+  and the dedicated Axe slice passes 11/11.
+- Design lint, lint, typecheck, unit, build, content, links, SEO, static
+  validation, and Graft checks pass. The aggregate test rerun is green.
+- The first aggregate run encountered one transient assertion in the unrelated
+  PlatformShowcase coverage. Independent failure analysis classified it
+  outside the navbar change; the exact focused platform test then passed
+  10/10, and the aggregate E2E rerun passed 47/47. Do not weaken that test.
+- Lighthouse is still not green: the known mobile LCP is approximately 2.611
+  seconds against the 2.5-second budget. This predates the unboxed navbar and
+  remains separate performance debt; do not report it as passing.
+- The local preview server was stopped after validation; port 4173 was free at
+  handoff. Start a fresh server before browser or performance measurement to
+  avoid stale exported output.
 
 ## Suggested skills
 
-- `impeccable` — review the navbar’s hierarchy, polish, responsive behavior,
-  and accessibility before making any user-requested refinement.
-- `emil-design-eng` — refine hover, focus, press, and label-roll motion without
-  adding a dependency or ornamental motion.
-- `apple-design` — use only if further work changes the glass material, depth,
-  or reduced-motion behavior.
+- `impeccable` — evaluate any requested navbar refinement against the existing
+  hierarchy, responsive behavior, and accessibility baseline.
+- `emil-design-eng` — tune the rolling-label, focus, and press feedback while
+  keeping the implementation CSS-only and restrained.
+- `apple-design` — use only if a follow-up changes the outer glass material or
+  reduced-motion behavior.
 
-## Deferred decision
+## Deferred work
 
-- The only known non-green gate is the pre-existing mobile LCP budget. Treat a
-  new optimization pass as separate scope, preserve the 2.5-second threshold,
-  and compare any experiment with fresh-server three-run medians.
+- Commit and push only after the user accepts this revision.
+- Handle the mobile LCP budget as an explicit, separate optimization task with
+  fresh-server three-run medians and the existing 2.5-second threshold.
