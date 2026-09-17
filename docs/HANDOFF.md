@@ -9,16 +9,20 @@ disable-model-invocation: true
 
 ## Next-session focus
 
-First verify the GitHub Pages deployment end to end, including the workflow run,
-the published URL, base-path assets and navigation, canonical metadata, and the
-production smoke checks. Then ask the user which site section they want to work
-on next; do not begin another visual, copy, structural, or dependency change
-until they select it.
+The GitHub Pages deployment is complete and verified. Ask the user which site
+section they want to work on next; do not begin another visual, copy,
+structural, or dependency change until they select it.
 
 ## Deployment state
 
-- The intended GitHub repository and Pages target is
-  `vjk7989/may-be-not-some-p0-oooorn-site` on branch `main`.
+- The repository is
+  <https://github.com/vjk7989/may-be-not-some-p0-oooorn-site> on branch `main`.
+  The verified live site is
+  <https://vjk7989.github.io/may-be-not-some-p0-oooorn-site/>.
+- GitHub Actions run
+  <https://github.com/vjk7989/may-be-not-some-p0-oooorn-site/actions/runs/35265549056>
+  completed successfully. At verification time, the deployed code SHA was
+  `b4c8d87a70261abee8d391a5e4f1e25474d70902`.
 - The repository is configured for a static Next.js export under the project
   base path `/may-be-not-some-p0-oooorn-site`. The Pages workflow and base-path
   behavior are covered by
@@ -26,10 +30,10 @@ until they select it.
   use that artifact and the relevant entries in
   [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) as the sources
   of truth rather than reconstructing their detail here.
-- At the time this handoff was written, deployment work was still in progress.
-  Do not report the site as live solely because local configuration, a commit,
-  or a push exists. Confirm the remote commit, successful Pages workflow, and
-  live URL before stating that deployment completed.
+- GitHub Pages had to be enabled once for the repository before the workflow
+  could publish. The workspace Node-tool wrapper also required a Linux scalar
+  handling fix for the Actions runner. Preserve both pieces of deployment
+  context when diagnosing future publishing failures.
 - The user explicitly authorized proceeding despite the Lighthouse LCP result
   of approximately 2.611 seconds exceeding the 2.5-second project threshold.
   Record this as a narrow, user-authorized deployment exception, not as a
@@ -54,22 +58,16 @@ until they select it.
   verification, distinguish the GitHub Pages project URL from any future custom
   production-domain decision.
 
-## Verification checklist
+## Deployment verification record
 
-1. Confirm the `origin` remote resolves to the intended repository and `main`
-   contains the deployment commit.
-2. Confirm the GitHub Pages workflow completed successfully and note its exact
-   run/result.
-3. Open the live project URL and verify the homepage plus representative nested
-   routes load without 404s, redirects to incorrect roots, or missing assets.
-4. Run the deterministic GitHub Pages validation and the broader regression
-   suite prescribed by `AGENTS.md`. Preserve exact commands, exit codes, and
-   failures through the independent test-runner role.
-5. Report Lighthouse LCP separately as the authorized exception; do not round
-   it into compliance or weaken the threshold.
-6. After deployment is verified, ask the user to select the next section and
-   follow the repository's test-design, implementation, and independent
-   test-runner workflow for that bounded change.
+- The `main` deployment commit, successful workflow run, live project URL,
+  base-path routing, and published assets were verified.
+- The deterministic GitHub Pages validation and broader regression gates pass,
+  except for the separately authorized Lighthouse LCP exception. Do not round
+  that measurement into compliance or weaken its threshold.
+- For the next user-selected section, follow the repository's independent test
+  design, bounded implementation, test-runner, architecture-record, and handoff
+  workflow.
 
 ## Suggested skills
 
@@ -82,8 +80,6 @@ until they select it.
 
 ## Blockers and deferred decisions
 
-- Deployment cannot be called complete until the remote workflow and live URL
-  are verified.
 - The next site section has not yet been selected by the user.
 - A custom production domain remains a separate future decision; the current
   target is the GitHub Pages project site.

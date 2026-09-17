@@ -685,6 +685,16 @@ writes elsewhere. It deliberately does not alter user or machine settings.
   asset/link output, canonical metadata, trailing-slash routes, sitemap,
   robots, exported assets, and `out/.nojekyll`. The Pages-targeted build and all
   functional, accessibility, content, link, SEO, build, and static gates pass.
+  GitHub Pages is enabled with `build_type: workflow`. The first CI execution
+  exposed a Linux-only wrapper ambiguity: `Get-Command` returned multiple npm
+  matches from `PATH`. The wrapper now deterministically selects the first
+  application result with `Select-Object -First 1`, and the Pages validator
+  asserts that behavior to prevent regression. The corrected deployment
+  succeeded at
+  `https://github.com/vjk7989/may-be-not-some-p0-oooorn-site/actions/runs/35265549056`.
+  At verification time, the live site at
+  `https://vjk7989.github.io/may-be-not-some-p0-oooorn-site/` served commit
+  `b4c8d87`, matching the intended deployed SHA.
   The latest isolated mobile Lighthouse run measured LCP at approximately
   2.611 s against the established 2.5 s budget; this exception does not change
   the budget or mark the performance gate as passing. Deployment proceeds only
