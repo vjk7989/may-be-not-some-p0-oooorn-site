@@ -61,8 +61,19 @@ the 2.5-second budget passes.
   Accessibility and SEO were 100 in all three runs. Do not report the
   performance gate as passing.
 - `graft build` and `graft check` are green after the material source changes.
-- No push was requested or performed for this task; the viewport work remains
-  in the local working tree for review before any commit or push.
+- Source commit `72651871912d85551aa4ec4a5b47fb9ffd82dec5` (`7265187`)
+  was pushed to `origin/main`. GitHub Actions run
+  [35399868659](https://github.com/vjk7989/may-be-not-some-p0-oooorn-site/actions/runs/35399868659)
+  completed successfully for both build and deploy.
+- The live [GitHub Pages site](https://vjk7989.github.io/may-be-not-some-p0-oooorn-site/)
+  passed smoke checks for the root page, About page, an article route, favicon,
+  robots file, sitemap, and a repository-scoped static asset.
+- The successful workflow emitted non-blocking warnings about Node 20 action
+  deprecation and a future `ubuntu-latest` runner migration. These are future
+  maintenance items, not deployment failures.
+- A documentation-only follow-up commit will contain this handoff update. The
+  deployed viewport implementation's provenance remains source commit
+  `7265187`.
 
 ## Suggested skills
 
