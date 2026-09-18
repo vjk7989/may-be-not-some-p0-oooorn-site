@@ -821,6 +821,33 @@ writes elsewhere. It deliberately does not alter user or machine settings.
   `tests/e2e/production-website.spec.ts`
 - **References:** `tests/GLASS_NAVBAR_TEST_MATRIX.md`, D-030, D-033, D-035
 
+### D-037 — Stagger the navigation roll per character
+
+- **Date:** 2026-09-18
+- **Status:** Accepted; refines D-036 without changing its unboxed navigation
+  contract
+- **Context:** The user requested that each navigation word roll letter by
+  letter and that the overall interaction feel slightly slower.
+- **Decision:** Render one complete `sr-only` semantic label and mark both
+  visual character layers `aria-hidden`. Animate each visible character with a
+  340 ms transform transition and a deterministic 28 ms index-based stagger.
+  Whitespace remains in layout without receiving an additional stagger beat.
+  Under reduced motion, use `transition: none` and present the complete static
+  label without travel.
+- **Rationale:** Per-character timing supplies the requested rhythm while the
+  single semantic copy preserves an uninterrupted accessible name. CSS timing
+  and explicit character indices keep the behavior deterministic and avoid a
+  motion dependency or client-side interaction state.
+- **Consequences:** Navigation labels must preserve the semantic/visual-layer
+  separation, character order, and whitespace width. New destinations inherit
+  the same timing contract. No dependency, network work, or persistent runtime
+  state is added. The known mobile Lighthouse LCP of approximately 2.611 s
+  remains separate from this refinement and above the active 2.5 s budget.
+- **Affected paths:** `src/components/site-header.tsx`, `src/app/globals.css`,
+  `tests/GLASS_NAVBAR_TEST_MATRIX.md`,
+  `tests/e2e/production-website.spec.ts`
+- **References:** `tests/GLASS_NAVBAR_TEST_MATRIX.md`, D-033, D-036
+
 ## Compact codebase map
 
 | Path | Purpose | Current status |
@@ -854,8 +881,8 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `src/app/blog/[slug]/page.tsx` | Six statically generated MDX article routes, article metadata, and structured data | Active |
 | `src/app/robots.ts` | Static crawl policy metadata route | Active |
 | `src/app/sitemap.ts` | Static sitemap for pages and articles | Active |
-| `src/app/globals.css` | Production tokens, responsive layouts, focus styles, funnel motion, unboxed electric-violet label motion, glass/preference fallbacks, and reduced-motion behavior | Active |
-| `src/components/site-header.tsx` | Shared ordered desktop, mobile Sheet, and no-JavaScript navigation within one glass shell, using semantic unboxed rolling labels | Active |
+| `src/app/globals.css` | Production tokens, responsive layouts, focus styles, funnel motion, staggered per-character electric-violet label motion, glass/preference fallbacks, and reduced-motion behavior | Active |
+| `src/components/site-header.tsx` | Shared ordered desktop, mobile Sheet, and no-JavaScript navigation within one glass shell, using one semantic label plus aria-hidden per-character visual layers | Active |
 | `src/components/platform-showcase.tsx` | One-open product disclosure with keyboard, pointer, mobile, reduced-motion, and no-JavaScript paths | Active |
 | `src/components/` | Shared assessment CTA, logo, status, risk funnel, header, and local UI primitives | Active |
 | `src/lib/types.ts` | Static public-content interfaces | Active |
@@ -873,7 +900,7 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `tests/Validate-ProductionWebsite.ps1` | Deterministic route, content, asset, link, metadata, SEO, and claim validator | Passing |
 | `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Combined E2E passing 47/47; dedicated a11y 11/11 |
 | `tests/e2e/platform-panels.spec.ts` | Focused PlatformShowcase state, keyboard, mobile, no-JavaScript, reduced-motion, and layout coverage | Passing as part of 47/47 combined E2E |
-| `tests/GLASS_NAVBAR_TEST_MATRIX.md` | Focused single-shell geometry, unboxed label motion, active-route, fallback, responsive, and accessibility contract for the shared navbar | Active; focused coverage passing 34/34 |
+| `tests/GLASS_NAVBAR_TEST_MATRIX.md` | Focused single-shell geometry, unboxed per-character label motion, active-route, fallback, responsive, and accessibility contract for the shared navbar | Active |
 | `tests/LOGO_ROUNDING_TEST_MATRIX.md` | Source-integrity, rounded presentation, favicon safety, metadata, and logo-semantics contract | Active; passing |
 | `tests/PLATFORM_PANELS_TEST_MATRIX.md` | Focused progressive-disclosure acceptance and applicability contract | Active; passing |
 | `tests/GITHUB_PAGES_TEST_MATRIX.md` | Repository identity, deployment, routing, asset, metadata, security, and live-provenance contract | Active |

@@ -42,6 +42,13 @@ async function expectHeaderNavigation(navigation: Locator) {
   await expectHeaderLinks(navigation.getByRole("link"));
 }
 
+function cssTimeToSeconds(value: string) {
+  const normalized = value.trim();
+  return normalized.endsWith("ms")
+    ? Number.parseFloat(normalized) / 1000
+    : Number.parseFloat(normalized);
+}
+
 const outcomes = [
   {
     title: "Protect data",
@@ -256,23 +263,33 @@ test("desktop header keeps one glass shell with animated unboxed navigation link
   const restLabels = await about.evaluate((element) => {
     const base = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-base")!);
     const hover = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-hover")!);
+    const baseLetters = Array.from(
+      element.querySelectorAll<HTMLElement>(".nav-label-base .nav-letter"),
+      (letter) => getComputedStyle(letter).transform,
+    );
+    const hoverLetters = Array.from(
+      element.querySelectorAll<HTMLElement>(".nav-label-hover .nav-letter"),
+      (letter) => getComputedStyle(letter).transform,
+    );
     return {
       baseColor: base.color,
-      baseTransform: base.transform,
+      baseLetters,
       hoverColor: hover.color,
-      hoverTransform: hover.transform,
+      hoverLetters,
     };
   });
   expect(restLabels.baseColor).toBe(inactiveColor);
+  expect(restLabels.baseLetters).toHaveLength("About".length);
+  expect(restLabels.hoverLetters).toHaveLength("About".length);
 
   await about.focus();
   await expect(about).toBeFocused();
   await expect.poll(() => hoverLabel.evaluate((element) => getComputedStyle(element).color)).toBe(
     activeColor,
   );
-  await expect.poll(() => hoverLabel.evaluate((element) => getComputedStyle(element).transform)).not.toBe(
-    restLabels.hoverTransform,
-  );
+  await expect.poll(() => hoverLabel.locator(".nav-letter").last().evaluate(
+    (element) => getComputedStyle(element).transform,
+  )).not.toBe(restLabels.hoverLetters.at(-1));
   const focus = await about.evaluate((element) => {
     const styles = getComputedStyle(element);
     return {
@@ -302,19 +319,24 @@ test("desktop header keeps one glass shell with animated unboxed navigation link
   );
   const inactiveHover = await about.evaluate((element) => {
     const styles = getComputedStyle(element);
-    const base = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-base")!);
     const hover = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-hover")!);
     return {
       background: styles.backgroundColor,
-      baseTransform: base.transform,
+      baseTransforms: Array.from(
+        element.querySelectorAll<HTMLElement>(".nav-label-base .nav-letter"),
+        (letter) => getComputedStyle(letter).transform,
+      ),
       hoverColor: hover.color,
-      hoverTransform: hover.transform,
+      hoverTransforms: Array.from(
+        element.querySelectorAll<HTMLElement>(".nav-label-hover .nav-letter"),
+        (letter) => getComputedStyle(letter).transform,
+      ),
     };
   });
   expect(inactiveHover.background).toBe("rgba(0, 0, 0, 0)");
   expect(inactiveHover.hoverColor).toBe(activeColor);
-  expect(inactiveHover.baseTransform).not.toBe(restLabels.baseTransform);
-  expect(inactiveHover.hoverTransform).not.toBe(restLabels.hoverTransform);
+  expect(inactiveHover.baseTransforms).not.toEqual(restLabels.baseLetters);
+  expect(inactiveHover.hoverTransforms).not.toEqual(restLabels.hoverLetters);
 
   const activeRest = await home.evaluate((element) => {
     const styles = getComputedStyle(element);
@@ -357,6 +379,68 @@ test("desktop header keeps one glass shell with animated unboxed navigation link
   expect(sticky.top).toBeLessThanOrEqual(32);
 });
 
+test("navbar label roll staggers each character at a deliberately slower pace", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const navigation = page.getByRole("navigation", {
+    name: "Primary navigation",
+    exact: true,
+  });
+
+  for (const item of headerNavigation) {
+    const link = navigation.getByRole("link", { name: item.label, exact: true });
+    const semanticLabel = link.locator(".nav-label > .sr-only");
+    const base = link.locator('.nav-label-base[aria-hidden="true"]');
+    const hover = link.locator('.nav-label-hover[aria-hidden="true"]');
+    const baseLetters = base.locator(".nav-letter");
+    const hoverLetters = hover.locator(".nav-letter");
+    const expectedCharacters = Array.from(item.label);
+
+    await expect(link).toHaveAccessibleName(item.label);
+    await expect(semanticLabel).toHaveCount(1);
+    await expect(semanticLabel).toHaveText(item.label);
+    await expect(base).toHaveAttribute("aria-hidden", "true");
+    await expect(hover).toHaveAttribute("aria-hidden", "true");
+    await expect(baseLetters).toHaveCount(expectedCharacters.length);
+    await expect(hoverLetters).toHaveCount(expectedCharacters.length);
+
+    for (const [index, character] of expectedCharacters.entries()) {
+      const expected = character === " " ? /^(?: |\u00a0)$/ : character;
+      await expect(baseLetters.nth(index)).toHaveText(expected);
+      await expect(hoverLetters.nth(index)).toHaveText(expected);
+    }
+
+    const timing = await baseLetters.evaluateAll((letters) =>
+      letters.map((letter) => {
+        const styles = getComputedStyle(letter);
+        return {
+          character: (letter.textContent ?? "").replace("\u00a0", " "),
+          delay: styles.transitionDelay,
+          duration: styles.transitionDuration,
+          property: styles.transitionProperty,
+        };
+      }),
+    );
+    const animatedLetters = timing.filter(({ character }) => character.trim().length > 0);
+    const delays = animatedLetters.map(({ delay }) => cssTimeToSeconds(delay.split(",")[0]));
+    const durations = animatedLetters.map(({ duration }) =>
+      cssTimeToSeconds(duration.split(",")[0]),
+    );
+
+    expect(animatedLetters.every(({ property }) => property.includes("transform"))).toBeTruthy();
+    expect(durations.every((duration) => duration >= 0.32 && duration <= 0.65)).toBeTruthy();
+    expect(delays[0]).toBeLessThanOrEqual(0.01);
+    for (let index = 1; index < delays.length; index += 1) {
+      expect(delays[index]).toBeGreaterThan(delays[index - 1]);
+      expect(delays[index] - delays[index - 1]).toBeGreaterThanOrEqual(0.01);
+      expect(delays[index] - delays[index - 1]).toBeLessThanOrEqual(0.12);
+    }
+    expect(delays.at(-1)).toBeLessThanOrEqual(0.8);
+  }
+});
+
 test("glass navbar CSS includes preference and capability fallbacks", async () => {
   const css = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf8");
 
@@ -385,8 +469,12 @@ test("glass navbar CSS includes preference and capability fallbacks", async () =
   expect(css).toMatch(
     /\.nav-label\s*\{[^{}]*overflow\s*:\s*hidden[^{}]*\}/i,
   );
+  expect(css).toMatch(/\.nav-letter\s*\{[^{}]*transition[^{}]*transform/i);
   expect(css).toMatch(
-    /\.nav-label-(?:base|hover)\s*\{[^{}]*transition[^{}]*transform/i,
+    /\.nav-letter\s*\{[^{}]*transition-delay\s*:\s*calc\(var\(--letter-index\)\s*\*\s*[^)]+\)/i,
+  );
+  expect(css).not.toMatch(
+    /\.nav-label-base\s*,\s*\.nav-label-hover\s*\{[^{}]*transition[^{}]*transform/i,
   );
   expect(css).toMatch(
     /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?\.nav-(?:cell|label)[^{}]*\{[^{}]*transition(?:-duration)?\s*:/i,
@@ -594,6 +682,21 @@ test("mobile header preserves navigation order and active route semantics", asyn
     expect(inactiveStyles.background).toBe("rgba(0, 0, 0, 0)");
     expect(currentStyles.color).not.toBe(inactiveStyles.color);
     expect(currentStyles.color).toBe("rgb(109, 40, 217)");
+    const mobileContact = navigation.getByRole("link", {
+      name: "Contact Us",
+      exact: true,
+    });
+    await expect(mobileContact.locator(".nav-label > .sr-only")).toHaveText("Contact Us");
+    await expect(mobileContact.locator(".nav-label-base")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
+    await expect(mobileContact.locator(".nav-label-base .nav-letter")).toHaveCount(
+      "Contact Us".length,
+    );
+    await expect(
+      mobileContact.locator('.nav-label-hover[aria-hidden="true"] .nav-letter'),
+    ).toHaveCount("Contact Us".length);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
@@ -659,10 +762,19 @@ test("reduced motion preserves navbar state without traveling labels", async ({ 
     const styles = getComputedStyle(element);
     const base = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-base")!);
     const hover = getComputedStyle(element.querySelector<HTMLElement>(".nav-label-hover")!);
+    const letters = Array.from(element.querySelectorAll<HTMLElement>(".nav-letter"), (letter) => {
+      const letterStyles = getComputedStyle(letter);
+      return {
+        delay: letterStyles.transitionDelay,
+        duration: letterStyles.transitionDuration,
+        transform: letterStyles.transform,
+      };
+    });
     return {
       transitionDuration: styles.transitionDuration,
       baseDuration: base.transitionDuration,
       hoverDuration: hover.transitionDuration,
+      letters,
       color: styles.color,
       background: styles.backgroundColor,
       baseColor: base.color,
@@ -673,13 +785,14 @@ test("reduced motion preserves navbar state without traveling labels", async ({ 
     };
   });
   for (const duration of [state.transitionDuration, state.baseDuration, state.hoverDuration]) {
-    const seconds = duration.split(",").map((value) => {
-      const normalized = value.trim();
-      return normalized.endsWith("ms")
-        ? Number.parseFloat(normalized) / 1000
-        : Number.parseFloat(normalized);
-    });
+    const seconds = duration.split(",").map(cssTimeToSeconds);
     expect(seconds.every((value) => value <= 0.001)).toBeTruthy();
+  }
+  expect(state.letters).toHaveLength("About".length * 2);
+  for (const letter of state.letters) {
+    expect(letter.duration.split(",").map(cssTimeToSeconds).every((value) => value <= 0.001)).toBeTruthy();
+    expect(letter.delay.split(",").map(cssTimeToSeconds).every((value) => value <= 0.001)).toBeTruthy();
+    expect(letter.transform).toBe("none");
   }
   expect(state.color).toBe("rgb(109, 40, 217)");
   expect(state.background).toBe("rgba(0, 0, 0, 0)");

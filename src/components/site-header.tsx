@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
+import type { CSSProperties } from "react";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
@@ -21,11 +22,34 @@ function isCurrent(pathname: string, href: string) {
 }
 
 function NavLabel({ children }: { children: string }) {
+  const characters = Array.from(children);
+  const renderCharacters = () => {
+    let letterIndex = 0;
+
+    return characters.map((character, index) => {
+      const staggerIndex = letterIndex;
+      if (character.trim()) letterIndex += 1;
+
+      return (
+        <span
+          className="nav-letter"
+          style={{ "--letter-index": staggerIndex } as CSSProperties}
+          key={`${character}-${index}`}
+        >
+          {character}
+        </span>
+      );
+    });
+  };
+
   return (
     <span className="nav-label">
-      <span className="nav-label-base">{children}</span>
+      <span className="sr-only">{children}</span>
+      <span className="nav-label-base" aria-hidden="true">
+        {renderCharacters()}
+      </span>
       <span className="nav-label-hover" aria-hidden="true">
-        {children}
+        {renderCharacters()}
       </span>
     </span>
   );

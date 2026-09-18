@@ -160,12 +160,21 @@ p { text-wrap: pretty; }
 .nav-label-base,
 .nav-label-hover {
   display: block;
-  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .nav-label-hover {
   position: absolute;
   inset: 0;
+}
+
+.nav-letter {
+  display: inline-block;
+  white-space: pre;
+  transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--letter-index) * 28ms);
+}
+
+.nav-label-hover .nav-letter {
   transform: translateY(125%);
 }
 
@@ -178,13 +187,13 @@ p { text-wrap: pretty; }
   outline-offset: 3px;
 }
 
-.nav-cell:focus-visible .nav-label-base { transform: translateY(-125%); }
-.nav-cell:focus-visible .nav-label-hover { transform: translateY(0); }
+.nav-cell:focus-visible .nav-label-base .nav-letter { transform: translateY(-125%); }
+.nav-cell:focus-visible .nav-label-hover .nav-letter { transform: translateY(0); }
 
 @media (hover: hover) and (pointer: fine) {
   .nav-cell:hover { color: var(--primary); }
-  .nav-cell:hover .nav-label-base { transform: translateY(-125%); }
-  .nav-cell:hover .nav-label-hover { transform: translateY(0); }
+  .nav-cell:hover .nav-label-base .nav-letter { transform: translateY(-125%); }
+  .nav-cell:hover .nav-label-hover .nav-letter { transform: translateY(0); }
   .nav-cell:active { transform: scale(0.97); }
 }
 
@@ -844,8 +853,11 @@ p { text-wrap: pretty; }
   .moving-token { display: none; }
   .nav-cell,
   .nav-label-base,
-  .nav-label-hover { transition-duration: 0.01ms !important; }
-  .nav-label-base { transform: none !important; }
+  .nav-label-hover,
+  .nav-letter {
+    transition: none !important;
+  }
+  .nav-letter { transform: none !important; }
   .nav-label-hover { display: none; transform: none !important; opacity: 0; }
 }
 

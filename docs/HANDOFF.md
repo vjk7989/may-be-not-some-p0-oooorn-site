@@ -5,67 +5,69 @@ argument-hint: "What will the next session be used for?"
 disable-model-invocation: true
 ---
 
-# Unboxed rolling navbar handoff
+# Staggered navbar animation handoff
 
 ## Next-session focus
 
-Review the completed unboxed rolling navbar with the user and continue only
-with requested refinements. The implementation is ready for commit/push once
-the user approves it; treat the known Lighthouse LCP debt as separate scope.
+Review the slower letter-by-letter navbar roll with the user and continue only
+with requested refinements. Keep the unboxed single-shell navigation decision
+intact and treat the known Lighthouse LCP debt as separate scope.
 
 ## Current state
 
-- The outer sticky glass navbar remains a single rounded rectangle. Desktop,
-  mobile Sheet, and no-JavaScript destinations are now transparent,
-  borderless, and shadowless rather than individually boxed.
-- Hover and keyboard focus retain the vertical rolling-label interaction and
-  settle in electric violet. The current route remains violet in every state;
-  Contact Us uses the same unboxed treatment.
-- D-036 in [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) is the
-  durable implementation decision and supersedes D-035's boxed-cell visual
-  treatment. The bounded acceptance contract is
+- Each desktop navigation label now rolls one character at a time in reading
+  order. Character transforms run for 340ms with a deterministic 28ms delay
+  between non-whitespace characters; spaces preserve the visible word gap but
+  do not add an animation beat.
+- The accessible-name boundary was corrected for the split-letter treatment:
+  each link exposes one unsplit `.sr-only` label, while both animated character
+  layers are `aria-hidden`. This avoids accessibility trees announcing words as
+  separated letters.
+- Reduced motion removes both transitions and per-character delays, hides the
+  duplicate layer, and leaves one complete static visual label.
+- D-037 in [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) is the
+  durable decision. The bounded acceptance contract is
   [`tests/GLASS_NAVBAR_TEST_MATRIX.md`](../tests/GLASS_NAVBAR_TEST_MATRIX.md).
   Use those artifacts and the current `git diff` for implementation detail.
 
 ## Changed files and repository state
 
+- `src/components/site-header.tsx`
 - `src/app/globals.css`
 - `tests/e2e/production-website.spec.ts`
 - `tests/GLASS_NAVBAR_TEST_MATRIX.md`
 - `docs/architecture/DECISIONS.md`
 - `docs/HANDOFF.md`
 
-The work is uncommitted. Inspect `git diff` before further edits; it is the
-authoritative patch. No component contract or dependency changed.
+The work is currently uncommitted. No dependency, route, or runtime state was
+added. Inspect the current diff before further edits; it is the authoritative
+patch.
 
 ## Validation record
 
-- Focused navbar coverage passes 34/34, the combined E2E suite passes 47/47,
-  and the dedicated Axe slice passes 11/11.
-- Design lint, lint, typecheck, unit, build, content, links, SEO, static
-  validation, and Graft checks pass. The aggregate test rerun is green.
-- The first aggregate run encountered one transient assertion in the unrelated
-  PlatformShowcase coverage. Independent failure analysis classified it
-  outside the navbar change; the exact focused platform test then passed
-  10/10, and the aggregate E2E rerun passed 47/47. Do not weaken that test.
-- Lighthouse is still not green: the known mobile LCP is approximately 2.611
-  seconds against the 2.5-second budget. This predates the unboxed navbar and
-  remains separate performance debt; do not report it as passing.
-- The local preview server was stopped after validation; port 4173 was free at
-  handoff. Start a fresh server before browser or performance measurement to
-  avoid stale exported output.
+- Focused navbar coverage passes 35/35, including character ordering, exact
+  accessible names, keyboard focus, reduced motion, responsive layouts, and
+  no-JavaScript navigation.
+- Independent full-suite validation is green: design lint, lint, typecheck,
+  unit, build, content, links, SEO, E2E, Axe, and aggregate checks all passed.
+  Playwright passed 48/48 and the dedicated Axe slice passed 11/11.
+- Lighthouse remains non-green: the known mobile LCP is approximately 2.611
+  seconds against the 2.5-second budget. This predates this animation change,
+  remains separate performance debt, and must not be reported as passing.
+- The workspace-owned static preview was stopped after validation and visual
+  review; port 4173 was released.
 
 ## Suggested skills
 
-- `impeccable` — evaluate any requested navbar refinement against the existing
-  hierarchy, responsive behavior, and accessibility baseline.
-- `emil-design-eng` — tune the rolling-label, focus, and press feedback while
-  keeping the implementation CSS-only and restrained.
+- `impeccable` — evaluate visual rhythm, hierarchy, and accessibility of any
+  requested navbar refinement.
+- `emil-design-eng` — tune character staggering and interaction feedback while
+  keeping motion restrained, interruptible, and CSS-only.
 - `apple-design` — use only if a follow-up changes the outer glass material or
-  reduced-motion behavior.
+  the reduced-motion experience.
 
 ## Deferred work
 
-- Commit and push only after the user accepts this revision.
-- Handle the mobile LCP budget as an explicit, separate optimization task with
-  fresh-server three-run medians and the existing 2.5-second threshold.
+- Commit and push only when explicitly requested after validation.
+- Handle the mobile LCP budget as a separate optimization task using fresh
+  three-run measurements and the existing 2.5-second threshold.
