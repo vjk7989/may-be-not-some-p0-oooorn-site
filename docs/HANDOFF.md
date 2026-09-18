@@ -5,7 +5,7 @@ argument-hint: "What will the next session be used for?"
 disable-model-invocation: true
 ---
 
-# Responsive viewport-section handoff
+# Website refinement handoff
 
 ## Next-session focus
 
@@ -13,6 +13,10 @@ Continue with the user's section-by-section visual and copy refinement. Treat
 mobile LCP optimization as optional, separate work: preserve the approved
 viewport-fit contract and take fresh three-run measurements before claiming
 the 2.5-second budget passes.
+
+For every new task, follow the explicit graph-driven workflow recorded in
+D-039: query the code graph before broad file discovery, model the work as a
+compact dependency DAG, and run only ready, non-overlapping nodes in parallel.
 
 ## Current state
 
@@ -33,6 +37,10 @@ the 2.5-second budget passes.
   [`tests/VIEWPORT_SECTIONS_TEST_MATRIX.md`](../tests/VIEWPORT_SECTIONS_TEST_MATRIX.md).
   Use those artifacts and the source paths below instead of reconstructing the
   implementation from this handoff.
+- D-039 in [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) is the
+  durable record for the per-task code-graph, Graft, dependency-DAG, YAGNI,
+  parallelization, and independent validation workflow. Do not duplicate that
+  policy in session documents.
 
 ## Implementation map
 
@@ -61,6 +69,10 @@ the 2.5-second budget passes.
   Accessibility and SEO were 100 in all three runs. Do not report the
   performance gate as passing.
 - `graft build` and `graft check` are green after the material source changes.
+- The graph-workflow follow-up changes documentation and repository guidance
+  only. Validate them with deterministic content and ordering checks rather
+  than inventing application tests; the deployed application regression record
+  below remains unchanged.
 - Source commit `72651871912d85551aa4ec4a5b47fb9ffd82dec5` (`7265187`)
   was pushed to `origin/main`. GitHub Actions run
   [35399868659](https://github.com/vjk7989/may-be-not-some-p0-oooorn-site/actions/runs/35399868659)
@@ -71,8 +83,8 @@ the 2.5-second budget passes.
 - The successful workflow emitted non-blocking warnings about Node 20 action
   deprecation and a future `ubuntu-latest` runner migration. These are future
   maintenance items, not deployment failures.
-- A documentation-only follow-up commit will contain this handoff update. The
-  deployed viewport implementation's provenance remains source commit
+- Documentation commit `667acee` records the deployment provenance on
+  `origin/main`; the deployed viewport implementation remains source commit
   `7265187`.
 
 ## Suggested skills

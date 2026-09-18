@@ -94,8 +94,24 @@ For each user task, execute these gates in order:
    (`search_graph`, `trace_path`, `get_code_snippet`, `query_graph`, then
    `get_architecture`); otherwise use Graft. Fall back to raw search only for
    literals, non-code files, or when graph results are insufficient.
-2. Restate the task as the smallest independently verifiable work items, with
-   explicit acceptance criteria and affected boundaries. Do not expand scope.
+2. Restate the task as the smallest independently verifiable work items and
+   express them as a compact dependency graph. Each node must record its work
+   item, dependencies, affected boundary, acceptance criteria, and whether it
+   is safe to run in parallel. A one-node task still uses this contract without
+   adding ceremony. Keep the graph in the current plan or progress record; do
+   not add a persistent orchestration system unless the task explicitly needs
+   one.
+   - A node is ready only when every dependency is known, complete, and passing
+     its focused gate. Unknown dependencies keep the node blocked.
+   - Detect cycles before implementation. Decompose a cycle into acyclic work
+     or escalate the unresolved dependency instead of choosing an arbitrary
+     execution order.
+   - Run ready nodes in parallel only when their writable boundaries do not
+     overlap. Shared read-only discovery is safe; overlapping writes must be
+     serialized.
+   - Update the graph when discovery reveals a new dependency, then continue in
+     topological order. Do not expand scope beyond the user's acceptance
+     criteria.
 3. Assign an independent test-design subagent. It must produce a bounded,
    risk-based matrix covering: happy path; input boundaries; malformed or
    missing input; state transitions; failure and recovery; regression at each
@@ -103,8 +119,8 @@ For each user task, execute these gates in order:
    accessibility only when relevant. Each omitted category must be marked not
    applicable with a reason. The implementation must satisfy every applicable
    case.
-4. Implement one small work item at a time. After each item, run the narrowest
-   relevant tests before starting the next item.
+4. Implement ready nodes in topological order. After each node, run the
+   narrowest relevant tests before unblocking any dependent node.
 5. Assign a separate test-runner subagent to execute the relevant test suite and
    report exact commands, exit codes, and failures. The test runner must not
    modify production code or tests.

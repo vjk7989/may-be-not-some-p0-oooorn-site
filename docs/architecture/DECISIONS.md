@@ -901,11 +901,46 @@ writes elsewhere. It deliberately does not alter user or machine settings.
   `src/app/globals.css`, `tests/e2e/viewport-sections.spec.ts`
 - **References:** `tests/VIEWPORT_SECTIONS_TEST_MATRIX.md`, D-020, D-033
 
+### D-039 — Make graph-driven dependency ordering the repository task workflow
+
+- **Date:** 2026-09-19
+- **Status:** Accepted
+- **Context:** Future tasks need a deterministic way to discover affected code,
+  expose ordering constraints, parallelize only independent work, and preserve
+  the existing test and context-management gates without adding orchestration
+  infrastructure.
+- **Decision:** The repository operating contract in `AGENTS.md` now requires
+  code discovery through codebase-memory MCP first and Graft second. Every task
+  is represented by a compact dependency graph whose nodes record the work
+  item, dependencies, affected boundary, acceptance criteria, and parallel
+  safety. Nodes become ready only when all dependencies are known, complete,
+  and passing; work proceeds in topological order. Unknown dependencies block
+  their consumers, cycles must be decomposed or escalated, and parallel writes
+  are allowed only across disjoint boundaries. Each completed node passes its
+  focused gate before dependents start. Independent agents own test design and
+  test execution, with failure analysis added only after an actual failure.
+  Material work completes with broader regression checks, Graft refresh, and
+  architecture and handoff updates.
+- **Rationale:** A lightweight task DAG makes dependencies and safe concurrency
+  explicit while preserving YAGNI. Keeping it in the active plan or progress
+  record avoids a speculative scheduler, persistent task database, or new
+  runtime dependency.
+- **Consequences:** A one-node task still records the same minimum fields
+  without extra ceremony. Discovery may add dependencies and update the graph,
+  but may not expand scope beyond current acceptance criteria. Documentation-
+  only changes use deterministic validation rather than application tests.
+  Overlapping writes remain serialized, and valid tests cannot be weakened to
+  unblock downstream work. `AGENTS.md` is the authoritative detailed contract;
+  this decision records the durable architectural choice without duplicating
+  its full procedure.
+- **Affected paths:** `AGENTS.md`, `docs/architecture/DECISIONS.md`
+- **References:** `AGENTS.md`
+
 ## Compact codebase map
 
 | Path | Purpose | Current status |
 | --- | --- | --- |
-| `AGENTS.md` | Repository operating contract, graph-first discovery, storage boundary, and gated workflow | Active |
+| `AGENTS.md` | Repository operating contract for graph-first discovery, compact task DAGs, topological and disjoint-write execution, storage boundaries, independent test gates, and context completion | Active; authoritative workflow |
 | `DESIGN.md` | Machine-linted production design system, interaction rules, and accessibility baseline | Active; `design:lint` passing |
 | `PRODUCT.md` | Product intent, audience, brand register, voice, claim policy, and public-content boundaries | Active |
 | `package.json` | Pinned production dependencies and build, validation, preview, and Graft scripts | Active |
