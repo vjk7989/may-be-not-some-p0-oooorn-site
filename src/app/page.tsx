@@ -15,6 +15,7 @@ import { RiskLandscape } from "@/components/risk-landscape";
 import { SectionHeading } from "@/components/section-heading";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
+import { ViewportSection } from "@/components/ui/viewport-section";
 import {
   articleRegistry,
   industries,
@@ -47,7 +48,7 @@ const outcomes = [
 export default function HomePage() {
   return (
     <main id="main-content" tabIndex={-1}>
-      <section className="hero-section">
+      <ViewportSection className="hero-section">
         <div className="shell hero-layout">
           <div className="hero-copy">
             <p className="hero-category">A Trust &amp; Execution Layer for AI Infrastructure.</p>
@@ -95,11 +96,11 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </ViewportSection>
 
       <RiskLandscape />
 
-      <section className="outcomes-section">
+      <ViewportSection className="outcomes-section">
         <div className="shell">
           <SectionHeading
             title="Three outcomes around every approved AI task."
@@ -122,9 +123,9 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+      </ViewportSection>
 
-      <section className="products-section" id="platform">
+      <ViewportSection className="products-section" id="platform">
         <div className="shell">
           <SectionHeading
             label="Platform"
@@ -133,9 +134,9 @@ export default function HomePage() {
           />
           <PlatformShowcase />
         </div>
-      </section>
+      </ViewportSection>
 
-      <section className="hyper-section">
+      <ViewportSection className="hyper-section">
         <div className="shell hyper-layout">
           <div className="hyper-mark-wrap">
             <Image
@@ -167,9 +168,9 @@ export default function HomePage() {
             </Button>
           </div>
         </div>
-      </section>
+      </ViewportSection>
 
-      <section className="services-section">
+      <ViewportSection className="services-section">
         <div className="shell">
           <div className="services-layout">
             <div className="services-intro">
@@ -197,9 +198,9 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </ViewportSection>
 
-      <section className="industries-section">
+      <ViewportSection className="industries-section">
         <div className="shell industries-layout">
           <div>
             <p className="section-label">Where controls matter</p>
@@ -209,9 +210,9 @@ export default function HomePage() {
             {industries.map((industry) => <li key={industry}>{industry}</li>)}
           </ul>
         </div>
-      </section>
+      </ViewportSection>
 
-      <section className="articles-section">
+      <ViewportSection className="articles-section">
         <div className="shell">
           <SectionHeading
             label="Field notes"
@@ -231,7 +232,7 @@ export default function HomePage() {
             Read all guides <ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         </div>
-      </section>
+      </ViewportSection>
 
       <AssessmentCta />
     </main>

@@ -18,8 +18,9 @@ Last updated: 2026-09-18
 - Graft configuration is present in `package.json`, `package-lock.json`, `opencode.json`, `.gitignore`, and `graft/`.
 - Production gates currently pass for design-system linting, ESLint,
   TypeScript, unit and contract checks, static build, content, links, SEO,
-  Playwright end-to-end coverage (47/47), and the dedicated accessibility slice
-  (11/11). The latest isolated Lighthouse LCP is approximately 2.611 s against
+  Playwright end-to-end coverage, and the dedicated accessibility slice. The
+  homepage viewport-fit slice passes its focused 18/18 browser checks. The
+  latest three-run Lighthouse mobile median LCP is 2,856.9 ms against
   the active 2.5 s budget; publication carries the explicit user-authorized
   exception recorded in D-033. See
   `tests/PRODUCTION_WEBSITE_TEST_MATRIX.md` for the acceptance contract; the
@@ -854,6 +855,52 @@ writes elsewhere. It deliberately does not alter user or machine settings.
   `tests/e2e/production-website.spec.ts`
 - **References:** `tests/GLASS_NAVBAR_TEST_MATRIX.md`, D-033, D-036
 
+### D-038 — Fit homepage scenes to the usable viewport when content allows
+
+- **Date:** 2026-09-18
+- **Status:** Accepted
+- **Context:** Homepage sections used large fixed spacing and intrinsic layouts
+  that often required a small extra scroll to reveal otherwise compact content.
+  The requested behavior was one complete section per browser window across
+  desktop, tablet, mobile, landscape, and accessibility-scale conditions,
+  without clipping dense content or forcing slide-like navigation.
+- **Decision:** Introduce the local semantic `ViewportSection` primitive and
+  apply it to the homepage's nine content sections only. Its CSS contract uses
+  `min-block-size: calc(100svh - var(--viewport-header-footprint))`, centers
+  content within that usable height when it fits, and allows the section to
+  expand naturally when its intrinsic content is taller. Fluid scene padding
+  compacts the existing layouts without removing copy or functionality.
+  Section targets receive sticky-header scroll clearance. The Risk Landscape
+  grid permits min-content shrinkage at 200% text scaling, and header/navigation
+  tracks may wrap or shrink rather than widening the document.
+- **Rationale:** A reusable semantic wrapper plus CSS minimum sizing is the
+  smallest deterministic solution. It needs no client measurement, runtime
+  observer, new dependency, or viewport-specific content fork, and preserves
+  useful static HTML when JavaScript is unavailable.
+- **Consequences:** A homepage scene equals the usable viewport within the
+  tested tolerance only when its complete readable content fits; short screens,
+  accessibility text scaling, and intrinsically dense scenes use normal page
+  growth. Fixed heights, internal section scrollbars, clipped meaningful
+  content, scroll snapping, and forced full-screen slides remain unsupported.
+  Supporting pages and articles retain natural document flow, and the footer
+  remains ordinary site chrome. Existing shadcn primitives are retained;
+  Aceternity and other layout dependencies are intentionally not added.
+- **Validation:** Focused Playwright coverage passes 18/18 across 320×568,
+  390×844, 844×390, 768×1024, 1024×768, 1366×768, 1440×900,
+  1920×1080, and the 720×450 zoom-equivalent viewport. It also covers
+  resize and orientation changes, every Platform active state, no-JavaScript
+  content, blocked-image recovery, reduced motion, anchor clearance, 200% root
+  text scaling, section containment, internal-scroll rejection, and horizontal
+  overflow. Design lint, lint, typecheck, unit, build, content, links, SEO,
+  combined E2E, Axe, aggregate tests, and GitHub Pages validation pass. The
+  latest three-run Lighthouse mobile median LCP is 2,856.9 ms, above the active
+  2.5 s budget; performance remains explicit debt and is not recorded as green.
+- **Affected paths:** `src/components/ui/viewport-section.tsx`,
+  `src/app/page.tsx`, `src/components/risk-landscape.tsx`,
+  `src/components/assessment-cta.tsx`, `src/components/site-header.tsx`,
+  `src/app/globals.css`, `tests/e2e/viewport-sections.spec.ts`
+- **References:** `tests/VIEWPORT_SECTIONS_TEST_MATRIX.md`, D-020, D-033
+
 ## Compact codebase map
 
 | Path | Purpose | Current status |
@@ -890,6 +937,7 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `src/app/globals.css` | Production tokens, responsive layouts, focus styles, funnel motion, staggered per-character electric-violet label motion, glass/preference fallbacks, and reduced-motion behavior | Active |
 | `src/components/site-header.tsx` | Shared ordered desktop, mobile Sheet, and no-JavaScript navigation within one glass shell, using one semantic label plus aria-hidden per-character visual layers | Active |
 | `src/components/platform-showcase.tsx` | One-open product disclosure with keyboard, pointer, mobile, reduced-motion, and no-JavaScript paths | Active |
+| `src/components/ui/viewport-section.tsx` | Semantic homepage scene boundary with stable test hook and CSS-driven usable-viewport minimum | Active; no client measurement or dependency |
 | `src/components/` | Shared assessment CTA, logo, status, risk funnel, header, and local UI primitives | Active |
 | `src/lib/types.ts` | Static public-content interfaces | Active |
 | `src/lib/site-data.ts` | Single source for configuration, navigation, product, service, risk, industry, and article metadata | Active |
@@ -906,12 +954,14 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `tests/Validate-ProductionWebsite.ps1` | Deterministic route, content, asset, link, metadata, SEO, and claim validator | Passing |
 | `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Combined E2E passing 47/47; dedicated a11y 11/11 |
 | `tests/e2e/platform-panels.spec.ts` | Focused PlatformShowcase state, keyboard, mobile, no-JavaScript, reduced-motion, and layout coverage | Passing as part of 47/47 combined E2E |
+| `tests/e2e/viewport-sections.spec.ts` | Homepage usable-height, natural-overflow, containment, resize, text-scale, fallback, Platform-state, and anchor coverage | Passing 18/18 |
+| `tests/VIEWPORT_SECTIONS_TEST_MATRIX.md` | Risk-based acceptance and applicability contract for homepage viewport scenes | Active |
 | `tests/GLASS_NAVBAR_TEST_MATRIX.md` | Focused single-shell geometry, unboxed per-character label motion, active-route, fallback, responsive, and accessibility contract for the shared navbar | Active |
 | `tests/LOGO_ROUNDING_TEST_MATRIX.md` | Source-integrity, rounded presentation, favicon safety, metadata, and logo-semantics contract | Active; passing |
 | `tests/PLATFORM_PANELS_TEST_MATRIX.md` | Focused progressive-disclosure acceptance and applicability contract | Active; passing |
 | `tests/GITHUB_PAGES_TEST_MATRIX.md` | Repository identity, deployment, routing, asset, metadata, security, and live-provenance contract | Active |
 | `tests/Validate-GitHubPages.ps1` | Deterministic GitHub Pages workflow and exported-output validator | Passing locally |
-| `tests/lighthouserc.cjs` | Three-run mobile Lighthouse thresholds | LCP budget remains 2.5 s; latest isolated run ~2.611 s under explicit deployment exception |
+| `tests/lighthouserc.cjs` | Three-run mobile Lighthouse thresholds | LCP budget remains 2.5 s; latest median 2,856.9 ms remains explicit performance debt |
 | `src/lib/site-data.test.ts` | Unit checks for local public-data contracts | Passing |
 | `vitest.config.ts` | Unit-test discovery and source alias configuration | Active |
 | `tests/MULTIPAGE_WIREFRAME_TEST_MATRIX.md` | Previous five-page wireframe acceptance contract | Historical |

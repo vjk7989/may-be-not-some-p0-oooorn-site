@@ -118,8 +118,14 @@ export function SiteHeader() {
         </Sheet>
         <noscript>
           <style>{`
+            :root {
+              --header-height: 11rem;
+            }
             .header-inner {
+              height: var(--header-height);
+              min-height: var(--header-height);
               flex-wrap: wrap;
+              align-content: start;
               gap: 0.5rem;
               padding-top: 0.75rem;
             }
@@ -127,9 +133,11 @@ export function SiteHeader() {
               display: none !important;
             }
             .no-script-nav {
-              display: flex !important;
+              display: grid !important;
               width: 100%;
-              flex-wrap: wrap;
+              height: 6.5rem;
+              grid-template-columns: repeat(3, minmax(0, 1fr));
+              align-content: center;
               gap: 0.5rem 1rem;
               border-top: 1px solid var(--line);
               padding: 0.75rem 0 1rem;

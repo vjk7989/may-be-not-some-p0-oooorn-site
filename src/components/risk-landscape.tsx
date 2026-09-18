@@ -1,5 +1,6 @@
 import { Cpu, Database, Laptop, Server, ShieldCheck, Workflow } from "lucide-react";
 
+import { ViewportSection } from "@/components/ui/viewport-section";
 import { risks } from "@/lib/site-data";
 
 const sources = [
@@ -14,7 +15,7 @@ const destinations = ["Individual users", "Servers", "Applications", "Devices"];
 
 export function RiskLandscape() {
   return (
-    <section
+    <ViewportSection
       className="risk-section"
       aria-labelledby="risk-label risk-title"
     >
@@ -103,6 +104,6 @@ export function RiskLandscape() {
           <li><strong>4. Systems receive controlled activity</strong><span>Approved users, servers, applications, and devices remain the destination.</span></li>
         </ol>
       </div>
-    </section>
+    </ViewportSection>
   );
 }

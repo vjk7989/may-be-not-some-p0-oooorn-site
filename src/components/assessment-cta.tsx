@@ -1,11 +1,12 @@
 import { ArrowUpRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { ViewportSection } from "@/components/ui/viewport-section";
 import { siteConfig } from "@/lib/site-data";
 
 export function AssessmentCta() {
   return (
-    <section className="assessment-cta" aria-labelledby="assessment-title">
+    <ViewportSection className="assessment-cta" aria-labelledby="assessment-title">
       <div className="shell assessment-layout">
         <div>
           <p className="section-label section-label-light">Start with your workflow</p>
@@ -22,6 +23,6 @@ export function AssessmentCta() {
           </a>
         </Button>
       </div>
-    </section>
+    </ViewportSection>
   );
 }
