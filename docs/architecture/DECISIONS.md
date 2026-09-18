@@ -827,21 +827,27 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 - **Status:** Accepted; refines D-036 without changing its unboxed navigation
   contract
 - **Context:** The user requested that each navigation word roll letter by
-  letter and that the overall interaction feel slightly slower.
+  letter, then requested an exact 12% slowdown to the established timing and
+  an additional exact 18% slowdown to those interim values.
 - **Decision:** Render one complete `sr-only` semantic label and mark both
   visual character layers `aria-hidden`. Animate each visible character with a
-  340 ms transform transition and a deterministic 28 ms index-based stagger.
-  Whitespace remains in layout without receiving an additional stagger beat.
-  Under reduced motion, use `transition: none` and present the complete static
-  label without travel.
+  449.344 ms transform transition and a deterministic 37.0048 ms index-based
+  stagger, exactly 18% slower than the interim 380.8 ms duration and 31.36 ms
+  stagger. The longest navigation label, Contact Us, settles at 745.3824 ms.
+  These current values supersede the interim 12%-slower values. Whitespace
+  remains in layout without receiving an additional stagger beat. Easing,
+  transform-only motion, semantics, and reduced-motion behavior remain
+  unchanged; under reduced motion, use `transition: none` and present the
+  complete static label without travel.
 - **Rationale:** Per-character timing supplies the requested rhythm while the
   single semantic copy preserves an uninterrupted accessible name. CSS timing
   and explicit character indices keep the behavior deterministic and avoid a
   motion dependency or client-side interaction state.
 - **Consequences:** Navigation labels must preserve the semantic/visual-layer
-  separation, character order, and whitespace width. New destinations inherit
-  the same timing contract. No dependency, network work, or persistent runtime
-  state is added. The known mobile Lighthouse LCP of approximately 2.611 s
+  separation, character order, whitespace width, easing, and interaction
+  semantics. New destinations inherit the same timing contract. Reduced-motion
+  behavior remains unchanged. No dependency, network work, or persistent
+  runtime state is added. The known mobile Lighthouse LCP of approximately 2.611 s
   remains separate from this refinement and above the active 2.5 s budget.
 - **Affected paths:** `src/components/site-header.tsx`, `src/app/globals.css`,
   `tests/GLASS_NAVBAR_TEST_MATRIX.md`,

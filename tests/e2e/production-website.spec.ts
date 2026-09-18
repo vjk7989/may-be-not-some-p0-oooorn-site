@@ -379,7 +379,7 @@ test("desktop header keeps one glass shell with animated unboxed navigation link
   expect(sticky.top).toBeLessThanOrEqual(32);
 });
 
-test("navbar label roll staggers each character at a deliberately slower pace", async ({
+test("navbar label roll is exactly eighteen percent slower at every timing boundary", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -429,15 +429,22 @@ test("navbar label roll staggers each character at a deliberately slower pace", 
       cssTimeToSeconds(duration.split(",")[0]),
     );
 
+    const expectedDurationSeconds = 0.340 * 1.12 * 1.18;
+    const expectedStaggerSeconds = 0.028 * 1.12 * 1.18;
+    const expectedCompletionSeconds =
+      expectedDurationSeconds + (animatedLetters.length - 1) * expectedStaggerSeconds;
+
     expect(animatedLetters.every(({ property }) => property.includes("transform"))).toBeTruthy();
-    expect(durations.every((duration) => duration >= 0.32 && duration <= 0.65)).toBeTruthy();
-    expect(delays[0]).toBeLessThanOrEqual(0.01);
-    for (let index = 1; index < delays.length; index += 1) {
-      expect(delays[index]).toBeGreaterThan(delays[index - 1]);
-      expect(delays[index] - delays[index - 1]).toBeGreaterThanOrEqual(0.01);
-      expect(delays[index] - delays[index - 1]).toBeLessThanOrEqual(0.12);
+    for (const duration of durations) {
+      expect(duration).toBeCloseTo(expectedDurationSeconds, 5);
     }
-    expect(delays.at(-1)).toBeLessThanOrEqual(0.8);
+    for (const [index, delay] of delays.entries()) {
+      expect(delay).toBeCloseTo(index * expectedStaggerSeconds, 5);
+    }
+    expect((delays.at(-1) ?? 0) + (durations.at(-1) ?? 0)).toBeCloseTo(
+      expectedCompletionSeconds,
+      5,
+    );
   }
 });
 
@@ -471,7 +478,10 @@ test("glass navbar CSS includes preference and capability fallbacks", async () =
   );
   expect(css).toMatch(/\.nav-letter\s*\{[^{}]*transition[^{}]*transform/i);
   expect(css).toMatch(
-    /\.nav-letter\s*\{[^{}]*transition-delay\s*:\s*calc\(var\(--letter-index\)\s*\*\s*[^)]+\)/i,
+    /\.nav-letter\s*\{[^{}]*transition\s*:\s*transform\s+449\.344ms\s+cubic-bezier\(0\.22,\s*1,\s*0\.36,\s*1\)/i,
+  );
+  expect(css).toMatch(
+    /\.nav-letter\s*\{[^{}]*transition-delay\s*:\s*calc\(var\(--letter-index\)\s*\*\s*37\.0048ms\)/i,
   );
   expect(css).not.toMatch(
     /\.nav-label-base\s*,\s*\.nav-label-hover\s*\{[^{}]*transition[^{}]*transform/i,

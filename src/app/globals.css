@@ -170,8 +170,8 @@ p { text-wrap: pretty; }
 .nav-letter {
   display: inline-block;
   white-space: pre;
-  transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
-  transition-delay: calc(var(--letter-index) * 28ms);
+  transition: transform 449.344ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--letter-index) * 37.0048ms);
 }
 
 .nav-label-hover .nav-letter {
