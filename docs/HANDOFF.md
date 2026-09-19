@@ -9,9 +9,10 @@ disable-model-invocation: true
 
 ## Next-session focus
 
-Release the validated Cloudflare-inspired navbar together with the earlier
-animated-404/performance work. The user has explicitly authorized commit, push,
-and deployment with the typed social-link list empty and its rail hidden.
+Publish this final documentation update and confirm it without changing the
+already deployed implementation. The Cloudflare-inspired navbar and the earlier
+animated-404/performance work are live with the typed social-link list empty and
+its rail hidden.
 
 ## Final known state
 
@@ -34,7 +35,8 @@ and deployment with the typed social-link list empty and its rail hidden.
   **4/4**, and Playwright **100/100**. `git diff --check` also exits 0. All
   release gates are green except the explicitly accepted Lighthouse LCP budget.
 - The animated static-export 404 and performance implementation is complete.
-  Use the current working-tree diff and the applicable decisions in
+  Use implementation commit `0ce51e97db8beeb3a33eacf873394b1818ee7281` and
+  the applicable decisions in
   [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) as the source of
   truth for implementation boundaries.
 - Focused end-to-end and accessibility coverage is green. Refer to
@@ -70,24 +72,27 @@ and deployment with the typed social-link list empty and its rail hidden.
 - The typed social-link configuration remains empty because the user has not
   supplied real destinations. Ship it in that validated state with the social
   rail hidden; do not invent placeholders.
-- The current navbar and 404/performance work is uncommitted. The last commit is
-  `77fa892` (`docs: define graph-driven workflow`); nothing from these slices
-  has been pushed or deployed.
-- The user's explicit instruction to check and push supersedes the earlier
-  social-link hold. Commit, push, GitHub Pages deployment, and live verification
-  are now authorized, but have not yet completed as of this handoff update.
+- Implementation commit `0ce51e97db8beeb3a33eacf873394b1818ee7281` is
+  pushed to `origin/main`. GitHub Pages run `35420152138` completed successfully
+  for that exact head SHA.
+- Live verification is green: the homepage returns HTTP 200 and contains the
+  expected hero, Contact Us, and Products-panel markers. The nested missing URL
+  `/missing/deployed-check/` returns a real HTTP 404 with the custom 404 content.
+- The deployment workflow emitted non-blocking GitHub annotations: Node
+  20-based actions are currently forced onto Node 24, and the
+  `ubuntu-latest` runner migration is upcoming. These warnings did not fail the
+  run but should be tracked during future workflow maintenance.
+- This final handoff update is not yet committed, pushed, or deployed. Do not
+  imply that the documentation SHA is live until that follow-up completes.
 - Confirm and stop any local preview server before handoff; do not assume the
   current `out/` artifact is fresh until the final build is rerun.
 
 ## Remaining sequence
 
-1. Visually verify the desktop panels, mobile grouped navigation, Contact Us
-   interaction, focus behavior, and responsive overflow against the focused
-   matrix.
-2. Commit the validated release, push `main`, monitor GitHub Pages, and verify
-   both the live navbar and deployed 404. Keep the Lighthouse LCP failure and
-   accepted development-tool audit risk explicit; leave the empty social rail
-   hidden.
+1. Commit and push this final documentation update, then confirm the resulting
+   Pages run without implying any implementation change. Preserve the explicit
+   Lighthouse LCP failure and accepted development-tool audit risk; leave the
+   empty social rail hidden.
 
 ## Suggested skills
 
