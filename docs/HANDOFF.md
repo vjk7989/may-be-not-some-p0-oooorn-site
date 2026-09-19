@@ -9,10 +9,9 @@ disable-model-invocation: true
 
 ## Next-session focus
 
-Publish this final documentation update and confirm it without changing the
-already deployed implementation. The Cloudflare-inspired navbar and the earlier
-animated-404/performance work are live with the typed social-link list empty and
-its rail hidden.
+Commit, push, and deploy the validated navbar submenu-corridor fix together with
+this handoff update. The earlier Cloudflare-inspired navbar and animated-404/
+performance work remain live with the typed social-link list empty and hidden.
 
 ## Final known state
 
@@ -23,16 +22,23 @@ its rail hidden.
   panels; Contact Us is the persistent violet outlined oval with inverted
   interaction feedback. Desktop, mobile Sheet, keyboard, reduced-motion, and
   no-JavaScript behavior are covered without introducing a new dependency.
+- A user-reported desktop defect caused a panel to disappear while the pointer
+  crossed from its trigger into the submenu. The root cause was dismissal on
+  the navigation row's `pointerleave`, which created a dead zone before the
+  absolutely positioned panel. Dismissal now occurs at the enclosing
+  `header-inner` boundary, preserving the trigger-to-panel corridor without
+  changing click, focus, or Escape semantics.
 - The focused navbar suite in
   [`tests/e2e/site-header-mega-menu.spec.ts`](../tests/e2e/site-header-mega-menu.spec.ts)
-  passes **10/10**. The affected Platform regression repair passes its focused
+  now exercises physical cursor travel for all four groups and passes **11/11**.
+  The affected Platform regression repair passes its focused
   check **1/1**. Use
   [`tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md`](../tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md)
   for the acceptance contract instead of restating it here.
-- Independent broader validation is green: `test:e2e` exits 0 with **100/100**,
+- Independent broader validation is green: `test:e2e` exits 0 with **101/101**,
   `test:a11y` exits 0 with **11/11**, and aggregate `npm test` exits 0 with the
   production validator passing, the 404/performance validator passing, Vitest
-  **4/4**, and Playwright **100/100**. `git diff --check` also exits 0. All
+  **4/4**, and Playwright **101/101**. `git diff --check` also exits 0. All
   release gates are green except the explicitly accepted Lighthouse LCP budget.
 - The animated static-export 404 and performance implementation is complete.
   Use implementation commit `0ce51e97db8beeb3a33eacf873394b1818ee7281` and
@@ -49,14 +55,15 @@ its rail hidden.
   ESLint, TypeScript, unit, content, links, SEO, animated-404 validation,
   combined Playwright end-to-end coverage (90/90), the dedicated accessibility
   slice (11/11), and the aggregate test gate all pass.
-- The GitHub Pages-mode build passes with
+- The updated GitHub Pages-mode build passes with
   `SITE_URL=https://vjk7989.github.io/may-be-not-some-p0-oooorn-site` and
   `NEXT_PUBLIC_BASE_PATH=/may-be-not-some-p0-oooorn-site`. The matching local
   predeployment validation also passes with 0 failed assertions.
-- The release Graft refresh and validation are green; both `graft build` and
+- The updated Graft refresh and validation are green; both `graft build` and
   `graft check` pass.
-- The release Lighthouse measurement is **2,811.868375 ms LCP**, which fails
-  the active 2.5-second budget. Do not report the performance gate as green.
+- Lighthouse was not rerun for the corridor fix. The retained release
+  measurement is **2,811.868375 ms LCP**, which fails the active 2.5-second
+  budget. Do not report the performance gate as green.
 - An `inlineCss` experiment was rejected and reverted: it did not improve the
   measured LCP enough to meet the budget and was not retained as unproven
   configuration complexity. D-041 records the experiment and retained
@@ -82,15 +89,17 @@ its rail hidden.
   20-based actions are currently forced onto Node 24, and the
   `ubuntu-latest` runner migration is upcoming. These warnings did not fail the
   run but should be tracked during future workflow maintenance.
-- This final handoff update is not yet committed, pushed, or deployed. Do not
-  imply that the documentation SHA is live until that follow-up completes.
+- The submenu-corridor fix and this handoff update are not yet committed,
+  pushed, or deployed. The live implementation commit above therefore does not
+  include this fix yet.
 - Confirm and stop any local preview server before handoff; do not assume the
   current `out/` artifact is fresh until the final build is rerun.
 
 ## Remaining sequence
 
-1. Commit and push this final documentation update, then confirm the resulting
-   Pages run without implying any implementation change. Preserve the explicit
+1. Commit and push the validated submenu-corridor fix and documentation update,
+   monitor the resulting Pages run, and verify physical pointer travel on the
+   live About, Products, Services, and Blog panels. Preserve the explicit
    Lighthouse LCP failure and accepted development-tool audit risk; leave the
    empty social rail hidden.
 

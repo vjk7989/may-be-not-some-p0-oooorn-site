@@ -17,11 +17,12 @@ Last updated: 2026-09-19
 - Graft v0.18.0 is installed locally through the project's Node dependencies.
 - Graft configuration is present in `package.json`, `package-lock.json`, `opencode.json`, `.gitignore`, and `graft/`.
 - Production validation passes after the mega-menu change: the focused navbar
-  suite passes 10/10, the Platform mobile-hover regression passes 1/1, the
-  independent combined E2E suite passes 100/100, and the dedicated
+  suite passes 11/11, the Platform mobile-hover regression passes 1/1, the
+  independent combined E2E suite passes 101/101, and the dedicated
   accessibility slice passes 11/11. The aggregate `npm test` gate also passes,
-  including both deterministic validators, Vitest 4/4, and Playwright 100/100;
-  `git diff --check` passes. Lighthouse was not rerun for this change. Its
+  including both deterministic validators, Vitest 4/4, and Playwright 101/101;
+  `git diff --check`, GitHub Pages, and Graft validation are green. Lighthouse
+  was not rerun for this change. Its
   retained three-run mobile cohort has a median LCP of 2,829.375 ms against the
   active 2.5 s budget; publication carries the explicit user-authorized
   exception recorded in D-033. See
@@ -1048,8 +1049,8 @@ writes elsewhere. It deliberately does not alter user or machine settings.
   mobile and no-JavaScript paths, and must not make hidden desktop content
   discoverable to assistive technology. Hover is an enhancement only; every
   destination remains available without it. Focus rings stay above panel and
-  CTA effects. The focused navbar suite passes 10/10, the independent combined
-  E2E suite passes 100/100, the dedicated accessibility slice passes 11/11,
+  CTA effects. The focused navbar suite passes 11/11, the independent combined
+  E2E suite passes 101/101, the dedicated accessibility slice passes 11/11,
   and the aggregate `npm test` gate passes. Lighthouse was not rerun; the
   retained LCP debt remains separate.
 - **Affected paths:** `src/components/site-header.tsx`,
@@ -1078,7 +1079,7 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 - **Consequences:** Synthetic or hybrid environments that do not report all
   three desktop conditions cannot activate a product through mouse enter, but
   retain the explicit button path. The focused mobile regression passes 1/1,
-  the independent combined E2E suite passes 100/100, and the aggregate
+  the independent combined E2E suite passes 101/101, and the aggregate
   `npm test` gate passes.
 - **Affected paths:** `src/components/platform-showcase.tsx`,
   `tests/e2e/platform-panels.spec.ts`
@@ -1117,6 +1118,33 @@ writes elsewhere. It deliberately does not alter user or machine settings.
   `.github/workflows/deploy-pages.yml`, `out/`
 - **References:** D-041
 
+### D-045 — Keep mega menus open across the physical trigger-to-panel path
+
+- **Date:** 2026-09-19
+- **Status:** Accepted
+- **Context:** The desktop navigation row is only 44 px tall while each mega
+  panel begins below it. Dismissing on pointer leave from that narrow row could
+  close the panel while the pointer was still travelling naturally from its
+  trigger into the submenu.
+- **Decision:** Move pointer-leave dismissal from `.desktop-navigation` to the
+  full `.header-inner` boundary. Keep the existing panel pseudo-element bridge,
+  which overlaps the header boundary and preserves the trigger-to-panel hover
+  corridor. Do not add close delays, timers, additional state, or new CSS.
+- **Rationale:** The enclosing header already represents the complete physical
+  interaction region. Moving one existing handler fixes the geometry at its
+  source and avoids timing-dependent behavior or another state transition.
+- **Consequences:** Menus stay open while the pointer travels from any grouped
+  trigger into its panel and close when the pointer leaves the full header
+  region. A physical-mouse regression covers this path for all four menus.
+  Independent validation passes: focused navbar 11/11, combined E2E 101/101,
+  accessibility 11/11, aggregate tests, GitHub Pages validation, and Graft.
+  The retained Lighthouse LCP debt in D-041 remains unchanged and separate;
+  no push or deployment status is implied.
+- **Affected paths:** `src/components/site-header.tsx`,
+  `tests/e2e/site-header-mega-menu.spec.ts`
+- **References:** D-042, D-044,
+  `tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md`
+
 ## Compact codebase map
 
 | Path | Purpose | Current status |
@@ -1152,9 +1180,9 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `src/app/robots.ts` | Static crawl policy metadata route | Active |
 | `src/app/sitemap.ts` | Static sitemap for pages and articles | Active |
 | `src/app/globals.css` | Production tokens, responsive layouts, restored below-fold content visibility, 404-only chrome/layout rules, mega-menu and Contact CTA presentation, focus styles, motion, and preference fallbacks | Active |
-| `src/components/site-header.tsx` | Shared ordered navigation with real top-level links, one-open desktop mega-menu previews, grouped mobile Sheet and no-JavaScript destinations, current-route semantics, and the external violet Contact CTA | Active; focused navbar 10/10 and combined E2E 100/100 passing |
+| `src/components/site-header.tsx` | Shared ordered navigation with real top-level links, one-open desktop mega-menu previews, a header-wide pointer corridor, grouped mobile Sheet and no-JavaScript destinations, current-route semantics, and the external violet Contact CTA | Active; focused navbar 11/11 and combined E2E 101/101 passing |
 | `src/components/not-found-motion.tsx` | Route-local client island that dynamically imports Anime.js 4.5.0, scopes deterministic SVG motion, and cleans up without affecting normal routes | Active |
-| `src/components/platform-showcase.tsx` | One-open product disclosure with keyboard, pointer, mobile, reduced-motion, and no-JavaScript paths; hover activation is restricted to desktop-width fine pointers that report hover capability | Active; focused mobile guard 1/1 and combined E2E 100/100 passing |
+| `src/components/platform-showcase.tsx` | One-open product disclosure with keyboard, pointer, mobile, reduced-motion, and no-JavaScript paths; hover activation is restricted to desktop-width fine pointers that report hover capability | Active; focused mobile guard 1/1 and combined E2E 101/101 passing |
 | `src/components/ui/viewport-section.tsx` | Semantic homepage scene boundary with stable test hook and CSS-driven usable-viewport minimum | Active; no client measurement or dependency |
 | `src/components/` | Shared assessment CTA, logo, status, risk funnel, header, and local UI primitives | Active |
 | `src/lib/types.ts` | Static public-content interfaces, including the HTTPS-only 404 social-link contract | Active |
@@ -1174,9 +1202,9 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `tests/Validate-404Performance.ps1` | Deterministic static validator for 404 content, Anime.js isolation, metadata, social-link, brand-integrity, and performance-source contracts | Active |
 | `tests/e2e/not-found-performance.spec.ts` | Focused browser coverage for missing routes, static/reduced-motion behavior, responsive containment, chunk isolation, image loading, and accessibility | Active |
 | `tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md` | Risk-based contract for mega-menu structure, hover and keyboard state, mobile and no-JavaScript parity, Contact CTA treatment, responsive containment, preferences, and accessibility | Active |
-| `tests/e2e/site-header-mega-menu.spec.ts` | Focused browser coverage for link order, one-open panels, hover corridor, focus/Escape behavior, route state, Contact CTA, mobile grouping, reduced motion, reflow, Axe, and no-JavaScript destinations | Passing 10/10; included in combined E2E 100/100 |
-| `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Combined E2E passing 100/100; dedicated a11y 11/11 |
-| `tests/e2e/platform-panels.spec.ts` | Focused PlatformShowcase state, keyboard, guarded desktop-hover, mobile, no-JavaScript, reduced-motion, and layout coverage | Mobile hover-guard check passing 1/1; included in combined E2E 100/100 |
+| `tests/e2e/site-header-mega-menu.spec.ts` | Focused browser coverage for link order, one-open panels, physical mouse travel through every trigger-to-panel corridor, focus/Escape behavior, route state, Contact CTA, mobile grouping, reduced motion, reflow, Axe, and no-JavaScript destinations | Passing 11/11; included in combined E2E 101/101 |
+| `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Combined E2E passing 101/101; dedicated a11y 11/11 |
+| `tests/e2e/platform-panels.spec.ts` | Focused PlatformShowcase state, keyboard, guarded desktop-hover, mobile, no-JavaScript, reduced-motion, and layout coverage | Mobile hover-guard check passing 1/1; included in combined E2E 101/101 |
 | `tests/e2e/viewport-sections.spec.ts` | Homepage usable-height, natural-overflow, containment, resize, text-scale, fallback, Platform-state, and anchor coverage | Passing 18/18 |
 | `tests/VIEWPORT_SECTIONS_TEST_MATRIX.md` | Risk-based acceptance and applicability contract for homepage viewport scenes | Active |
 | `tests/GLASS_NAVBAR_TEST_MATRIX.md` | Focused single-shell geometry, unboxed per-character label motion, active-route, fallback, responsive, and accessibility contract for the shared navbar | Active |

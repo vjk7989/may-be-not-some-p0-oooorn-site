@@ -196,14 +196,16 @@ export function SiteHeader() {
 
   return (
     <header className="site-header">
-      <div className="shell header-inner">
+      <div
+        className="shell header-inner"
+        onPointerLeave={() => setActiveMenu(null)}
+      >
         <BrandLogo eager />
         <nav
           className="desktop-navigation"
           aria-label="Primary navigation"
           onBlur={closeWhenFocusLeaves}
           onKeyDown={closeWithEscape}
-          onPointerLeave={() => setActiveMenu(null)}
         >
           {navigation.map((item) => {
             const key = navigationKeys[item.href];

@@ -83,6 +83,42 @@ async function expectNoHorizontalOverflow(page: Page) {
   expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.clientWidth + 1);
 }
 
+async function movePointerFromTriggerToDestination(
+  page: Page,
+  key: GroupKey,
+  destinationIndex: number,
+  steps = 1,
+) {
+  const trigger = topLink(page, key);
+  const disclosure = panel(page, key);
+
+  await trigger.hover();
+  await expect(disclosure).toBeVisible();
+
+  const triggerBounds = await trigger.boundingBox();
+  const destination = disclosure.getByRole("link").nth(destinationIndex);
+  const destinationBounds = await destination.boundingBox();
+  if (!triggerBounds || !destinationBounds) {
+    throw new Error(`Unable to resolve pointer path geometry for ${key}`);
+  }
+
+  await page.mouse.move(
+    triggerBounds.x + triggerBounds.width / 2,
+    triggerBounds.y + triggerBounds.height / 2,
+  );
+  await page.mouse.move(
+    destinationBounds.x + destinationBounds.width / 2,
+    destinationBounds.y + destinationBounds.height / 2,
+    { steps },
+  );
+
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  await expect(disclosure).toBeVisible();
+  await expect.poll(() => destination.evaluate((element) => element.matches(":hover"))).toBe(true);
+
+  return { destination, disclosure, trigger };
+}
+
 test.describe("Cloudflare-inspired shared navigation", () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -162,6 +198,34 @@ test.describe("Cloudflare-inspired shared navigation", () => {
     await expect(aboutPanel).toBeHidden();
     await aboutLink.hover();
     await expect(aboutPanel).toBeVisible();
+  });
+
+  test("preserves every panel across real trigger-to-submenu pointer paths", async ({ page }) => {
+    for (const key of Object.keys(groups) as GroupKey[]) {
+      const lastDestinationIndex = groups[key].length - 1;
+      const { destination: lastDestination, disclosure, trigger } =
+        await movePointerFromTriggerToDestination(page, key, lastDestinationIndex, 1);
+
+      const firstDestination = disclosure.getByRole("link").first();
+      const firstBounds = await firstDestination.boundingBox();
+      if (!firstBounds) {
+        throw new Error(`Unable to resolve submenu-link geometry for ${key}`);
+      }
+
+      await page.mouse.move(
+        firstBounds.x + firstBounds.width / 2,
+        firstBounds.y + firstBounds.height / 2,
+        { steps: 4 },
+      );
+      await expect.poll(() => firstDestination.evaluate((element) => element.matches(":hover"))).toBe(true);
+      await expect(lastDestination).not.toBeFocused();
+      await expect(trigger).toHaveAttribute("aria-expanded", "true");
+      await expect(disclosure).toBeVisible();
+
+      await page.mouse.move(2, 2, { steps: 1 });
+      await expect(trigger).toHaveAttribute("aria-expanded", "false");
+      await expect(disclosure).toBeHidden();
+    }
   });
 
   test("opens on focus and dismisses on Escape and focus exit", async ({ page }) => {
