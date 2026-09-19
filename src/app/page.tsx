@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -23,6 +24,11 @@ import {
   siteConfig,
   withBasePath,
 } from "@/lib/site-data";
+
+export const metadata: Metadata = {
+  title: { absolute: "Buckleson — Trust and Execution Infrastructure for AI" },
+  robots: { index: true, follow: true },
+};
 
 const outcomes = [
   {
@@ -81,11 +87,13 @@ export default function HomePage() {
             </div>
             <div className="boundary-core">
               <Image
-                src={withBasePath("/brand/buckleson-logo.jpg")}
-                width={322}
-                height={308}
+                src={withBasePath("/brand/buckleson-logo-display.webp")}
+                width={128}
+                height={122}
                 alt=""
                 className="boundary-logo"
+                decoding="async"
+                loading="eager"
               />
               <strong>Buckleson</strong>
               <p>Protection · Policy · Evidence</p>
@@ -140,12 +148,13 @@ export default function HomePage() {
         <div className="shell hyper-layout">
           <div className="hyper-mark-wrap">
             <Image
-              src={withBasePath("/brand/hyper-0x-logo.png")}
-              width={1254}
-              height={1254}
+              src={withBasePath("/brand/hyper-0x-logo-display.webp")}
+              width={640}
+              height={640}
               alt="Hyper-0x logo"
               className="hyper-mark"
               loading="lazy"
+              decoding="async"
             />
           </div>
           <div className="hyper-copy">

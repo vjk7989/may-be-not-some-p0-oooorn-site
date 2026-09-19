@@ -13,14 +13,14 @@ link labeling must not change.
 
 | Category | Check | Acceptance |
 | --- | --- | --- |
-| Happy path | Shared rendered marks | Every rendered image using `/brand/buckleson-logo.jpg`, including header and footer, has visibly rounded clipping at every corner. |
+| Happy path | Shared rendered marks | Every Buckleson display derivative, including header, footer, and homepage boundary uses visibly rounded clipping at every corner. |
 | Happy path | Favicon presentation | The metadata icon points to a local SVG presentation wrapper that clips the original JPEG with a rounded rectangle and preserves its aspect ratio. |
 | Asset integrity | Original bytes | `public/brand/buckleson-logo.jpg` remains SHA-256 `19C1C8EA72D395660AD59BFB05BBBD02F3473DE2C614D4740B3B2F67C1CD3481`, with intrinsic dimensions 322 × 308. |
-| Proportion | No distortion | Every rendered Buckleson image keeps the source aspect ratio within 1%; rounding must not force it into a stretched square or crop the brand mark. |
+| Proportion | No distortion | Every rendered Buckleson derivative keeps the approved 322 × 308 source aspect ratio within 1%; rounding must not force it into a stretched square or crop the brand mark. The preserved source itself is loaded independently to verify its intrinsic dimensions. |
 | Responsive | Mobile and desktop | At 320px and 1440px, all rendered Buckleson marks retain the same rounded mask and source proportions with no horizontal overflow. |
-| Coverage | Risk Landscape | The browser test discovers every rendered `/brand/buckleson-logo.jpg` instance rather than assuming only header/footer. If the Risk Landscape contains the asset now or later, it automatically receives the same assertions. |
+| Coverage | Shared components | The browser test discovers the shared `brand-logo-image` and homepage `boundary-logo` presentation hooks instead of coupling presentation to the immutable source URL. New Buckleson display placements must reuse one of those tested hooks or extend this matrix explicitly. |
 | Accessibility | Decorative image in named link | Shared lockup images remain `alt=""` because the surrounding home link is named “Buckleson home”; rounding does not add duplicate announcements or remove the link's accessible name. |
-| Metadata regression | Social/organization identity | Open Graph/Twitter/Organization metadata may continue to reference the byte-preserved original; their existing descriptions and logo identity remain unchanged. Only the browser icon requires a rounded wrapper. |
+| Metadata regression | Social/organization identity | Open Graph/Twitter/Organization metadata may continue to reference the byte-preserved original; their existing descriptions and logo identity remain unchanged. Browser-rendered marks may use smaller local derivatives and the browser icon keeps its rounded wrapper. |
 | Missing/malformed asset | Deterministic failure | A missing original, changed hash, wrong intrinsic size, missing/invalid SVG wrapper, absent rounded clip, or remote icon reference fails validation. |
 | Failure/recovery | Unsupported presentation | The normal image uses CSS `border-radius`, which degrades to the intact original if unavailable; the icon wrapper includes explicit SVG geometry and `preserveAspectRatio` rather than script-dependent masking. |
 | I/O | Local static assets only | The original and icon wrapper resolve locally with successful responses; no CDN, runtime fetch, data URL, or remote image is introduced. |

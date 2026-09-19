@@ -33,11 +33,13 @@ export default function ProductsPage() {
                 <h2>{product.name}</h2>
                 {product.slug === "hyper-0x" ? (
                   <Image
-                    src={withBasePath("/brand/hyper-0x-logo.png")}
-                    width={1254}
-                    height={1254}
+                    src={withBasePath("/brand/hyper-0x-logo-display.webp")}
+                    width={640}
+                    height={640}
                     alt="Hyper-0x logo"
                     className="product-logo"
+                    loading="lazy"
+                    decoding="async"
                   />
                 ) : null}
               </div>

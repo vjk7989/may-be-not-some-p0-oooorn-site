@@ -148,6 +148,7 @@ async function expectViewportContract(page: Page, context: string) {
     const section = homepageSections.nth(index);
     await expect(section, `${context}: ${expectedClass} is visible`).toBeVisible();
     await expect(section, `${context}: section order`).toHaveClass(new RegExp(`\\b${expectedClass}\\b`));
+    await section.scrollIntoViewIfNeeded();
     const geometry = await readGeometry(section);
 
     expect(
@@ -249,6 +250,7 @@ test("resize recovery preserves CSS geometry and the selected Platform product",
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await settleLayout(page);
+  await expectViewportContract(page, "initial desktop");
 
   const platform = page.locator("#platform");
   const hyperAbs = platform.getByRole("button", { name: /^Hyper-ABS/ });
@@ -365,6 +367,7 @@ test("blocked homepage images preserve scene structure and horizontal fit", asyn
   );
   expect(horizontalOverflow).toBeLessThanOrEqual(1);
   for (const section of await sections(page).all()) {
+    await section.scrollIntoViewIfNeeded();
     const geometry = await readGeometry(section);
     expect(geometry.height).toBeGreaterThan(0);
     expect(geometry.escapedMeaningfulElements).toEqual([]);

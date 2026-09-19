@@ -17,7 +17,7 @@ export function createPageMetadata({
   const canonicalUrl = `${siteConfig.siteUrl}${canonicalPath === "/" ? "" : canonicalPath}`;
   const logoUrl = `${siteConfig.siteUrl}/brand/buckleson-logo.jpg`;
   return {
-    title,
+    title: { absolute: `${title} — Buckleson` },
     description,
     alternates: { canonical: canonicalUrl },
     openGraph: {

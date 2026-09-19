@@ -70,7 +70,15 @@ export function PlatformShowcase() {
               data-product-panel
               data-active={isActive || undefined}
               key={product.slug}
-              onMouseEnter={() => setActiveSlug(product.slug)}
+              onMouseEnter={() => {
+                if (
+                  window.matchMedia(
+                    "(min-width: 48.0625rem) and (hover: hover) and (pointer: fine)",
+                  ).matches
+                ) {
+                  setActiveSlug(product.slug);
+                }
+              }}
             >
               <button
                 className="platform-panel-trigger"

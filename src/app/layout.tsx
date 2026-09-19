@@ -17,10 +17,6 @@ const onest = Onest({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
-  title: {
-    default: "Buckleson — Trust and Execution Infrastructure for AI",
-    template: "%s — Buckleson",
-  },
   description: siteConfig.description,
   alternates: { canonical: siteConfig.siteUrl },
   openGraph: {
@@ -45,7 +41,6 @@ export const metadata: Metadata = {
     images: [`${siteConfig.siteUrl}/brand/buckleson-logo.jpg`],
   },
   icons: { icon: withBasePath("/brand/buckleson-icon-v2.svg") },
-  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {

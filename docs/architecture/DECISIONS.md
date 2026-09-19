@@ -1,6 +1,6 @@
 # Architecture and Context Record
 
-Last updated: 2026-09-18
+Last updated: 2026-09-19
 
 ## Current project state
 
@@ -16,12 +16,14 @@ Last updated: 2026-09-18
   `vjk7989/may-be-not-some-p0-oooorn-site` on GitHub Pages.
 - Graft v0.18.0 is installed locally through the project's Node dependencies.
 - Graft configuration is present in `package.json`, `package-lock.json`, `opencode.json`, `.gitignore`, and `graft/`.
-- Production gates currently pass for design-system linting, ESLint,
-  TypeScript, unit and contract checks, static build, content, links, SEO,
-  Playwright end-to-end coverage, and the dedicated accessibility slice. The
-  homepage viewport-fit slice passes its focused 18/18 browser checks. The
-  latest three-run Lighthouse mobile median LCP is 2,856.9 ms against
-  the active 2.5 s budget; publication carries the explicit user-authorized
+- Production validation passes after the mega-menu change: the focused navbar
+  suite passes 10/10, the Platform mobile-hover regression passes 1/1, the
+  independent combined E2E suite passes 100/100, and the dedicated
+  accessibility slice passes 11/11. The aggregate `npm test` gate also passes,
+  including both deterministic validators, Vitest 4/4, and Playwright 100/100;
+  `git diff --check` passes. Lighthouse was not rerun for this change. Its
+  retained three-run mobile cohort has a median LCP of 2,829.375 ms against the
+  active 2.5 s budget; publication carries the explicit user-authorized
   exception recorded in D-033. See
   `tests/PRODUCTION_WEBSITE_TEST_MATRIX.md` for the acceptance contract; the
   wireframe validators remain historical evidence only.
@@ -936,6 +938,185 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 - **Affected paths:** `AGENTS.md`, `docs/architecture/DECISIONS.md`
 - **References:** `AGENTS.md`
 
+### D-040 — Isolate animated 404 recovery and defer non-critical rendering
+
+- **Date:** 2026-09-19
+- **Status:** Accepted
+- **Context:** The site needed a distinctive static-export 404 experience
+  without loading animation code on normal routes, plus a measured performance
+  pass that preserved eager identity and navigation content while restoring
+  below-fold rendering deferral.
+- **Decision:** Keep `src/app/not-found.tsx` server-rendered and make its first
+  frame, recovery copy, CTA, and decorative SVG complete without JavaScript.
+  A single route-local client island dynamically imports the exactly pinned
+  Anime.js 4.5.0 runtime, owns a deterministic scoped timeline, and reverts it
+  on cleanup. Reduced-motion users retain the finished static SVG. The 404
+  surface hides shared header, footer, and skip link only when its page marker
+  is present. Optional socials use a typed HTTPS-only `SocialLink` list that is
+  empty, and therefore renders no placeholder rail, until approved links are
+  supplied. Homepage non-hero scenes again use `content-visibility: auto` with
+  their existing intrinsic-size reservations; critical hero, header, font,
+  and identity content remain eager. Small WebP display derivatives serve
+  repeated logo artwork while the official source files remain byte-identical.
+  Root metadata supplies shared fields but not route title/indexability;
+  indexable routes own absolute titles and robots metadata so the 404 title and
+  noindex state cannot be overwritten during hydration.
+- **Rationale:** A server shell, static-first SVG, and one route-scoped dynamic
+  import provide the requested motion with no normal-route Anime.js transfer.
+  CSS rendering deferral and immutable display derivatives address measured
+  costs without observer infrastructure, broad dynamic imports, or replacing
+  the accessible navigation implementation.
+- **Consequences:** The 404 remains meaningful with scripts disabled and its
+  motion adds no semantic dependency. Normal routes must not preload or request
+  the Anime.js chunk. New public pages must explicitly own their title and
+  indexability through the shared metadata helper or route metadata. Brand
+  integrity tests continue to hash and dimension-check original artwork;
+  derivatives are presentation assets only. Social links remain absent until
+  real HTTPS destinations are supplied. Performance success still requires a
+  fresh three-run Lighthouse median meeting the active thresholds.
+- **Affected paths:** `src/app/not-found.tsx`,
+  `src/components/not-found-motion.tsx`, `src/app/globals.css`,
+  `src/app/layout.tsx`, `src/lib/metadata.ts`, `src/lib/site-data.ts`,
+  `src/lib/types.ts`, `src/components/brand-logo.tsx`,
+  `src/components/site-header.tsx`, `src/app/page.tsx`,
+  `src/app/products/page.tsx`, `public/brand/buckleson-logo-display.webp`,
+  `public/brand/hyper-0x-logo-display.webp`, `package.json`
+- **References:** `tests/ANIMATED_404_PERFORMANCE_TEST_MATRIX.md`,
+  `tests/Validate-404Performance.ps1`,
+  `tests/e2e/not-found-performance.spec.ts`, D-025, D-028, D-038
+
+### D-041 — Retain the existing rendering configuration after measured CSS experiment
+
+- **Date:** 2026-09-19
+- **Status:** Accepted
+- **Context:** The animated-404 performance pass required a fresh three-run
+  mobile Lighthouse cohort and a bounded experiment against the remaining LCP
+  failure while preserving the accessible Radix navigation and existing client
+  islands.
+- **Decision:** Retain the current configuration. Its LCP runs measured
+  2,960.977 ms, 2,802.940 ms, and 2,829.375 ms (median 2,829.375 ms), which
+  fails the 2,500 ms budget. CLS is 0 and passes; median TBT is 35 ms and
+  passes. Reject Next.js `experimental.inlineCss`: its post-experiment cohort
+  produced a 2,824.575 ms median LCP, only a 4.8 ms improvement, while FCP
+  regressed by 114.8 ms, median TBT increased to 64 ms, and transfer grew by
+  29%. The setting was reverted.
+- **Rationale:** The negligible LCP change does not justify the measured FCP,
+  blocking-time, and transfer regressions. No further small, evidence-backed
+  fix remains within the protected Radix-navigation and client-island
+  constraints.
+- **Consequences:** The 2.5 s LCP budget remains active performance debt and is
+  not recorded as passing. Any future attempt needs new evidence or authority
+  to change the protected interaction boundaries; CLS and TBT remain green.
+- **Affected paths:** `next.config.mjs`, `tests/lighthouserc.cjs`
+- **References:** D-033, D-038, D-040,
+  `tests/ANIMATED_404_PERFORMANCE_TEST_MATRIX.md`
+
+### D-042 — Add progressive mega-menu navigation without replacing route links
+
+- **Date:** 2026-09-19
+- **Status:** Accepted
+- **Context:** The shared glass header needed Cloudflare-inspired previews for
+  About, Products, Services, and Blog while preserving the existing top-level
+  destinations, ordered navigation, active-route semantics, static export, and
+  unboxed rolling-label treatment. Contact Us also needed a persistent,
+  high-visibility violet treatment without becoming an application route.
+- **Decision:** Keep each top-level item as a real Next.js link and add one
+  associated disclosure panel for About, Products, Services, and Blog. A small
+  typed presentation map in `site-header.tsx` supplies each panel's introduction
+  and destination links, reusing product, service, and article data where it
+  already exists. Desktop panels open on fine-pointer hover or keyboard focus,
+  keep at most one panel open, close when focus or the pointer leaves the
+  navigation, and return focus to the trigger on Escape. Closed panels remain
+  in the DOM but are `aria-hidden` and inert. Mobile keeps the existing Sheet
+  and exposes the same destinations as readable grouped links rather than
+  reproducing hover behavior. The no-JavaScript navigation also includes every
+  grouped destination with base-path-safe links. Contact Us remains an external
+  Cal.com link and uses a violet oval outline that inverts to a violet fill with
+  white text on hover, focus, and press. The panel is a single restrained,
+  ruled technical surface—not a grid of standalone promotional cards—and uses
+  the existing Buckleson tokens and transparency, contrast, and reduced-motion
+  fallbacks.
+- **Rationale:** Enhancing real links preserves direct navigation and
+  progressive enhancement while revealing useful route structure before a
+  click. Deriving content from existing typed data avoids a second product,
+  service, or article source. One local state boundary is the smallest complete
+  implementation; no menu framework, content system, new route, or dependency
+  is required.
+- **Consequences:** Route changes reset the open disclosure. Blog article paths
+  continue to select Blog through existing current-route logic. Any new grouped
+  destination must be keyboard reachable, base-path safe, present in the
+  mobile and no-JavaScript paths, and must not make hidden desktop content
+  discoverable to assistive technology. Hover is an enhancement only; every
+  destination remains available without it. Focus rings stay above panel and
+  CTA effects. The focused navbar suite passes 10/10, the independent combined
+  E2E suite passes 100/100, the dedicated accessibility slice passes 11/11,
+  and the aggregate `npm test` gate passes. Lighthouse was not rerun; the
+  retained LCP debt remains separate.
+- **Affected paths:** `src/components/site-header.tsx`,
+  `src/app/globals.css`, `tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md`,
+  `tests/e2e/site-header-mega-menu.spec.ts`
+- **References:** D-016, D-035, D-036, D-037,
+  `tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md`
+
+### D-043 — Guard Platform hover state by actual desktop pointer capability
+
+- **Date:** 2026-09-19
+- **Status:** Accepted
+- **Context:** Navbar browser validation exposed a pre-existing interaction
+  boundary in `PlatformShowcase`: Playwright can dispatch a mouse-enter event
+  at a mobile viewport even when the production device has no hover-capable
+  fine pointer. The unguarded handler could change the open mobile accordion
+  panel through a desktop-only interaction path.
+- **Decision:** Before applying panel activation from `onMouseEnter`, require
+  the same desktop-capable media conditions used by the visual interaction:
+  `min-width: 48.0625rem`, `hover: hover`, and `pointer: fine`. Button activation
+  remains the mobile, touch, and keyboard path; the initial and one-open state
+  contracts are unchanged.
+- **Rationale:** Matching the event handler to the interaction's real input and
+  breakpoint boundary removes accidental cross-mode state changes without a
+  second state model, listener, dependency, or user-agent detection.
+- **Consequences:** Synthetic or hybrid environments that do not report all
+  three desktop conditions cannot activate a product through mouse enter, but
+  retain the explicit button path. The focused mobile regression passes 1/1,
+  the independent combined E2E suite passes 100/100, and the aggregate
+  `npm test` gate passes.
+- **Affected paths:** `src/components/platform-showcase.tsx`,
+  `tests/e2e/platform-panels.spec.ts`
+- **References:** D-029, D-030,
+  `tests/PLATFORM_PANELS_TEST_MATRIX.md`
+
+### D-044 — Do not block the static release on development-tool audit findings
+
+- **Date:** 2026-09-19
+- **Status:** Accepted
+- **Context:** The current dependency audit reports 1 critical, 13 high,
+  19 moderate, and 4 low findings. Every critical and high root belongs to
+  development tooling and is absent from the generated static `out/` artifact.
+  The deployment workflow invokes PostCSS only against trusted, checked-in CSS;
+  it does not process untrusted user input.
+- **Decision:** Do not block this static release on the current audit report and
+  do not run `npm audit fix --force`. Track a later exact, independently tested
+  toolchain patch to `@playwright/test` 1.55.1, `postcss` 8.5.28,
+  `serve` 14.2.6, and `vitest` 3.2.7. Keep `@lhci/cli` unchanged for now:
+  version 0.15.1 pins a vulnerable Lighthouse dependency and has no safe
+  isolated patch under the project's Node 22.18 runtime.
+- **Rationale:** The critical and high findings are not shipped to visitors and
+  the only identified build-time PostCSS path operates on trusted repository
+  content. Forced audit remediation would permit breaking transitive upgrades
+  without addressing a runtime exposure in the deployed static site. Exact
+  patches can be validated as a separate bounded change.
+- **Consequences:** This is a documented release-risk acceptance, not a claim
+  that the dependency tree is vulnerability-free. CI and local development
+  tooling remain exposed to their applicable advisories until the exact patch
+  set is tested. Any future untrusted CSS input, runtime server deployment, or
+  production inclusion of these packages invalidates this assessment and
+  requires reevaluation. The retained Lighthouse LCP debt in D-041 remains
+  unchanged and separate from this dependency decision. No push or deployment
+  status is implied.
+- **Affected paths:** `package.json`, `package-lock.json`,
+  `.github/workflows/deploy-pages.yml`, `out/`
+- **References:** D-041
+
 ## Compact codebase map
 
 | Path | Purpose | Current status |
@@ -960,8 +1141,9 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `.codex/skills/` | Project-local Emil design-engineering and Apple design guidance used for the shared glass navbar | Active; documentation-only skills |
 | `docs/architecture/DECISIONS.md` | Durable architecture decisions and codebase map | This document |
 | `docs/design/RISK_LANDSCAPE_REFERENCE.md` | Source brief for the implemented funnel's composition, motion, responsive, and accessibility constraints | Implemented by `src/components/risk-landscape.tsx` |
-| `src/app/layout.tsx` | Root semantic shell, font, shared header/footer, metadata, and Organization/WebSite JSON-LD | Active |
+| `src/app/layout.tsx` | Root semantic shell, font, shared header/footer, shared metadata fields, and Organization/WebSite JSON-LD; route titles and indexability remain page-owned | Active |
 | `src/app/page.tsx` | Production homepage and section ordering | Active; statically exported |
+| `src/app/not-found.tsx` | Server-rendered custom 404 shell with static-first recovery content, CTA, diagram, noindex title state, and optional empty social boundary | Active; exported as `out/404.html` |
 | `src/app/products/page.tsx` | Hyper Tern, Hyper-ABS, and Hyper-0x product route with status boundaries | Active; statically exported |
 | `src/app/services/page.tsx` | AI Security, Secure Inference, and Custom AI/fine-tuning service route | Active; statically exported |
 | `src/app/about/page.tsx` | Mission, protection layers, responsibilities, capability status, and vision route | Active; statically exported |
@@ -969,26 +1151,32 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `src/app/blog/[slug]/page.tsx` | Six statically generated MDX article routes, article metadata, and structured data | Active |
 | `src/app/robots.ts` | Static crawl policy metadata route | Active |
 | `src/app/sitemap.ts` | Static sitemap for pages and articles | Active |
-| `src/app/globals.css` | Production tokens, responsive layouts, focus styles, funnel motion, staggered per-character electric-violet label motion, glass/preference fallbacks, and reduced-motion behavior | Active |
-| `src/components/site-header.tsx` | Shared ordered desktop, mobile Sheet, and no-JavaScript navigation within one glass shell, using one semantic label plus aria-hidden per-character visual layers | Active |
-| `src/components/platform-showcase.tsx` | One-open product disclosure with keyboard, pointer, mobile, reduced-motion, and no-JavaScript paths | Active |
+| `src/app/globals.css` | Production tokens, responsive layouts, restored below-fold content visibility, 404-only chrome/layout rules, mega-menu and Contact CTA presentation, focus styles, motion, and preference fallbacks | Active |
+| `src/components/site-header.tsx` | Shared ordered navigation with real top-level links, one-open desktop mega-menu previews, grouped mobile Sheet and no-JavaScript destinations, current-route semantics, and the external violet Contact CTA | Active; focused navbar 10/10 and combined E2E 100/100 passing |
+| `src/components/not-found-motion.tsx` | Route-local client island that dynamically imports Anime.js 4.5.0, scopes deterministic SVG motion, and cleans up without affecting normal routes | Active |
+| `src/components/platform-showcase.tsx` | One-open product disclosure with keyboard, pointer, mobile, reduced-motion, and no-JavaScript paths; hover activation is restricted to desktop-width fine pointers that report hover capability | Active; focused mobile guard 1/1 and combined E2E 100/100 passing |
 | `src/components/ui/viewport-section.tsx` | Semantic homepage scene boundary with stable test hook and CSS-driven usable-viewport minimum | Active; no client measurement or dependency |
 | `src/components/` | Shared assessment CTA, logo, status, risk funnel, header, and local UI primitives | Active |
-| `src/lib/types.ts` | Static public-content interfaces | Active |
-| `src/lib/site-data.ts` | Single source for configuration, navigation, product, service, risk, industry, and article metadata | Active |
+| `src/lib/types.ts` | Static public-content interfaces, including the HTTPS-only 404 social-link contract | Active |
+| `src/lib/site-data.ts` | Single source for configuration, navigation, product, service, risk, industry, article metadata, and currently empty 404 social links | Active |
 | `src/mdx-components.tsx` | MDX component boundary that prefixes internal anchors for repository-scoped Pages output | Active |
 | `src/lib/articles.ts` | Explicit local MDX loader registry | Active |
-| `src/lib/metadata.ts` | Shared page metadata and canonical URL construction | Active |
+| `src/lib/metadata.ts` | Shared absolute page-title metadata and canonical URL construction | Active |
 | `src/lib/json-ld.tsx` | Typed structured-data serialization and `<` escaping boundary | Active |
 | `src/content/articles/` | Six original local MDX articles | Active; no runtime fetch |
-| `public/brand/` | Byte-preserved official Buckleson and Hyper-0x source artwork | Active; hash validated |
+| `public/brand/` | Byte-preserved official Buckleson and Hyper-0x source artwork plus proportion-preserving WebP display derivatives | Active; originals remain hash validated |
 | `public/brand/buckleson-icon-v2.svg` | Versioned, self-contained favicon wrapper embedding the unchanged Buckleson JPEG under the rounded clip | Active; focused browser check and Pages validation passing |
 | `public/.nojekyll` | Prevents GitHub Pages/Jekyll from filtering Next static-export paths | Active; copied into `out/` |
 | `out/` | Generated deployable static export | Build output; not source |
 | `tests/PRODUCTION_WEBSITE_TEST_MATRIX.md` | Current risk-based production acceptance contract | Active |
 | `tests/Validate-ProductionWebsite.ps1` | Deterministic route, content, asset, link, metadata, SEO, and claim validator | Passing |
-| `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Combined E2E passing 47/47; dedicated a11y 11/11 |
-| `tests/e2e/platform-panels.spec.ts` | Focused PlatformShowcase state, keyboard, mobile, no-JavaScript, reduced-motion, and layout coverage | Passing as part of 47/47 combined E2E |
+| `tests/ANIMATED_404_PERFORMANCE_TEST_MATRIX.md` | Risk-based contract for 404 semantics, animation isolation, fallbacks, responsive behavior, derivatives, and rendering deferral | Active |
+| `tests/Validate-404Performance.ps1` | Deterministic static validator for 404 content, Anime.js isolation, metadata, social-link, brand-integrity, and performance-source contracts | Active |
+| `tests/e2e/not-found-performance.spec.ts` | Focused browser coverage for missing routes, static/reduced-motion behavior, responsive containment, chunk isolation, image loading, and accessibility | Active |
+| `tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md` | Risk-based contract for mega-menu structure, hover and keyboard state, mobile and no-JavaScript parity, Contact CTA treatment, responsive containment, preferences, and accessibility | Active |
+| `tests/e2e/site-header-mega-menu.spec.ts` | Focused browser coverage for link order, one-open panels, hover corridor, focus/Escape behavior, route state, Contact CTA, mobile grouping, reduced motion, reflow, Axe, and no-JavaScript destinations | Passing 10/10; included in combined E2E 100/100 |
+| `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Combined E2E passing 100/100; dedicated a11y 11/11 |
+| `tests/e2e/platform-panels.spec.ts` | Focused PlatformShowcase state, keyboard, guarded desktop-hover, mobile, no-JavaScript, reduced-motion, and layout coverage | Mobile hover-guard check passing 1/1; included in combined E2E 100/100 |
 | `tests/e2e/viewport-sections.spec.ts` | Homepage usable-height, natural-overflow, containment, resize, text-scale, fallback, Platform-state, and anchor coverage | Passing 18/18 |
 | `tests/VIEWPORT_SECTIONS_TEST_MATRIX.md` | Risk-based acceptance and applicability contract for homepage viewport scenes | Active |
 | `tests/GLASS_NAVBAR_TEST_MATRIX.md` | Focused single-shell geometry, unboxed per-character label motion, active-route, fallback, responsive, and accessibility contract for the shared navbar | Active |
@@ -996,7 +1184,7 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `tests/PLATFORM_PANELS_TEST_MATRIX.md` | Focused progressive-disclosure acceptance and applicability contract | Active; passing |
 | `tests/GITHUB_PAGES_TEST_MATRIX.md` | Repository identity, deployment, routing, asset, metadata, security, and live-provenance contract | Active |
 | `tests/Validate-GitHubPages.ps1` | Deterministic GitHub Pages workflow and exported-output validator | Passing locally |
-| `tests/lighthouserc.cjs` | Three-run mobile Lighthouse thresholds | LCP budget remains 2.5 s; latest median 2,856.9 ms remains explicit performance debt |
+| `tests/lighthouserc.cjs` | Three-run mobile Lighthouse thresholds | Retained cohort: LCP median 2,829.375 ms fails the active 2.5 s budget; CLS 0 and TBT median 35 ms pass |
 | `src/lib/site-data.test.ts` | Unit checks for local public-data contracts | Passing |
 | `vitest.config.ts` | Unit-test discovery and source alias configuration | Active |
 | `tests/MULTIPAGE_WIREFRAME_TEST_MATRIX.md` | Previous five-page wireframe acceptance contract | Historical |

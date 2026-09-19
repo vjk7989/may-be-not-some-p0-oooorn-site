@@ -5,104 +5,112 @@ argument-hint: "What will the next session be used for?"
 disable-model-invocation: true
 ---
 
-# Website refinement handoff
+# Navbar, animated 404, and performance handoff
 
 ## Next-session focus
 
-Continue with the user's section-by-section visual and copy refinement. Treat
-mobile LCP optimization as optional, separate work: preserve the approved
-viewport-fit contract and take fresh three-run measurements before claiming
-the 2.5-second budget passes.
+Release the validated Cloudflare-inspired navbar together with the earlier
+animated-404/performance work. The user has explicitly authorized commit, push,
+and deployment with the typed social-link list empty and its rail hidden.
 
-For every new task, follow the explicit graph-driven workflow recorded in
-D-039: query the code graph before broad file discovery, model the work as a
-compact dependency DAG, and run only ready, non-overlapping nodes in parallel.
+## Final known state
 
-## Current state
+- The expanded shared navbar is implemented in
+  [`src/components/site-header.tsx`](../src/components/site-header.tsx) and
+  [`src/app/globals.css`](../src/app/globals.css). About, Products, Services,
+  and Blog retain clickable top-level routes and expose focused destination
+  panels; Contact Us is the persistent violet outlined oval with inverted
+  interaction feedback. Desktop, mobile Sheet, keyboard, reduced-motion, and
+  no-JavaScript behavior are covered without introducing a new dependency.
+- The focused navbar suite in
+  [`tests/e2e/site-header-mega-menu.spec.ts`](../tests/e2e/site-header-mega-menu.spec.ts)
+  passes **10/10**. The affected Platform regression repair passes its focused
+  check **1/1**. Use
+  [`tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md`](../tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md)
+  for the acceptance contract instead of restating it here.
+- Independent broader validation is green: `test:e2e` exits 0 with **100/100**,
+  `test:a11y` exits 0 with **11/11**, and aggregate `npm test` exits 0 with the
+  production validator passing, the 404/performance validator passing, Vitest
+  **4/4**, and Playwright **100/100**. `git diff --check` also exits 0. All
+  release gates are green except the explicitly accepted Lighthouse LCP budget.
+- The animated static-export 404 and performance implementation is complete.
+  Use the current working-tree diff and the applicable decisions in
+  [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) as the source of
+  truth for implementation boundaries.
+- Focused end-to-end and accessibility coverage is green. Refer to
+  [`tests/ANIMATED_404_PERFORMANCE_TEST_MATRIX.md`](../tests/ANIMATED_404_PERFORMANCE_TEST_MATRIX.md),
+  [`tests/Validate-404Performance.ps1`](../tests/Validate-404Performance.ps1),
+  and [`tests/e2e/not-found-performance.spec.ts`](../tests/e2e/not-found-performance.spec.ts)
+  rather than duplicating the acceptance contract here.
+- The last independent non-performance regression for the 404/performance
+  slice was green: design lint,
+  ESLint, TypeScript, unit, content, links, SEO, animated-404 validation,
+  combined Playwright end-to-end coverage (90/90), the dedicated accessibility
+  slice (11/11), and the aggregate test gate all pass.
+- The GitHub Pages-mode build passes with
+  `SITE_URL=https://vjk7989.github.io/may-be-not-some-p0-oooorn-site` and
+  `NEXT_PUBLIC_BASE_PATH=/may-be-not-some-p0-oooorn-site`. The matching local
+  predeployment validation also passes with 0 failed assertions.
+- The release Graft refresh and validation are green; both `graft build` and
+  `graft check` pass.
+- The release Lighthouse measurement is **2,811.868375 ms LCP**, which fails
+  the active 2.5-second budget. Do not report the performance gate as green.
+- An `inlineCss` experiment was rejected and reverted: it did not improve the
+  measured LCP enough to meet the budget and was not retained as unproven
+  configuration complexity. D-041 records the experiment and retained
+  configuration.
+- `npm audit` reports **1 critical, 13 high, 19 moderate, and 4 low** findings.
+  D-044 classifies every critical/high root as development tooling that is
+  absent from the generated static `out/` artifact, so this accepted release
+  risk does not revoke push authorization. Do not run `npm audit fix --force`.
+  Defer exact, independently tested safe patches to `@playwright/test` 1.55.1,
+  `postcss` 8.5.28, `serve` 14.2.6, and `vitest` 3.2.7. Keep `@lhci/cli` at
+  0.15.1 for now: it pins the affected Lighthouse dependency and has no safe
+  isolated patch under the project's Node 22.18 runtime.
+- The typed social-link configuration remains empty because the user has not
+  supplied real destinations. Ship it in that validated state with the social
+  rail hidden; do not invent placeholders.
+- The current navbar and 404/performance work is uncommitted. The last commit is
+  `77fa892` (`docs: define graph-driven workflow`); nothing from these slices
+  has been pushed or deployed.
+- The user's explicit instruction to check and push supersedes the earlier
+  social-link hold. Commit, push, GitHub Pages deployment, and live verification
+  are now authorized, but have not yet completed as of this handoff update.
+- Confirm and stop any local preview server before handoff; do not assume the
+  current `out/` artifact is fresh until the final build is rerun.
 
-- The homepage's nine content sections now share the local
-  `ViewportSection` primitive. A scene fills the usable viewport when its
-  intrinsic content fits and grows naturally when it does not; fixed heights,
-  internal vertical scrollbars, clipping, scroll snapping, and client-side
-  measurement were intentionally excluded.
-- Homepage spacing, the hero boundary graphic, Risk Landscape, Platform,
-  Hyper-0x, Services, Industries, article previews, and assessment CTA were
-  compacted without removing copy or changing routes, claims, or product
-  behavior. Supporting pages and the footer retain normal document flow.
-- Header footprint variables, anchor clearance, 200% text reflow, no-JavaScript
-  navigation, reduced motion, blocked-image resilience, and static-export /
-  GitHub Pages behavior are covered by the implementation and focused suite.
-- D-038 in [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) is the
-  durable decision. The bounded contract is
-  [`tests/VIEWPORT_SECTIONS_TEST_MATRIX.md`](../tests/VIEWPORT_SECTIONS_TEST_MATRIX.md).
-  Use those artifacts and the source paths below instead of reconstructing the
-  implementation from this handoff.
-- D-039 in [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) is the
-  durable record for the per-task code-graph, Graft, dependency-DAG, YAGNI,
-  parallelization, and independent validation workflow. Do not duplicate that
-  policy in session documents.
+## Remaining sequence
 
-## Implementation map
-
-- `src/components/ui/viewport-section.tsx` — semantic local scene primitive
-  and stable `data-viewport-section` hook.
-- `src/app/page.tsx`, `src/components/risk-landscape.tsx`, and
-  `src/components/assessment-cta.tsx` — the nine homepage scene boundaries.
-- `src/app/globals.css` — usable-height calculation, fluid scene spacing,
-  responsive compaction, anchor clearance, and content-height fallbacks.
-- `src/components/site-header.tsx` — deterministic no-JavaScript header
-  footprint used by the scene-sizing contract.
-- `tests/e2e/viewport-sections.spec.ts` — focused geometry, interaction,
-  resilience, reflow, and accessibility-boundary coverage.
-
-## Validation record
-
-- Independent focused viewport coverage passed 18/18.
-- Design lint, ESLint, TypeScript, build, content, links, SEO, and GitHub Pages
-  validations passed. Unit tests passed 4/4, full E2E passed 66/66, dedicated
-  Axe coverage passed 11/11, and the aggregate suite passed on unchanged retry.
-  Three initial browser timeouts were independently classified as transient
-  environment/resource flakes.
-- Lighthouse remains deliberately non-green: Performance scores were 96, 95,
-  and 96, but LCP measured 2821.5, 2862.5, and 2856.9 ms. The median is
-  **2856.9 ms**, above the 2500 ms gate. CLS was 0.000; TBT was 39.7–73.7 ms;
-  Accessibility and SEO were 100 in all three runs. Do not report the
-  performance gate as passing.
-- `graft build` and `graft check` are green after the material source changes.
-- The graph-workflow follow-up changes documentation and repository guidance
-  only. Validate them with deterministic content and ordering checks rather
-  than inventing application tests; the deployed application regression record
-  below remains unchanged.
-- Source commit `72651871912d85551aa4ec4a5b47fb9ffd82dec5` (`7265187`)
-  was pushed to `origin/main`. GitHub Actions run
-  [35399868659](https://github.com/vjk7989/may-be-not-some-p0-oooorn-site/actions/runs/35399868659)
-  completed successfully for both build and deploy.
-- The live [GitHub Pages site](https://vjk7989.github.io/may-be-not-some-p0-oooorn-site/)
-  passed smoke checks for the root page, About page, an article route, favicon,
-  robots file, sitemap, and a repository-scoped static asset.
-- The successful workflow emitted non-blocking warnings about Node 20 action
-  deprecation and a future `ubuntu-latest` runner migration. These are future
-  maintenance items, not deployment failures.
-- Documentation commit `667acee` records the deployment provenance on
-  `origin/main`; the deployed viewport implementation remains source commit
-  `7265187`.
+1. Visually verify the desktop panels, mobile grouped navigation, Contact Us
+   interaction, focus behavior, and responsive overflow against the focused
+   matrix.
+2. Commit the validated release, push `main`, monitor GitHub Pages, and verify
+   both the live navbar and deployed 404. Keep the Lighthouse LCP failure and
+   accepted development-tool audit risk explicit; leave the empty social rail
+   hidden.
 
 ## Suggested skills
 
-- `impeccable` — use `adapt` for responsive section refinements, `polish` for
-  visual rhythm and hierarchy, and `optimize` for a separately scoped LCP pass.
-- `emil-design-eng` — use when refining interaction timing or micro-layout
-  details without adding runtime dependencies.
-- `apple-design` — use only if a later request changes the glass material or
-  motion language; keep reduced-motion and static states complete.
+- `understand-anything:understand-diff` — inspect the combined working-tree
+  boundaries and regression risk before commit and deployment.
+- `impeccable` — visually audit the navbar panels, Contact Us treatment, and
+  404 while preserving the established Buckleson design system.
+- `emil-design-eng` — review interaction timing, focus transitions, and the
+  retained 404 animation cleanup if another polish pass is requested.
 
-## Guardrails for follow-up work
+## Guardrails
 
-- Keep homepage scene sizing CSS-only and based on `min-block-size`; do not add
-  JavaScript measurement or force dense content into one viewport.
-- Preserve the nine-section order, Platform states, semantic headings, visible
-  focus, 44px touch targets, no-JavaScript content, and reduced-motion state.
-- Re-run the focused viewport suite after every structural section change.
-  Re-run broader E2E, Axe, static export, and GitHub Pages checks before
-  delivery. Handle any genuine failure through the repository's independent
-  failure-analysis gate.
+- Follow the graph-first dependency-DAG and independent test-role workflow in
+  `AGENTS.md`.
+- Preserve real HTTP 404 behavior, `out/404.html`, `noindex`, base-path-safe
+  links and assets, keyboard operation, no-JavaScript completeness, reduced
+  motion, source-logo integrity, and normal-route bundle isolation.
+- Preserve clickable navbar parent routes, a single open desktop panel,
+  closed-panel removal from the accessibility tree, accurate `aria-current`,
+  mobile touch targets, Escape/focus-exit behavior, and the existing Platform
+  interaction contract.
+- Keep Anime.js route-local. Do not globally import or preload it, add observer
+  infrastructure, replace the accessible navigation, or defer critical
+  above-the-fold content.
+- Do not reinstate `inlineCss` without new evidence and a separately justified
+  decision.

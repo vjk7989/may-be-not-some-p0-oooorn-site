@@ -5,6 +5,7 @@ import type {
   RiskItem,
   Service,
   SiteConfig,
+  SocialLink,
 } from "@/lib/types";
 
 const configuredSiteUrl = process.env.SITE_URL?.replace(/\/$/, "");
@@ -34,6 +35,8 @@ export const navigation: NavItem[] = [
   { label: "Services", href: "/services/" },
   { label: "Blog", href: "/blog/" },
 ];
+
+export const socialLinks: SocialLink[] = [];
 
 export const products: Product[] = [
   {

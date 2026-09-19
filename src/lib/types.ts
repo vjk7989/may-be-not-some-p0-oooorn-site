@@ -16,6 +16,11 @@ export interface NavItem {
   href: string;
 }
 
+export interface SocialLink {
+  label: string;
+  href: `https://${string}`;
+}
+
 export interface Product {
   name: string;
   slug: string;

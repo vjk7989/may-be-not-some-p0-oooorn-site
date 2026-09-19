@@ -452,13 +452,13 @@ test("glass navbar CSS includes preference and capability fallbacks", async () =
   const css = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf8");
 
   expect(css).toMatch(
-    /@supports\s+not\s*\([^{}]*(?:backdrop-filter|-webkit-backdrop-filter)[^{}]*\)\s*\{[\s\S]*?\.header-inner\s*\{[\s\S]*?(?:backdrop-filter\s*:\s*none|background\s*:\s*[^;]+(?:0\.9|95%|96%|97%|98%|99%|100%))/i,
+    /@supports\s+not\s*\([^{}]*(?:backdrop-filter|-webkit-backdrop-filter)[^{}]*\)\s*\{[\s\S]*?\.header-inner\s*(?:,\s*\.mega-menu-panel\s*)?\{[\s\S]*?(?:backdrop-filter\s*:\s*none|background\s*:\s*[^;]+(?:0\.9|95%|96%|97%|98%|99%|100%))/i,
   );
   expect(css).toMatch(
-    /@media\s*\(prefers-reduced-transparency:\s*reduce\)\s*\{[\s\S]*?\.header-inner\s*\{[\s\S]*?backdrop-filter\s*:\s*none/i,
+    /@media\s*\(prefers-reduced-transparency:\s*reduce\)\s*\{[\s\S]*?\.header-inner\s*(?:,\s*\.mega-menu-panel\s*)?\{[\s\S]*?backdrop-filter\s*:\s*none/i,
   );
   expect(css).toMatch(
-    /@media\s*\(prefers-contrast:\s*more\)\s*\{[\s\S]*?\.header-inner\s*\{[\s\S]*?(?:border|outline)\s*:/i,
+    /@media\s*\(prefers-contrast:\s*more\)\s*\{[\s\S]*?\.header-inner\s*(?:,\s*\.mega-menu-panel\s*)?\{[\s\S]*?(?:border|outline)\s*:/i,
   );
   expect(css).toMatch(
     /@media\s*\(hover:\s*hover\)\s+and\s+\(pointer:\s*fine\)\s*\{[\s\S]*?\.nav-cell:hover/i,
@@ -506,7 +506,15 @@ test("Buckleson logo rounding preserves original bytes and rendered proportions"
     await page.setViewportSize(viewport);
     await page.goto("/");
 
-    const logos = page.locator('img[src*="/brand/buckleson-logo.jpg"]');
+    const sourceDimensions = await page.evaluate(async () => {
+      const source = new Image();
+      source.src = new URL("brand/buckleson-logo.jpg", window.location.href).href;
+      await source.decode();
+      return { width: source.naturalWidth, height: source.naturalHeight };
+    });
+    expect(sourceDimensions).toEqual({ width: 322, height: 308 });
+
+    const logos = page.locator("img.brand-logo-image, img.boundary-logo");
     expect(await logos.count(), "expected shared header and footer logo instances").toBeGreaterThanOrEqual(2);
 
     for (let index = 0; index < await logos.count(); index += 1) {
@@ -533,8 +541,12 @@ test("Buckleson logo rounding preserves original bytes and rendered proportions"
         };
       });
 
-      expect(presentation.naturalWidth).toBe(322);
-      expect(presentation.naturalHeight).toBe(308);
+      expect(presentation.naturalWidth).toBeGreaterThan(0);
+      expect(presentation.naturalHeight).toBeGreaterThan(0);
+      expect(
+        Math.abs(presentation.naturalWidth / presentation.naturalHeight - 322 / 308),
+        `optimized logo ${index} changed the source proportions`,
+      ).toBeLessThanOrEqual(0.01);
       expect(
         Math.abs(presentation.renderedRatio - 322 / 308),
         `logo ${index} is distorted at ${viewport.width}px`,
@@ -544,7 +556,7 @@ test("Buckleson logo rounding preserves original bytes and rendered proportions"
     }
 
     const linkedLockups = page.locator(
-      '.brand-lockup img[src*="/brand/buckleson-logo.jpg"]',
+      ".brand-lockup img.brand-logo-image",
     );
     expect(await linkedLockups.count()).toBeGreaterThanOrEqual(2);
     for (let index = 0; index < await linkedLockups.count(); index += 1) {
@@ -644,13 +656,17 @@ test("mobile header preserves navigation order and active route semantics", asyn
       name: "Mobile navigation",
       exact: true,
     });
-    await expectHeaderNavigation(navigation);
-    await expect(navigation.locator('[aria-current="page"]')).toHaveCount(1);
-    await expect(navigation.getByRole("link", { name: "About", exact: true })).toHaveAttribute(
-      "aria-current",
-      "page",
+    const topLevelLinks = navigation.locator(":scope > a[data-nav-link]");
+    await expectHeaderLinks(topLevelLinks);
+    await expect(
+      navigation.locator(':scope > a[data-nav-link][aria-current="page"]'),
+    ).toHaveCount(1);
+    const currentTopLevelLink = navigation.locator(
+      ':scope > a[data-nav-link="about"]',
     );
-    const cells = navigation.locator("a.nav-cell");
+    await expect(currentTopLevelLink).toHaveAccessibleName("About");
+    await expect(currentTopLevelLink).toHaveAttribute("aria-current", "page");
+    const cells = navigation.locator(":scope > a.nav-cell[data-nav-link]");
     await expect(cells).toHaveCount(headerNavigation.length);
     const navigationBounds = await navigation.boundingBox();
     expect(navigationBounds).not.toBeNull();
@@ -670,9 +686,14 @@ test("mobile header preserves navigation order and active route semantics", asyn
         };
       });
       expect(presentation.background).toBe("rgba(0, 0, 0, 0)");
-      expect(
-        presentation.borderStyle === "none" || presentation.borderWidth === 0,
-      ).toBeTruthy();
+      if (headerNavigation[index].label === "Contact Us") {
+        expect(presentation.borderStyle).not.toBe("none");
+        expect(presentation.borderWidth).toBeGreaterThanOrEqual(1);
+      } else {
+        expect(
+          presentation.borderStyle === "none" || presentation.borderWidth === 0,
+        ).toBeTruthy();
+      }
       expect(presentation.boxShadow).toBe("none");
     }
 
@@ -857,7 +878,7 @@ test.describe("navigation without JavaScript", () => {
       );
       await expect(navigation).toHaveCount(1);
       await expect(navigation).toBeVisible();
-      const links = navigation.locator("a");
+      const links = navigation.locator(":scope > .no-script-primary > a");
       await expectHeaderLinks(links);
 
       for (let index = 0; index < headerNavigation.length; index += 1) {
