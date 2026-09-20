@@ -1180,6 +1180,64 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 - **References:** D-042, D-045,
   `tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md`
 
+### D-047 — Isolate the homepage execution sphere as a static-first motion island
+
+- **Date:** 2026-09-20
+- **Status:** Accepted
+- **Context:** The homepage hero's former right-side execution-boundary card
+  did not communicate the requested dimensional request flow. The approved
+  Probe 2 direction requires Data, Identity, Tools, and Actions to pass through
+  Buckleson's execution boundary and resolve into Protected context,
+  Controlled action, and Execution evidence, while keeping the existing hero
+  copy, calls to action, routes, and viewport-scene behavior unchanged.
+- **Decision:** Replace only the homepage hero visual with a focused
+  `HeroExecutionSphere` client component. Render the complete inputs, outcomes,
+  three selectable explanations, inline SVG paths, layered ellipse rings,
+  central aperture, and Buckleson identity in the initial HTML. Initialize
+  Protect data deterministically and keep exactly one selection active through
+  pointer hover, keyboard focus, or button activation. Load only the required
+  Anime.js 4.5.0 modules asynchronously inside the component only after fonts
+  are ready and the browser grants idle time, create fixed-rate scoped ring,
+  path, particle, and aperture motion, and cancel the idle request plus revert
+  the scope on unmount. Keep `engine.pauseOnDocumentHidden` enabled. Supporting
+  routes must not import the hero component or its animation code.
+- **Rationale:** A single route-local island is the smallest implementation
+  that supplies persistent interaction and deterministic motion without
+  converting the surrounding server-rendered homepage into client code or
+  adding another animation dependency. Inline SVG preserves a meaningful
+  first frame and avoids WebGL, canvas, cursor tracking, random values, remote
+  assets, and layout-measurement code.
+- **Consequences:** The official logo display derivative is reserved with
+  explicit dimensions and remains stationary above the independently rotating
+  field; the unchanged source artwork remains the brand-integrity authority.
+  Violet identifies active request paths and selection state, while verified
+  green is limited to completed outcome nodes. The decorative SVG is removed
+  from the accessibility tree, and equivalent inputs, outcomes, explanations,
+  and real `aria-pressed` buttons remain visible in semantic HTML. Reduced
+  motion skips Anime.js initialization and preserves the complete static
+  composition; no JavaScript still yields all meaning in the server-rendered
+  first frame. Motion is limited to transforms, opacity, and SVG stroke
+  properties so it cannot change hero geometry or create layout shift. Mobile
+  layouts stack the visual below the copy and expose full-width, touch-sized
+  controls. Public copy remains qualified and does not promise safety,
+  correctness, privacy, confidential computing, or universal risk coverage.
+  Idle initialization restored the three-run Lighthouse cohort to its prior
+  performance baseline (0.96 performance, median LCP 2,825.15 ms, median TBT
+  32.5 ms, CLS 0). The 2.5 s LCP threshold remains pre-existing debt and is
+  not reported as passing.
+- **Test hooks:** `data-hero-execution-sphere`, `data-active-stage`,
+  `data-hero-control`, `data-hero-flow`, `data-hero-outcome`,
+  `data-sphere-ring`, `data-sphere-aperture`, `data-sphere-logo`,
+  `data-request-path`, and `data-request-particle` are stable verification
+  seams, not a public consumer API.
+- **Affected paths:** `src/app/page.tsx`, `src/app/globals.css`,
+  `src/components/hero-execution-sphere.tsx`,
+  `tests/Validate-404Performance.ps1`,
+  `tests/HERO_EXECUTION_SPHERE_TEST_MATRIX.md`,
+  `tests/e2e/hero-execution-sphere.spec.ts`
+- **References:** D-011, D-020, D-032, D-041,
+  `tests/HERO_EXECUTION_SPHERE_TEST_MATRIX.md`
+
 ## Compact codebase map
 
 | Path | Purpose | Current status |
@@ -1205,7 +1263,7 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `docs/architecture/DECISIONS.md` | Durable architecture decisions and codebase map | This document |
 | `docs/design/RISK_LANDSCAPE_REFERENCE.md` | Source brief for the implemented funnel's composition, motion, responsive, and accessibility constraints | Implemented by `src/components/risk-landscape.tsx` |
 | `src/app/layout.tsx` | Root semantic shell, font, shared header/footer, shared metadata fields, and Organization/WebSite JSON-LD; route titles and indexability remain page-owned | Active |
-| `src/app/page.tsx` | Production homepage and section ordering | Active; statically exported |
+| `src/app/page.tsx` | Production homepage and section ordering, including the server-rendered hero shell that mounts the route-local execution sphere | Active; statically exported |
 | `src/app/not-found.tsx` | Server-rendered custom 404 shell with static-first recovery content, CTA, diagram, noindex title state, and optional empty social boundary | Active; exported as `out/404.html` |
 | `src/app/products/page.tsx` | Hyper Tern, Hyper-ABS, and Hyper-0x product route with status boundaries | Active; statically exported |
 | `src/app/services/page.tsx` | AI Security, Secure Inference, and Custom AI/fine-tuning service route | Active; statically exported |
@@ -1214,9 +1272,10 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `src/app/blog/[slug]/page.tsx` | Six statically generated MDX article routes, article metadata, and structured data | Active |
 | `src/app/robots.ts` | Static crawl policy metadata route | Active |
 | `src/app/sitemap.ts` | Static sitemap for pages and articles | Active |
-| `src/app/globals.css` | Production tokens, responsive layouts, restored below-fold content visibility, 404-only chrome/layout rules, true-center header grid, rounded soft-violet mega-menu destination states, Contact CTA presentation, focus styles, motion, and preference fallbacks | Active |
+| `src/app/globals.css` | Production tokens, responsive layouts, restored below-fold content visibility, execution-sphere geometry and state styling, 404-only chrome/layout rules, true-center header grid, rounded soft-violet mega-menu destination states, Contact CTA presentation, focus styles, motion, and preference fallbacks | Active |
 | `src/components/site-header.tsx` | Shared ordered navigation with a three-column header grid, true-centered Home-through-Blog links, real top-level destinations, one-open desktop mega-menu previews, a header-wide pointer corridor, grouped mobile Sheet and no-JavaScript destinations, current-route semantics, and a separate external violet Contact CTA | Active; focused navbar 13/13 and combined E2E 103/103 passing |
 | `src/components/not-found-motion.tsx` | Route-local client island that dynamically imports Anime.js 4.5.0, scopes deterministic SVG motion, and cleans up without affecting normal routes | Active |
+| `src/components/hero-execution-sphere.tsx` | Homepage-only client island with a static-first SVG request flow, persistent three-stage controls, stationary Buckleson identity, post-font idle granular Anime.js imports, reduced-motion fallback, hidden-document pausing, cancellable idle initialization, and scoped cleanup | Active; focused acceptance 18/18 and combined E2E 121/121 passing |
 | `src/components/platform-showcase.tsx` | One-open product disclosure with keyboard, pointer, mobile, reduced-motion, and no-JavaScript paths; hover activation is restricted to desktop-width fine pointers that report hover capability | Active; focused mobile guard 1/1 and combined E2E 101/101 passing |
 | `src/components/ui/viewport-section.tsx` | Semantic homepage scene boundary with stable test hook and CSS-driven usable-viewport minimum | Active; no client measurement or dependency |
 | `src/components/` | Shared assessment CTA, logo, status, risk funnel, header, and local UI primitives | Active |
@@ -1234,11 +1293,13 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `tests/PRODUCTION_WEBSITE_TEST_MATRIX.md` | Current risk-based production acceptance contract | Active |
 | `tests/Validate-ProductionWebsite.ps1` | Deterministic route, content, asset, link, metadata, SEO, and claim validator | Passing |
 | `tests/ANIMATED_404_PERFORMANCE_TEST_MATRIX.md` | Risk-based contract for 404 semantics, animation isolation, fallbacks, responsive behavior, derivatives, and rendering deferral | Active |
-| `tests/Validate-404Performance.ps1` | Deterministic static validator for 404 content, Anime.js isolation, metadata, social-link, brand-integrity, and performance-source contracts | Active |
+| `tests/Validate-404Performance.ps1` | Deterministic static validator for 404 content, exact route-local Anime.js import allowlists, metadata, social-link, brand-integrity, and performance-source contracts | Passing |
 | `tests/e2e/not-found-performance.spec.ts` | Focused browser coverage for missing routes, static/reduced-motion behavior, responsive containment, chunk isolation, image loading, and accessibility | Active |
+| `tests/HERO_EXECUTION_SPHERE_TEST_MATRIX.md` | Risk-based contract for hero content and claims, deterministic selection, sphere motion, fixed brand identity, lifecycle cleanup, route isolation, fallbacks, responsive containment, accessibility, and performance | Active |
+| `tests/e2e/hero-execution-sphere.spec.ts` | Focused browser coverage for the homepage execution sphere's semantic content, state transitions, touch, motion, fixed logo, reduced-motion/no-JavaScript behavior, route isolation, geometry, and Axe checks | Passing 18/18; included in combined E2E 121/121 |
 | `tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md` | Risk-based contract for mega-menu structure, hover and keyboard state, mobile and no-JavaScript parity, Contact CTA treatment, responsive containment, preferences, and accessibility | Active |
 | `tests/e2e/site-header-mega-menu.spec.ts` | Focused browser coverage for true-centered desktop geometry, link order, rounded destination states, one-open panels, physical mouse travel through every trigger-to-panel corridor, focus/Escape behavior, route state, separate Contact CTA, mobile grouping, reduced motion, reflow, Axe, and no-JavaScript destinations | Passing 13/13; included in combined E2E 103/103 |
-| `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction and alignment, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Production specification passing 35/35; combined E2E passing 103/103; dedicated a11y 11/11 |
+| `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction and alignment, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Combined E2E passing 121/121; dedicated a11y 11/11 |
 | `tests/e2e/platform-panels.spec.ts` | Focused PlatformShowcase state, keyboard, guarded desktop-hover, mobile, no-JavaScript, reduced-motion, and layout coverage | Mobile hover-guard check passing 1/1; included in combined E2E 101/101 |
 | `tests/e2e/viewport-sections.spec.ts` | Homepage usable-height, natural-overflow, containment, resize, text-scale, fallback, Platform-state, and anchor coverage | Passing 18/18 |
 | `tests/VIEWPORT_SECTIONS_TEST_MATRIX.md` | Risk-based acceptance and applicability contract for homepage viewport scenes | Active |
@@ -1247,7 +1308,7 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `tests/PLATFORM_PANELS_TEST_MATRIX.md` | Focused progressive-disclosure acceptance and applicability contract | Active; passing |
 | `tests/GITHUB_PAGES_TEST_MATRIX.md` | Repository identity, deployment, routing, asset, metadata, security, and live-provenance contract | Active |
 | `tests/Validate-GitHubPages.ps1` | Deterministic GitHub Pages workflow and exported-output validator | Passing locally |
-| `tests/lighthouserc.cjs` | Three-run mobile Lighthouse thresholds | Retained cohort: LCP median 2,829.375 ms fails the active 2.5 s budget; CLS 0 and TBT median 35 ms pass |
+| `tests/lighthouserc.cjs` | Three-run mobile Lighthouse thresholds | Latest cohort: Performance 0.96, Accessibility 1.00, Best Practices 0.96, SEO 1.00, CLS 0, and median TBT 32.5 ms pass; median LCP 2,825.15 ms remains above the active 2.5 s budget |
 | `src/lib/site-data.test.ts` | Unit checks for local public-data contracts | Passing |
 | `vitest.config.ts` | Unit-test discovery and source alias configuration | Active |
 | `tests/MULTIPAGE_WIREFRAME_TEST_MATRIX.md` | Previous five-page wireframe acceptance contract | Historical |

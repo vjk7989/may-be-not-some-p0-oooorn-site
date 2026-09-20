@@ -4,13 +4,13 @@ import type { Metadata } from "next";
 import {
   ArrowRight,
   ArrowUpRight,
-  DatabaseZap,
   FileCheck2,
   Fingerprint,
   LockKeyhole,
 } from "lucide-react";
 
 import { AssessmentCta } from "@/components/assessment-cta";
+import { HeroExecutionSphere } from "@/components/hero-execution-sphere";
 import { PlatformShowcase } from "@/components/platform-showcase";
 import { RiskLandscape } from "@/components/risk-landscape";
 import { SectionHeading } from "@/components/section-heading";
@@ -80,29 +80,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="hero-boundary" aria-label="Buckleson platform overview">
-            <div className="boundary-label">Execution boundary</div>
-            <div className="boundary-inputs" aria-hidden="true">
-              <span>Data</span><span>Models</span><span>Tools</span><span>Actions</span>
-            </div>
-            <div className="boundary-core">
-              <Image
-                src={withBasePath("/brand/buckleson-logo-display.webp")}
-                width={128}
-                height={122}
-                alt=""
-                className="boundary-logo"
-                decoding="async"
-                loading="eager"
-              />
-              <strong>Buckleson</strong>
-              <p>Protection · Policy · Evidence</p>
-            </div>
-            <div className="boundary-output">
-              <DatabaseZap aria-hidden="true" className="size-5" />
-              <span>Controlled execution</span>
-            </div>
-          </div>
+          <HeroExecutionSphere />
         </div>
       </ViewportSection>
 

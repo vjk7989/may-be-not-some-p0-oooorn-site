@@ -101,20 +101,33 @@ foreach ($sourceFile in (Get-SourceFiles $resolvedSource)) {
         $animeImportRecords.Add([pscustomobject]@{ Path = $sourceFile.FullName; Kind = 'dynamic'; Value = $match.Value })
     }
 }
-if ($animeImportRecords.Count -ne 1) {
-    Add-Failure "Expected exactly one route-local Anime.js import expression; found $($animeImportRecords.Count)"
-} else {
-    $animeImport = $animeImportRecords[0]
-    $componentName = [IO.Path]::GetFileNameWithoutExtension([string]$animeImport.Path)
-    if ($componentName -notmatch '^not-found-motion$') {
-        Add-Failure "Anime.js may be imported only by the dedicated not-found-motion component: $($animeImport.Path)"
+$allowedAnimeImports = @{
+    'not-found-motion' = @('animejs')
+    'hero-execution-sphere' = @('animejs/animation', 'animejs/scope', 'animejs/engine')
+}
+$animeImportsByComponent = $animeImportRecords | Group-Object {
+    [IO.Path]::GetFileNameWithoutExtension([string]$_.Path)
+}
+foreach ($componentGroup in @($animeImportsByComponent)) {
+    if (-not $allowedAnimeImports.ContainsKey($componentGroup.Name)) {
+        Add-Failure "Anime.js import found outside an approved route-local motion component: $($componentGroup.Group[0].Path)"
+        continue
+    }
+    $actualSpecifiers = @($componentGroup.Group | ForEach-Object {
+        if ($_.Value -match "['\x22](animejs(?:/[^'\x22]+)?)['\x22]") { $Matches[1] }
+    } | Sort-Object -Unique)
+    $expectedSpecifiers = @($allowedAnimeImports[$componentGroup.Name] | Sort-Object)
+    if (($actualSpecifiers -join '|') -ne ($expectedSpecifiers -join '|')) {
+        Add-Failure "Unexpected Anime.js imports in $($componentGroup.Name): $($actualSpecifiers -join ', ')"
+    }
+}
+foreach ($expectedComponent in $allowedAnimeImports.Keys) {
+    if (-not ($animeImportsByComponent.Name -contains $expectedComponent)) {
+        Add-Failure "Missing approved route-local Anime.js imports in $expectedComponent"
     }
 }
 foreach ($staticImport in @($animeImportRecords | Where-Object { $_.Kind -eq 'static' })) {
-    $componentName = [IO.Path]::GetFileNameWithoutExtension([string]$staticImport.Path)
-    if ($componentName -notmatch '^not-found-motion$') {
-        Add-Failure "Top-level Anime.js import outside the 404 motion component breaks route isolation: $($staticImport.Path)"
-    }
+    Add-Failure "Top-level Anime.js imports break route isolation: $($staticImport.Path)"
 }
 Assert-Matches $allSource 'pauseOnDocumentHidden\s*=\s*true|pauseOnDocumentHidden\s*:\s*true' '404 motion must explicitly pause when the document is hidden'
 Assert-Matches $allSource '\b(?:scope|timeline)\.revert\s*\(' '404 motion must revert its Anime.js scope or timeline during cleanup'
