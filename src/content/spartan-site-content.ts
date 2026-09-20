@@ -67,6 +67,18 @@ export interface SpartanSiteContent {
 
 const media = [
   {
+    id: "signal-horizon",
+    alt: "A rain-worn retro monitor glowing on a mossy mountain ridge",
+    width: 1672,
+    height: 936,
+    derivatives: [
+      { src: "/media/spartan-signal-horizon-960.avif", width: 960, height: 538, format: "avif" },
+      { src: "/media/spartan-signal-horizon-1672.avif", width: 1672, height: 936, format: "avif" },
+      { src: "/media/spartan-signal-horizon-960.webp", width: 960, height: 538, format: "webp" },
+      { src: "/media/spartan-signal-horizon-1672.webp", width: 1672, height: 936, format: "webp" },
+    ],
+  },
+  {
     id: "frontier",
     alt: "A monumental black gateway standing in a bright mountain landscape",
     width: 1586,
@@ -286,4 +298,3 @@ export const getArticleBySlug = (slug: string) =>
 
 export const getMediaById = (id: string) =>
   spartanSiteContent.media.find((asset) => asset.id === id);
-

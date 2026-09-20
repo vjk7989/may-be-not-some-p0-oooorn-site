@@ -1422,7 +1422,7 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `tests/LOGO_ROUNDING_TEST_MATRIX.md` | Source-integrity, rounded presentation, favicon safety, metadata, and logo-semantics contract | Active; passing |
 | `tests/GITHUB_PAGES_TEST_MATRIX.md` | Repository identity, deployment, routing, asset, metadata, security, and live-provenance contract | Active |
 | `tests/Validate-GitHubPages.ps1` | Deterministic GitHub Pages workflow and exported-output validator | Passing locally |
-| `tests/lighthouserc.cjs` | Three-run mobile Lighthouse thresholds | Latest cohort: Performance 94/95/95, Accessibility 100, Best Practices 96, SEO 100, CLS 0, TBT 110/69/72 ms; selected simulated LCP 2,921.59 ms remains above the active 2.5 s budget |
+| `tests/lighthouserc.cjs` | Three-run mobile Lighthouse thresholds | Latest cohort: Performance 100, Accessibility 96, Best Practices 100, SEO 100, median LCP 1,210.29 ms, CLS 0, TBT 0 ms; all active budgets pass |
 | `src/lib/site-data.test.ts` | Unit checks for configuration, base-path, article, and content-adapter contracts | Active |
 | `vitest.config.ts` | Unit-test discovery and source alias configuration | Active |
 | `tests/MULTIPAGE_WIREFRAME_TEST_MATRIX.md` | Previous five-page wireframe acceptance contract | Historical |
@@ -1449,18 +1449,41 @@ Copy this section for each material decision. Keep entries concise and reference
 - **References:** Links or repository paths to relevant artifacts
 ```
 
+### D-052 — Increase homepage fidelity with an original cinematic scene
+
+- **Date:** 2026-09-21
+- **Status:** Accepted
+- **Context:** The initial Spartan rebuild covered the full information architecture, but the homepage did not yet reproduce the reference's complete long-form cadence or hero composition closely enough for the requested visual review.
+- **Decision:** Expand the homepage into the observed hero, proof mosaic, works, capabilities, experiences, film, process, practice, engagement, FAQ, and insights sequence. Use a newly generated original CRT-in-landscape hero scene and retain independently authored copy, project art, and code. Keep Anime.js in the existing interaction-gated motion island and scope `content-visibility:auto` to the heaviest later sections.
+- **Rationale:** This is the smallest change that materially improves visual and behavioral fidelity without copying the paid template's source, protected media, customer marks, testimonials, prices, or unsupported claims.
+- **Consequences:** The homepage is longer and more image-led, responsive media remains local and intrinsic, and deferred rendering is limited to later sections with an intrinsic-size fallback.
+- **Affected paths:** `src/app/page.tsx`, `src/app/globals.css`, `src/components/site-header.tsx`, `src/components/brand-logo.tsx`, `src/content/spartan-site-content.ts`, `scripts/Generate-SiteMedia.mjs`, `public/media/source/spartan-signal-horizon.png`, `public/media/spartan-signal-horizon-*`
+- **References:** `tests/SPARTAN_FULL_SITE_TEST_MATRIX.md`, `DESIGN.md`
+
+### D-053 — Remove unused homepage hydration runtime after export
+
+- **Date:** 2026-09-21
+- **Status:** Accepted
+- **Context:** The static homepage has no React client component, but Next's exported HTML still included framework chunks and flight payloads. Lighthouse attributed about 300 ms of main-thread work to that unused runtime, leaving LCP above the 2.5 s release budget.
+- **Decision:** Run a fail-closed postbuild transform only on `out/index.html`. Remove Next JavaScript chunk tags, script preloads/modulepreloads, and `self.__next_f` payloads while preserving inlined critical CSS, JSON-LD, semantic HTML, and the local SpartanMotion module. Validate the absence of executable runtime references in the production contract.
+- **Rationale:** This is a deterministic export-only optimization at the one route proven not to need React hydration. It avoids adding a client framework workaround or changing the remaining route exports.
+- **Consequences:** Homepage navigation, native disclosures, no-JavaScript behavior, and Anime.js motion remain browser-tested. Any future homepage client component requires removing or revisiting this transform. Three mobile samples now report Performance 100, median LCP 1,210.29 ms, CLS 0, and TBT 0 ms.
+- **Affected paths:** `package.json`, `scripts/Strip-HomepageNextRuntime.mjs`, `tests/Validate-ProductionWebsite.ps1`
+- **References:** `tests/lighthouserc.cjs`, `tests/e2e/spartan-full-site.spec.ts`
+
 ## Current compact codebase map
 
 | Path | Purpose | Status |
 | --- | --- | --- |
 | `src/content/spartan-site-content.ts` | Authoritative typed company, route relations, projects, articles, capabilities, process, engagements, FAQ, and local media registry | Active source of truth |
-| `src/app/page.tsx` | Spartan editorial homepage with cinematic hero, projects, capabilities, product, process, engagements, FAQ, and articles | Active static route |
+| `src/app/page.tsx` | Spartan editorial homepage with cinematic hero, proof mosaic, works, capabilities, experiences, film, process, practice, engagements, FAQ, and insights | Active static route |
 | `src/app/digital-brain/`, `project/`, `about/`, `articles/`, `contact/`, `policies/` | Complete Spartan public route families and static detail generation | Active; 16 indexable routes total |
 | `src/app/not-found.tsx`, `sitemap.ts`, `robots.ts` | Custom missing-route recovery and crawl metadata | Active static output |
 | `src/app/globals.css`, `DESIGN.md` | Responsive visual system, token contract, focus/preferences, containment, and mobile popover presentation | Active; design lint passing |
 | `src/components/site-header.tsx`, `site-footer.tsx`, `brand-logo.tsx` | Server-rendered shared navigation and original Spartan identity | Active; base-path safe |
 | `src/components/spartan-motion.tsx`, `public/vendor/anime.esm.min.js` | Interaction-gated local Anime.js bootstrap with pagehide cleanup | Active; no initial React hydration |
-| `src/components/cinematic-picture.tsx`, `public/media/` | Intrinsically sized local AVIF/WebP delivery and original source scenes | Active; no reference-host requests |
+| `scripts/Strip-HomepageNextRuntime.mjs` | Fail-closed homepage-only removal of unused Next JavaScript and flight payloads after static export | Active; preserves critical CSS, JSON-LD, and SpartanMotion |
+| `src/components/cinematic-picture.tsx`, `public/media/` | Intrinsically sized local AVIF/WebP delivery and original source scenes, including the generated signal-horizon hero | Active; no reference-host requests |
 | `src/components/ui/` | Installed shadcn primitives; Button, Card, Badge, and Separator are used by the active site | Active; Sheet retained but not on the initial performance path |
 | `tests/SPARTAN_FULL_SITE_TEST_MATRIX.md`, `src/content/spartan-site-content.test.ts` | Independent risk matrix and deterministic typed-content assertions | Active |
 | `tests/e2e/spartan-full-site.spec.ts` | Route, navigation, disclosure, 404, no-JS, reduced-motion, responsive, Axe, and local-request browser coverage | Active |

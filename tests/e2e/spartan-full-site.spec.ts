@@ -59,7 +59,7 @@ test("mobile sheet is keyboard-operable and restores focus", async ({ page }) =>
 
 test("FAQ uses native disclosures", async ({ page }) => {
   await page.goto("/");
-  const disclosure = page.locator("details").nth(1);
+  const disclosure = page.locator(".faq-list details").nth(1);
   await expect(disclosure).not.toHaveAttribute("open", "");
   await disclosure.locator("summary").click();
   await expect(disclosure).toHaveAttribute("open", "");
@@ -80,8 +80,9 @@ test("site remains usable without JavaScript", async ({ browser }) => {
   const page = await context.newPage();
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Start a project/ })).toBeVisible();
-  await expect(page.locator("details").first()).toHaveAttribute("open", "");
+  await expect(page.locator("a.hero-build")).toBeVisible();
+  await expect(page.locator("a.hero-build")).toHaveAttribute("href", /contact\/$/);
+  await expect(page.locator(".faq-list details").first()).toHaveAttribute("open", "");
   await context.close();
 });
 

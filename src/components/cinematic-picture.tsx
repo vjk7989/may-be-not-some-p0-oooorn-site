@@ -23,7 +23,7 @@ export function CinematicPicture({
     <picture className={`cinematic-picture ${className}`.trim()}>
       <source type="image/avif" srcSet={avif.map((item) => `${withBasePath(item.src)} ${item.width}w`).join(", ")} sizes={sizes} />
       <source type="image/webp" srcSet={webp.map((item) => `${withBasePath(item.src)} ${item.width}w`).join(", ")} sizes={sizes} />
-      <img src={withBasePath(fallback.src)} alt={media.decorative ? "" : media.alt} width={fallback.width} height={fallback.height} loading={eager ? "eager" : "lazy"} fetchPriority={eager ? "high" : "auto"} decoding="async" />
+      <img src={withBasePath(fallback.src)} alt={media.decorative ? "" : media.alt} width={fallback.width} height={fallback.height} loading={eager ? "eager" : "lazy"} fetchPriority={eager ? "high" : "auto"} decoding={eager ? "sync" : "async"} />
     </picture>
   );
 }

@@ -2,6 +2,12 @@ import sharp from "sharp";
 
 const assets = [
   {
+    source: "public/media/source/spartan-signal-horizon.png",
+    name: "spartan-signal-horizon",
+    widths: [960, 1672],
+    avifQualityByWidth: { 960: 44 },
+  },
+  {
     source: "public/media/source/spartan-frontier.png",
     name: "spartan-frontier",
     widths: [960, 1586],
@@ -24,7 +30,7 @@ const assets = [
 ];
 
 await Promise.all(
-  assets.flatMap(({ source, name, widths }) =>
+  assets.flatMap(({ source, name, widths, avifQualityByWidth = {} }) =>
     widths.flatMap((width) => [
       sharp(source)
         .resize({ width, withoutEnlargement: true })
@@ -32,7 +38,7 @@ await Promise.all(
         .toFile(`public/media/${name}-${width}.webp`),
       sharp(source)
         .resize({ width, withoutEnlargement: true })
-        .avif({ quality: width > 1000 ? 62 : 58, effort: 6 })
+        .avif({ quality: avifQualityByWidth[width] ?? (width > 1000 ? 62 : 58), effort: 6 })
         .toFile(`public/media/${name}-${width}.avif`),
     ]),
   ),

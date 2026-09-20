@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -p 4173",
     "build": "next build",
+    "postbuild": "node scripts/Strip-HomepageNextRuntime.mjs",
     "start": "serve out -l 4173",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",

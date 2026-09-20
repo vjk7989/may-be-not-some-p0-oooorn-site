@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { navigation, withBasePath } from "@/lib/site-data";
 
 export function SiteHeader() {
-  const primary = navigation.filter((item) => item.href !== "/" && item.href !== "/contact/");
+  const primary = [
+    { label: "Works", href: "/project/" },
+    { label: "Services", href: "/#capabilities" },
+    { label: "Insights", href: "/articles/" },
+    { label: "Engagements", href: "/#engagements" },
+    { label: "Company", href: "/about/" },
+  ];
 
   return (
     <header className="site-header">

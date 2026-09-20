@@ -60,10 +60,22 @@ if ($Mode -in @('All', 'Content')) {
     foreach ($pattern in @('framerusercontent\.com', 'spartanai\.framer\.website', 'contra\.com', 'Hyper-0x', 'Hyper Tern', 'Hyper-ABS')) {
         if ($sourceAndOutput -match $pattern) { Fail "Forbidden copied or legacy resource found: $pattern" }
     }
-    foreach ($required in @('Scale your ideas', 'Digital Brain', 'Selected concepts', 'Custom engagement', 'No affiliation with the reference template creator')) {
+    foreach ($required in @('Scale your ideas', 'Digital Brain', 'Our Works', 'Custom engagement', 'No affiliation with the reference template creator')) {
         if (-not $pages[''].Text.Contains($required)) { Fail "Homepage missing required content: $required" }
     }
-    foreach ($asset in @('spartan-frontier', 'spartan-gateway', 'spartan-neural-core', 'spartan-evidence-grid')) {
+    $homepageRuntimePatterns = @(
+        '<script\b(?=[^>]*\bsrc=["''][^"'']*/_next/static/chunks/[^"'']+["''])[^>]*>',
+        '<link\b(?=[^>]*\brel=["'']modulepreload["''])(?=[^>]*\bhref=["''][^"'']*/_next/static/chunks/[^"'']+["''])[^>]*>',
+        '<link\b(?=[^>]*\brel=["'']preload["''])(?=[^>]*\bas=["'']script["''])(?=[^>]*\bhref=["''][^"'']*/_next/static/chunks/[^"'']+["''])[^>]*>',
+        'self\.__next_f'
+    )
+    if ($homepageRuntimePatterns | Where-Object { $pages[''].Html -match $_ }) {
+        Fail 'Homepage contains unnecessary Next.js hydration runtime after static export'
+    }
+    if ($pages[''].Html -notmatch 'type=["'']application/ld\+json["'']' -or $pages[''].Html -notmatch 'type=["'']module["'']') {
+        Fail 'Homepage static optimization removed JSON-LD or the scoped motion module'
+    }
+    foreach ($asset in @('spartan-signal-horizon', 'spartan-frontier', 'spartan-gateway', 'spartan-neural-core', 'spartan-evidence-grid')) {
         $matches = Get-ChildItem -LiteralPath (Join-Path $resolvedOut 'media') -File -Filter "$asset-*"
         if ($matches.Count -lt 4) { Fail "Responsive media set incomplete: $asset" }
     }
