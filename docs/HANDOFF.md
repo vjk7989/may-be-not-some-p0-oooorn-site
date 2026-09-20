@@ -14,11 +14,12 @@ The first frame is server-rendered and usable without JavaScript. Native disclos
 - Browser coverage includes all route families, mobile menu focus restoration, FAQ state, legacy/custom 404s, no-JavaScript content, reduced motion, eight viewport sizes, no horizontal overflow, local-only requests, and zero serious/critical Axe violations.
 - The final three-sample Lighthouse cohort passes Performance, Accessibility, Best Practices, and SEO ≥95; LCP ≤2.5 seconds; CLS ≤0.10; TBT ≤200 ms.
 - The independent runner passed every executable gate; its only failure was three extra EOF blank lines, which were removed. The focused `git diff --check`, lint, and typecheck rerun passed. The production base-path build and `tests/Validate-GitHubPages.ps1` also pass for all sixteen routes.
+- Commit `73f5817` was pushed to `main`; GitHub Pages workflow run `35511679251` completed successfully.
+- Live verification passed for all sixteen sitemap routes, nineteen unique internal links, fragment targets, canonical metadata, sitemap, robots, favicon, Anime.js, responsive media, and the nested custom 404. Legacy Products, Services, and Blog routes return 404, and production HTML contains no Spartan/Framer/Contra resource URLs.
 
 ## Next steps
 
-1. Commit the verified rebuild on `main` and push to `origin`.
-2. Monitor the Pages workflow and verify all live routes, assets, sitemap, robots, favicon, canonical URLs, and custom 404.
+The requested rebuild, validation, deployment, and live verification are complete. Future work should begin only from a new user requirement or a measured regression.
 
 ## Suggested skills
 
