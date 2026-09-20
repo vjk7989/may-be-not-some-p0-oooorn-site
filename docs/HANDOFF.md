@@ -53,9 +53,12 @@ system.
   fails and must not be claimed as passing. Raw browser LCP samples are
   313–344 ms. A further modeled-LCP repair requires a larger shared-header
   hydration redesign; this remains recorded debt in D-049.
-- GitHub push, Pages deployment monitoring, and live-route verification are
-  still pending. Do not claim the rebuild is deployed until the pushed commit
-  SHA and successful Pages run are verified against the live site.
+- The rebuild is deployed from commit
+  `3242325110f8b0e3fe35eb9ea20a953d52fc97f9`. GitHub Pages run
+  `35504119559` completed successfully. Live checks returned HTTP 200 for the
+  homepage, About, Products, all three product details, Services, Blog, and an
+  article; an unknown nested path returned the custom HTTP 404. The recoverable
+  `codex/pre-spartan-rebuild` branch is also present on the remote.
 
 ## Sources of truth
 
@@ -71,19 +74,14 @@ system.
 - Use `git diff` and `git status --short` for the exact uncommitted rebuild
   state. Do not duplicate the architecture record, test matrix, or diff here.
 
-## Completion sequence
+## Next steps
 
-1. Refresh Graft, run the final deterministic documentation/diff checks, and
-   confirm no unrelated artifact remains in the working tree.
-2. Commit the completed rebuild and push `main`.
-3. Monitor GitHub Pages and verify the homepage, About, Products, three product
-   details, Services, Blog/articles, and an unknown nested 404 against the
-   pushed SHA. Do not represent Lighthouse LCP as passing.
-4. If publication or live verification fails, use an independent
-   failure-analysis role, apply the smallest valid repair, rerun the affected
-   gate, and redeploy.
-5. Review the live result with the user. Limit the next edit to their requested
-   refinement and preserve qualified security language.
+1. Review the deployed experience with the user and limit the next edit to the
+   requested visual, copy, or interaction refinement.
+2. Preserve the qualified security language and do not represent the simulated
+   Lighthouse LCP budget as passing.
+3. Treat a shared-header hydration redesign as a separate measured task if the
+   user prioritizes closing the remaining modeled LCP debt.
 
 ## Suggested skills
 

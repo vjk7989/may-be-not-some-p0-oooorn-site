@@ -1316,8 +1316,11 @@ writes elsewhere. It deliberately does not alter user or machine settings.
   Future hero motion must remain CSS-only unless new evidence justifies
   expanding the client boundary. Performance reporting must preserve the
   distinction between the passing category scores/raw timings and the failing
-  simulated LCP budget. Deployment remains pending until `main` is pushed and
-  the live Pages routes are verified.
+  simulated LCP budget. Commit
+  `3242325110f8b0e3fe35eb9ea20a953d52fc97f9` was deployed successfully by
+  GitHub Pages run `35504119559`; live HTTP checks passed for the homepage,
+  About, Products, all three product details, Services, Blog, an article, and
+  the custom nested-path 404.
 - **Affected paths:** `src/components/cinematic-hero.tsx`,
   `src/app/globals.css`, `public/media/buckleson-execution-boundary-960.webp`,
   `public/media/buckleson-execution-boundary-1600.webp`,
