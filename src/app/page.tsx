@@ -4,6 +4,7 @@ import { ArrowRight, ArrowUpRight, Braces, CheckCircle2, DatabaseZap, Fingerprin
 
 import { AssessmentCta } from "@/components/assessment-cta";
 import { CinematicHero } from "@/components/cinematic-hero";
+import { CinematicPicture } from "@/components/cinematic-picture";
 import { SectionHeading } from "@/components/section-heading";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ const responsibilityIcons = [DatabaseZap, Fingerprint, CheckCircle2];
 
 export default function HomePage() {
   const { company, products, services, process, risks, faqs } = bucklesonSiteContent;
+  const { engagementPaths } = bucklesonSiteContent.presentation;
   return (
     <main id="main-content" tabIndex={-1}>
       <section className="home-scene home-hero" aria-label={company.hero}><CinematicHero /></section>
@@ -49,9 +51,16 @@ export default function HomePage() {
         {risks.slice(0, 6).map((risk) => <article key={risk.name}><span className="risk-category">{risk.category}</span><h3>{risk.name}</h3><p>{risk.explanation}</p><div>{risk.relatedProducts.map((slug) => <span key={slug}>{products.find((item) => item.slug === slug)?.name}</span>)}</div></article>)}
       </div></div></section>
 
+      <section className="home-scene protection-narrative" aria-labelledby="protection-narrative-title"><div className="shell protection-narrative-layout">
+        <div className="protection-narrative-copy"><p className="section-index">03 / How it works</p><h2 id="protection-narrative-title">A request moves through three explicit responsibilities.</h2><p>Information is reduced before inference, execution stays inside policy, and attributable evidence remains after an approved action.</p><ol>{["Protect the approved context", "Control identities, tools, and actions", "Preserve execution evidence"].map((item, index) => <li key={item}><span>0{index + 1}</span>{item}</li>)}</ol></div>
+        <CinematicPicture mediaId="hyper-tern-boundary" className="protection-narrative-media" />
+      </div></section>
+
       <section className="home-scene process-scene" aria-labelledby="process-title"><div className="shell split-heading-layout"><SectionHeading id="process-title" label="Engagement process" title="From workflow map to accountable execution." /><ol className="process-list">{process.map((step, index) => <li key={step.title}><span>0{index + 1}</span><div><h3>{step.title}</h3><p>{step.description}</p></div></li>)}</ol></div></section>
 
       <section className="home-scene principles-scene" aria-labelledby="principles-title"><div className="shell"><SectionHeading id="principles-title" label="Company principles" title="Clear boundaries beat invented certainty." /><div className="principles-grid">{company.principles.map((principle) => <article key={principle.title}><Braces aria-hidden="true" /><h3>{principle.title}</h3><p>{principle.description}</p></article>)}</div></div></section>
+
+      <section className="home-scene engagement-scene" aria-labelledby="engagement-title"><div className="shell"><SectionHeading id="engagement-title" label="Start with the need" title="Three practical ways to begin." description="No packaged promises or invented pricing—only a clear first boundary to evaluate." /><div className="engagement-grid">{engagementPaths.map((path, index) => <Link key={path.title} href={path.href}><span>0{index + 1}</span><h3>{path.title}</h3><p>{path.summary}</p><i>Start here <ArrowUpRight aria-hidden="true" /></i></Link>)}</div></div></section>
 
       <section className="home-scene faq-scene" aria-labelledby="faq-title"><div className="shell split-heading-layout"><SectionHeading id="faq-title" label="Security FAQ" title="Direct answers about scope and responsibility." /><div className="disclosure-list faq-list">{faqs.map((item) => <details key={item.question}><summary><strong>{item.question}</strong><i aria-hidden="true">+</i></summary><div className="disclosure-content"><p>{item.answer}</p></div></details>)}</div></div></section>
 

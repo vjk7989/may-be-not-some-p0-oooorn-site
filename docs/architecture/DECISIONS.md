@@ -1328,6 +1328,17 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 - **References:** D-041, D-048, `tests/BUCKLESON_REBUILD_TEST_MATRIX.md`,
   `tests/e2e/buckleson-rebuild.spec.ts`
 
+### D-050 — Extend the cinematic system with typed media and a three-card hero rail
+
+- **Date:** 2026-09-20
+- **Status:** Accepted
+- **Context:** The approved full-site rebuild required the hero media to extend behind the floating navbar, exactly three glass product surfaces, a complete long-form homepage sequence, and coordinated original media across supporting routes.
+- **Decision:** Keep the hero server-rendered, overlap the sticky header through document flow, add a typed local responsive-media contract and reusable picture component, restrict glass to the header and hero product rail, and map unsupported proof sections to truthful responsibilities, risks, principles, and non-priced engagement paths.
+- **Rationale:** Native HTML, CSS, AVIF/WebP, and existing data primitives provide the requested composition without another runtime, copied reference assets, or speculative infrastructure.
+- **Consequences:** The homepage contains fifteen ordered scenes; mobile product cards use scroll-snap; supporting page media is lazy and dimensioned; motion is CSS-only and static under reduced motion. Functional, accessibility, static-export, and GitHub Pages gates pass. The three-run simulated LCP remains known debt at approximately 2.92 seconds against the 2.5-second budget.
+- **Affected paths:** `src/content/buckleson-site-content.ts`, `src/components/cinematic-hero.tsx`, `src/components/cinematic-picture.tsx`, `src/components/product-bento.tsx`, `src/app/page.tsx`, `src/app/about/page.tsx`, `src/app/products/`, `src/app/services/page.tsx`, `src/app/blog/page.tsx`, `src/app/globals.css`, `public/media/`, `tests/FULL_SITE_CINEMATIC_REBUILD_TEST_MATRIX.md`
+- **References:** `DESIGN.md`, `tests/e2e/cinematic-hero-product-rail.spec.ts`, `tests/e2e/buckleson-rebuild.spec.ts`, `tests/e2e/not-found-performance.spec.ts`
+
 ## Compact codebase map
 
 | Path | Purpose | Current status |
@@ -1353,7 +1364,7 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `docs/architecture/DECISIONS.md` | Durable architecture decisions and codebase map | This document |
 | `docs/design/RISK_LANDSCAPE_REFERENCE.md` | Historical brief for the superseded risk-funnel presentation | Historical reference only |
 | `src/app/layout.tsx` | Root semantic shell, font, shared header/footer, shared metadata fields, and Organization/WebSite JSON-LD; route titles and indexability remain page-owned | Active |
-| `src/app/page.tsx` | Cinematic homepage composition: positioning, responsibilities, product and risk rails, native service/FAQ disclosures, mission, Hyper-0x, process, principles, insights, and CTA | Active; statically exported |
+| `src/app/page.tsx` | Fifteen-scene cinematic homepage: positioning, responsibilities, products, capabilities, mission, Hyper-0x, risks, protection narrative, process, principles, engagement paths, FAQ, insights, and CTA | Active; statically exported |
 | `src/app/not-found.tsx` | Server-rendered custom 404 shell with static-first recovery content, CTA, diagram, noindex title state, and optional empty social boundary | Active; exported as `out/404.html` |
 | `src/app/products/page.tsx` | Responsive product overview built from the authoritative three-product content and bento composition | Active; statically exported |
 | `src/app/products/[slug]/page.tsx` | Static parameters, metadata, architecture, workflow, risk controls, and responsibility boundary for Hyper Tern, Hyper-ABS, and Hyper-0x | Active; three statically exported routes |
@@ -1366,8 +1377,9 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `src/app/globals.css` | Production tokens and responsive styling for cinematic layouts, bento cards, rails, native disclosures, product details, 404 chrome, centered mega menus, focus, motion, and preference fallbacks | Active |
 | `src/components/site-header.tsx` | Data-driven centered Home-through-Blog navigation, one-open accessible mega menus with safe pointer transfer, grouped mobile Sheet, current-route semantics, and separate external violet Contact CTA | Active |
 | `src/components/not-found-motion.tsx` | Route-local client island that dynamically imports Anime.js 4.5.0, scopes deterministic SVG motion, and cleans up without affecting normal routes | Active |
-| `src/components/cinematic-hero.tsx` | Static Server Component for the homepage hero; native responsive picture selects the 960/1600 WebP derivatives with eager high-priority synchronous decoding, while CSS supplies spotlight drift and reduced-motion fallback | Active; no client hydration or Anime.js |
-| `src/components/product-bento.tsx` | Reusable responsive three-product overview with one featured tile, architectural diagrams, qualified boundaries, and detail links | Active |
+| `src/components/cinematic-hero.tsx` | Static Server Component with eager responsive AVIF/WebP media behind the sticky header and exactly three accessible glass product links | Active; no client hydration or Anime.js |
+| `src/components/cinematic-picture.tsx` | Reusable typed local AVIF/WebP picture renderer with intrinsic dimensions and lazy below-fold delivery | Active |
+| `src/components/product-bento.tsx` | Reusable responsive three-product overview with one featured tile, original cinematic media, qualified boundaries, and detail links | Active |
 | `src/components/` | Shared assessment CTA, brand logo, section headings, status badges, header/footer, and local shadcn primitives | Active |
 | `src/content/buckleson-site-content.ts` | Authoritative typed company, navigation, page, product, service, risk, industry, process, FAQ, footer, status, and prohibited-claim content | Active; source of truth |
 | `src/lib/types.ts` | Static public-content interfaces, including the HTTPS-only 404 social-link contract | Active |
@@ -1379,8 +1391,8 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `src/content/articles/` | Six original local MDX articles | Active; no runtime fetch |
 | `public/brand/` | Byte-preserved official Buckleson and Hyper-0x source artwork plus proportion-preserving WebP display derivatives | Active; originals remain hash validated |
 | `public/media/source/buckleson-execution-boundary.png` | Frozen original generated cinematic scene; contains no copied reference-site asset | Active media source |
-| `public/media/buckleson-execution-boundary-{960,1600}.webp` | Responsive local hero delivery derivatives selected by the hero's native picture source | Active; the viewport-selected hero asset is eager |
-| `scripts/Generate-SiteMedia.mjs` | Deterministic Sharp pipeline that regenerates the responsive WebP hero derivatives from the frozen local source | Active |
+| `public/media/` | Frozen original Buckleson cinematic sources and responsive AVIF/WebP derivatives for the hero and all three products | Active; hero eager, supporting media lazy |
+| `scripts/Generate-SiteMedia.mjs` | Deterministic manifest-driven Sharp pipeline for responsive AVIF/WebP derivatives | Active |
 | `public/brand/buckleson-icon-v2.svg` | Versioned, self-contained favicon wrapper embedding the unchanged Buckleson JPEG under the rounded clip | Active; focused browser check and Pages validation passing |
 | `public/.nojekyll` | Prevents GitHub Pages/Jekyll from filtering Next static-export paths | Active; copied into `out/` |
 | `out/` | Generated deployable static export | Build output; not source |
@@ -1399,7 +1411,7 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `tests/LOGO_ROUNDING_TEST_MATRIX.md` | Source-integrity, rounded presentation, favicon safety, metadata, and logo-semantics contract | Active; passing |
 | `tests/GITHUB_PAGES_TEST_MATRIX.md` | Repository identity, deployment, routing, asset, metadata, security, and live-provenance contract | Active |
 | `tests/Validate-GitHubPages.ps1` | Deterministic GitHub Pages workflow and exported-output validator | Passing locally |
-| `tests/lighthouserc.cjs` | Three-run mobile Lighthouse thresholds | Latest cohort: Performance 95/95/94, Accessibility 100, Best Practices 96, SEO 100, CLS 0, and TBT 42 ms pass; simulated median LCP 2,974.93 ms remains above the active 2.5 s budget despite raw LCP samples of 313–344 ms |
+| `tests/lighthouserc.cjs` | Three-run mobile Lighthouse thresholds | Latest cohort: Performance 94/95/95, Accessibility 100, Best Practices 96, SEO 100, CLS 0, TBT 110/69/72 ms; selected simulated LCP 2,921.59 ms remains above the active 2.5 s budget |
 | `src/lib/site-data.test.ts` | Unit checks for configuration, base-path, article, and content-adapter contracts | Active |
 | `vitest.config.ts` | Unit-test discovery and source alias configuration | Active |
 | `tests/MULTIPAGE_WIREFRAME_TEST_MATRIX.md` | Previous five-page wireframe acceptance contract | Historical |

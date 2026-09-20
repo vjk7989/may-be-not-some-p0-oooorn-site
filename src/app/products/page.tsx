@@ -1,4 +1,5 @@
 import { AssessmentCta } from "@/components/assessment-cta";
+import { CinematicPicture } from "@/components/cinematic-picture";
 import { ProductBento } from "@/components/product-bento";
 import { bucklesonSiteContent } from "@/content/buckleson-site-content";
 import { createPageMetadata } from "@/lib/metadata";
@@ -20,6 +21,7 @@ export default function ProductsPage() {
           Protect information before inference, control what AI can reach and
           do, then preserve attributable evidence of approved execution.
         </p>
+        <CinematicPicture mediaId="hyper-tern-boundary" className="page-hero-media" />
       </section>
 
       <section className="page-section page-section-white" aria-labelledby="product-family-title">

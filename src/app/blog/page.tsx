@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { AssessmentCta } from "@/components/assessment-cta";
+import { CinematicPicture } from "@/components/cinematic-picture";
 import { bucklesonSiteContent } from "@/content/buckleson-site-content";
 import { createPageMetadata } from "@/lib/metadata";
 import { articleRegistry } from "@/lib/site-data";
@@ -48,6 +49,7 @@ export default function BlogPage() {
           Practical explanations for teams connecting AI to sensitive
           information, business tools, and consequential actions.
         </p>
+        <CinematicPicture mediaId="hero-boundary" className="page-hero-media" />
       </section>
 
       <section

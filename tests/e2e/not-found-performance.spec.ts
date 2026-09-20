@@ -26,8 +26,10 @@ const sectionClasses = [
   "mission-scene",
   "hyper-band",
   "risk-scenarios",
+  "protection-narrative",
   "process-scene",
   "principles-scene",
+  "engagement-scene",
   "faq-scene",
   "insights-scene",
   "assessment-cta",
@@ -344,14 +346,22 @@ test.describe("bounded homepage performance regressions", () => {
     expect(statSync(resolve(process.cwd(), "public", localHeroPath)).size).toBeLessThan(200_000);
   });
 
-  test("Products bento uses code-native diagrams without remote media", async ({ page }) => {
+  test("Products bento uses local responsive cinematic media", async ({ page }) => {
     const remoteRequests: string[] = [];
     page.on("request", (request) => {
       const hostname = new URL(request.url()).hostname;
       if (!/^(?:127\.0\.0\.1|localhost)$/.test(hostname)) remoteRequests.push(request.url());
     });
     await page.goto("/products/", { waitUntil: "networkidle" });
-    await expect(page.locator("[data-product-diagram]")).toHaveCount(3);
+    const media = page.locator(".product-bento-media");
+    await expect(media).toHaveCount(3);
+    for (let index = 0; index < 3; index += 1) {
+      const image = media.nth(index).locator("img");
+      await expect(image).toHaveAttribute("loading", "lazy");
+      await expect(image).toHaveAttribute("width", /^\d+$/);
+      await expect(media.nth(index).locator('source[type="image/avif"]')).toHaveCount(1);
+      await expect(media.nth(index).locator('source[type="image/webp"]')).toHaveCount(1);
+    }
     expect(remoteRequests).toEqual([]);
   });
 });

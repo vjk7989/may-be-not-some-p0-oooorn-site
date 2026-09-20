@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 import { AssessmentCta } from "@/components/assessment-cta";
+import { CinematicPicture } from "@/components/cinematic-picture";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { bucklesonSiteContent } from "@/content/buckleson-site-content";
@@ -64,6 +65,7 @@ export default function AboutPage() {
             <Link href="/products/">Explore the platform</Link>
           </Button>
         </div>
+        <CinematicPicture mediaId="hyper-0x-evidence" className="page-hero-media" />
       </section>
 
       <section

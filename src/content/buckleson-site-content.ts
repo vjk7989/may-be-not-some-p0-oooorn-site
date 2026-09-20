@@ -16,6 +16,35 @@ export interface PageDefinition {
   description: string;
   purpose: string;
   sections: readonly string[];
+  mediaId?: string;
+}
+
+export interface MediaAsset {
+  id: string;
+  source: string;
+  alt: string;
+  width: number;
+  height: number;
+  derivatives: ReadonlyArray<{
+    src: string;
+    width: number;
+    height: number;
+    format: "avif" | "webp";
+  }>;
+  decorative?: boolean;
+}
+
+export interface HomepageSection {
+  id: string;
+  label: string;
+  title: string;
+  mediaId?: string;
+}
+
+export interface EngagementPath {
+  title: string;
+  summary: string;
+  href: string;
 }
 
 export interface ProductContent {
@@ -34,6 +63,7 @@ export interface ProductContent {
     boundary: string;
   }>;
   designedFor?: readonly string[];
+  mediaId?: string;
 }
 
 export interface ServiceContent {
@@ -88,6 +118,11 @@ export interface SiteContent {
   faqs: readonly FaqItem[];
   footer: { statement: string; capabilityNote: string };
   prohibitedClaims: readonly string[];
+  presentation: {
+    media: readonly MediaAsset[];
+    homepageSections: readonly HomepageSection[];
+    engagementPaths: readonly EngagementPath[];
+  };
 }
 
 export const bucklesonSiteContent: SiteContent = {
@@ -203,14 +238,14 @@ export const bucklesonSiteContent: SiteContent = {
     },
   ],
   pages: [
-    { route: "/", title: "Trust and Execution Infrastructure for AI", description: "Buckleson helps companies, organizations, and individual users use AI safely with protection, policy, and tamper-evident execution evidence.", purpose: "Explain the complete Buckleson story and lead visitors to products, services, and an assessment.", sections: ["Hero", "Responsibilities", "Products", "Services", "Vision", "Hyper-0x", "Risk scenarios", "Process", "Principles", "FAQ", "Insights", "Assessment"] },
-    { route: "/about/", title: "About Buckleson", description: "Learn Buckleson’s mission, current status, protection model, operating principles, and long-term vision.", purpose: "Explain what Buckleson is, what is current, and which responsibilities remain with people and organizations.", sections: ["Mission", "How we protect", "Company status", "Principles", "Vision", "Human responsibility"] },
-    { route: "/products/", title: "Buckleson Products", description: "Explore Hyper Tern, Hyper-ABS, and Hyper-0x across AI execution control, data protection, and tamper-evident evidence.", purpose: "Compare the three products and route visitors to detailed architecture pages.", sections: ["Overview", "Product bento", "Shared execution path", "Responsibility boundaries", "Assessment"] },
+    { route: "/", title: "Trust and Execution Infrastructure for AI", description: "Buckleson helps companies, organizations, and individual users use AI safely with protection, policy, and tamper-evident execution evidence.", purpose: "Explain the complete Buckleson story and lead visitors to products, services, and an assessment.", sections: ["Hero", "Responsibilities", "Products", "Services", "Vision", "Hyper-0x", "Risk scenarios", "Process", "Principles", "FAQ", "Insights", "Assessment"], mediaId: "hero-boundary" },
+    { route: "/about/", title: "About Buckleson", description: "Learn Buckleson’s mission, current status, protection model, operating principles, and long-term vision.", purpose: "Explain what Buckleson is, what is current, and which responsibilities remain with people and organizations.", sections: ["Mission", "How we protect", "Company status", "Principles", "Vision", "Human responsibility"], mediaId: "hyper-0x-evidence" },
+    { route: "/products/", title: "Buckleson Products", description: "Explore Hyper Tern, Hyper-ABS, and Hyper-0x across AI execution control, data protection, and tamper-evident evidence.", purpose: "Compare the three products and route visitors to detailed architecture pages.", sections: ["Overview", "Product bento", "Shared execution path", "Responsibility boundaries", "Assessment"], mediaId: "hyper-tern-boundary" },
     { route: "/products/hyper-tern/", title: "Hyper Tern", description: "Explore Hyper Tern identity, policy, routing, tool, resource, and AI action boundaries.", purpose: "Explain how Hyper Tern constrains AI execution and the risks its controls help reduce.", sections: ["Product hero", "What it controls", "Workflow", "Architecture", "Risk controls", "Responsibility boundary"] },
     { route: "/products/hyper-abs/", title: "Hyper-ABS", description: "Explore Hyper-ABS masking, redaction, tokenization, abstraction, and pre-inference protection.", purpose: "Explain how Hyper-ABS reduces unnecessary sensitive-data exposure.", sections: ["Product hero", "Data transformations", "Workflow", "Architecture", "Risk controls", "Responsibility boundary"] },
     { route: "/products/hyper-0x/", title: "Hyper-0x", description: "Explore Buckleson’s in-house blockchain for tamper-evident execution evidence, verification, audit, and settlement.", purpose: "Explain current Hyper-0x responsibilities separately from designed-for architecture.", sections: ["Product hero", "Evidence lifecycle", "Architecture", "Risk controls", "Designed-for features", "Responsibility boundary"] },
-    { route: "/services/", title: "Buckleson Services", description: "AI Security, Secure Inference, and Custom AI services tied to clear requirements and responsibility boundaries.", purpose: "Explain service outcomes, deliverables, related products, and boundaries.", sections: ["Overview", "AI Security", "Secure Inference", "Custom AI", "Engagement process", "Assessment"] },
-    { route: "/blog/", title: "Buckleson Guides", description: "Practical guides to AI agent security, prompt injection, secure inference, data leakage, least privilege, and audit trails.", purpose: "Provide original educational content and connect readers to relevant products and services.", sections: ["Article index", "Topics", "Assessment"] },
+    { route: "/services/", title: "Buckleson Services", description: "AI Security, Secure Inference, and Custom AI services tied to clear requirements and responsibility boundaries.", purpose: "Explain service outcomes, deliverables, related products, and boundaries.", sections: ["Overview", "AI Security", "Secure Inference", "Custom AI", "Engagement process", "Assessment"], mediaId: "hyper-abs-chamber" },
+    { route: "/blog/", title: "Buckleson Guides", description: "Practical guides to AI agent security, prompt injection, secure inference, data leakage, least privilege, and audit trails.", purpose: "Provide original educational content and connect readers to relevant products and services.", sections: ["Article index", "Topics", "Assessment"], mediaId: "hero-boundary" },
   ],
   products: [
     {
@@ -239,6 +274,7 @@ export const bucklesonSiteContent: SiteContent = {
         { risk: "Intent Breaking & Goal Manipulation (Agentic T6)", response: "Keeps requested actions inside an approved task and policy boundary.", boundary: "Controls can constrain impact without guaranteeing that every manipulation is detected." },
         { risk: "Prompt Injection", response: "Can prevent an unsafe instruction from reaching unauthorized tools or actions when policy identifies the request as disallowed.", boundary: "This is impact reduction and policy enforcement, not universal prompt-injection detection." },
       ],
+      mediaId: "hyper-tern-boundary",
     },
     {
       name: "Hyper-ABS",
@@ -264,6 +300,7 @@ export const bucklesonSiteContent: SiteContent = {
         { risk: "Sensitive Information Disclosure", response: "Minimizes, masks, and transforms sensitive values to reduce unnecessary data exposure in prompts and responses before model access.", boundary: "Helps reduce exposure; it does not guarantee that all sensitive information is identified. Model, application, and organizational controls remain necessary around the complete data lifecycle." },
         { risk: "Memory Poisoning (Agentic T1)", response: "Can restrict which protected fields enter long-lived context and memory stores.", boundary: "Content trust and memory validation remain separate responsibilities." },
       ],
+      mediaId: "hyper-abs-chamber",
     },
     {
       name: "Hyper-0x",
@@ -289,6 +326,7 @@ export const bucklesonSiteContent: SiteContent = {
         { risk: "Evidence tampering", response: "Preserves attributable events across the execution path and makes changes to committed evidence detectable for audit and reconstruction.", boundary: "The record is only as useful as the events and identities supplied to it. Tamper evidence does not prove that the original event was correct, and attribution still depends on sound identity and key management." },
       ],
       designedFor: ["Quantum-resistant architecture and four-layer encryption", "EVM, Solana, and Sui interoperability", "Account abstraction and task side-chains", "High-velocity finality"],
+      mediaId: "hyper-0x-evidence",
     },
   ],
   services: [
@@ -320,6 +358,83 @@ export const bucklesonSiteContent: SiteContent = {
     { question: "Can Buckleson stop prompt injection?", answer: "Buckleson can constrain the tools, data, and actions available to unsafe requests and can block requests identified as disallowed by policy. It does not claim universal prompt-injection detection or prevention." },
     { question: "Can Buckleson work with custom AI models?", answer: "Yes. Buckleson offers custom model development and fine-tuning for defined requirements, with explicit data permissions, evaluation criteria, and deployment responsibilities." },
   ],
+  presentation: {
+    media: [
+      {
+        id: "hero-boundary",
+        source: "/media/source/buckleson-execution-boundary.png",
+        alt: "A sculptural AI execution boundary in a pale mineral landscape",
+        width: 1586,
+        height: 992,
+        derivatives: [
+          { src: "/media/buckleson-execution-boundary-960.avif", width: 960, height: 600, format: "avif" },
+          { src: "/media/buckleson-execution-boundary-960.webp", width: 960, height: 600, format: "webp" },
+          { src: "/media/buckleson-execution-boundary-1586.avif", width: 1586, height: 992, format: "avif" },
+          { src: "/media/buckleson-execution-boundary-1586.webp", width: 1586, height: 992, format: "webp" },
+        ],
+      },
+      {
+        id: "hyper-tern-boundary",
+        source: "/media/source/hyper-tern-boundary.png",
+        alt: "A black execution gateway routing violet request paths into approved destinations",
+        width: 1536,
+        height: 1024,
+        derivatives: [
+          { src: "/media/hyper-tern-boundary-768.avif", width: 768, height: 512, format: "avif" },
+          { src: "/media/hyper-tern-boundary-768.webp", width: 768, height: 512, format: "webp" },
+          { src: "/media/hyper-tern-boundary-1536.avif", width: 1536, height: 1024, format: "avif" },
+          { src: "/media/hyper-tern-boundary-1536.webp", width: 1536, height: 1024, format: "webp" },
+        ],
+      },
+      {
+        id: "hyper-abs-chamber",
+        source: "/media/source/hyper-abs-chamber.png",
+        alt: "A glass transformation chamber reducing exposed data into approved context tokens",
+        width: 1536,
+        height: 1024,
+        derivatives: [
+          { src: "/media/hyper-abs-chamber-768.avif", width: 768, height: 512, format: "avif" },
+          { src: "/media/hyper-abs-chamber-768.webp", width: 768, height: 512, format: "webp" },
+          { src: "/media/hyper-abs-chamber-1536.avif", width: 1536, height: 1024, format: "avif" },
+          { src: "/media/hyper-abs-chamber-1536.webp", width: 1536, height: 1024, format: "webp" },
+        ],
+      },
+      {
+        id: "hyper-0x-evidence",
+        source: "/media/source/hyper-0x-evidence.png",
+        alt: "A sequence of linked stone and glass evidence markers ending at a verified state",
+        width: 1536,
+        height: 1024,
+        derivatives: [
+          { src: "/media/hyper-0x-evidence-768.avif", width: 768, height: 512, format: "avif" },
+          { src: "/media/hyper-0x-evidence-768.webp", width: 768, height: 512, format: "webp" },
+          { src: "/media/hyper-0x-evidence-1536.avif", width: 1536, height: 1024, format: "avif" },
+          { src: "/media/hyper-0x-evidence-1536.webp", width: 1536, height: 1024, format: "webp" },
+        ],
+      },
+    ],
+    homepageSections: [
+      { id: "hero", label: "Trust and execution", title: "We help you use AI safely.", mediaId: "hero-boundary" },
+      { id: "responsibilities", label: "Platform responsibilities", title: "Protect information. Control execution. Preserve evidence." },
+      { id: "product-work", label: "Products", title: "Built around the moment AI acts.", mediaId: "hyper-tern-boundary" },
+      { id: "capabilities", label: "Capabilities", title: "Start with the boundary that matters most.", mediaId: "hyper-abs-chamber" },
+      { id: "vision", label: "Mission and vision", title: "Accountability belongs in the infrastructure.", mediaId: "hyper-0x-evidence" },
+      { id: "hyper-0x", label: "Evidence infrastructure", title: "Records that are harder to rewrite after the fact.", mediaId: "hyper-0x-evidence" },
+      { id: "risks", label: "AI risk scenarios", title: "Unsafe requests do not need unlimited impact." },
+      { id: "protection-narrative", label: "How Buckleson protects execution", title: "A request moves through three explicit responsibilities.", mediaId: "hyper-tern-boundary" },
+      { id: "process", label: "Engagement process", title: "From workflow map to accountable execution." },
+      { id: "principles", label: "Company principles", title: "Clear boundaries beat invented certainty." },
+      { id: "engagement-paths", label: "Start with the need", title: "Three practical ways to begin." },
+      { id: "faq", label: "Security FAQ", title: "Direct answers about scope and responsibility." },
+      { id: "insights", label: "Field notes", title: "Understand the risks before choosing the controls." },
+      { id: "assessment", label: "Security assessment", title: "Map the boundary before AI reaches production." },
+    ],
+    engagementPaths: [
+      { title: "Assess an AI workflow", summary: "Map information, identities, tools, permissions, actions, and evidence before selecting controls.", href: "/services/#ai-security" },
+      { title: "Protect inference", summary: "Reduce unnecessary exposure and define the approved context around model execution.", href: "/services/#secure-inference" },
+      { title: "Build controlled AI", summary: "Develop or fine-tune AI against explicit data, evaluation, and deployment requirements.", href: "/services/#custom-ai" },
+    ],
+  },
   footer: {
     statement: "Trust and execution infrastructure for safer AI.",
     capabilityNote: "Capabilities and responsibility boundaries are stated throughout.",

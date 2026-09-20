@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { AssessmentCta } from "@/components/assessment-cta";
 import { StatusBadge } from "@/components/status-badge";
+import { CinematicPicture } from "@/components/cinematic-picture";
 import {
   bucklesonSiteContent,
   type ProductContent,
@@ -80,6 +81,7 @@ export default async function ProductDetailPage({
             <p><strong>The problem:</strong> {product.problem}</p>
           </div>
         </div>
+        {product.mediaId ? <CinematicPicture mediaId={product.mediaId} className="product-detail-media" /> : null}
       </section>
 
       <section className="page-section page-section-white" aria-labelledby="capabilities-title">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 
 import { AssessmentCta } from "@/components/assessment-cta";
+import { CinematicPicture } from "@/components/cinematic-picture";
 import { Button } from "@/components/ui/button";
 import { bucklesonSiteContent } from "@/content/buckleson-site-content";
 import { createPageMetadata } from "@/lib/metadata";
@@ -38,6 +39,7 @@ export default function ServicesPage() {
             <ArrowUpRight aria-hidden="true" />
           </a>
         </Button>
+        <CinematicPicture mediaId="hyper-abs-chamber" className="page-hero-media" />
       </section>
 
       <section

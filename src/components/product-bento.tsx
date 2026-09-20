@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 import { StatusBadge } from "@/components/status-badge";
+import { CinematicPicture } from "@/components/cinematic-picture";
 import type { ProductContent } from "@/content/buckleson-site-content";
 
 function ProductDiagram({ product }: { product: ProductContent }) {
@@ -42,7 +43,7 @@ export function ProductBento({ products }: { products: readonly ProductContent[]
             <StatusBadge status={product.status} />
           </div>
 
-          <ProductDiagram product={product} />
+          {product.mediaId ? <CinematicPicture mediaId={product.mediaId} className="product-bento-media" /> : <ProductDiagram product={product} />}
 
           <div className="product-bento-card-copy">
             <p className="product-bento-role">{product.role}</p>

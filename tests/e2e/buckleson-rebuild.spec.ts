@@ -66,8 +66,10 @@ const homepageMilestones = [
   ".mission-scene",
   ".hyper-band",
   ".risk-scenarios",
+  ".protection-narrative",
   ".process-scene",
   ".principles-scene",
+  ".engagement-scene",
   ".faq-scene",
   ".insights-scene",
   ".assessment-cta",
@@ -135,28 +137,28 @@ test.describe("Buckleson rebuild homepage", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/", { waitUntil: "networkidle" });
     const heroImage = page.locator("[data-cinematic-hero] img");
-    const mobileSource = page.locator("[data-cinematic-hero] picture source");
+    const mobileSource = page.locator('[data-cinematic-hero] picture source[media="(max-width: 62rem)"][type="image/avif"]');
     await expect(heroImage).toBeVisible();
     await expect(heroImage).toHaveAttribute("alt", /sculptural execution boundary/i);
-    await expect(heroImage).toHaveAttribute("src", /\/media\/buckleson-execution-boundary-1600\.webp/);
+    await expect(heroImage).toHaveAttribute("src", /\/media\/buckleson-execution-boundary-1586\.webp/);
     await expect(heroImage).toHaveAttribute("loading", "eager");
     await expect(heroImage).toHaveAttribute("fetchpriority", "high");
     await expect(mobileSource).toHaveAttribute("media", "(max-width: 62rem)");
-    await expect(mobileSource).toHaveAttribute("srcset", /\/media\/buckleson-execution-boundary-960\.webp/);
-    expect(heroRequests.filter((url) => url.endsWith("buckleson-execution-boundary-960.webp"))).toHaveLength(1);
-    expect(heroRequests.filter((url) => url.endsWith("buckleson-execution-boundary-1600.webp"))).toHaveLength(0);
+    await expect(mobileSource).toHaveAttribute("srcset", /\/media\/buckleson-execution-boundary-960\.avif/);
+    expect(heroRequests.filter((url) => /buckleson-execution-boundary-960\.(?:avif|webp)$/.test(url))).toHaveLength(1);
+    expect(heroRequests.filter((url) => /buckleson-execution-boundary-1586\.(?:avif|webp)$/.test(url))).toHaveLength(0);
 
     const html = await page.content();
     expect(html).not.toMatch(/spartanai\.framer\.website|pavii\.tech|framerusercontent\.com/i);
     expect(externalRequests).toEqual([]);
   });
 
-  test("links every product rail and spotlight item to its detail route", async ({ page }) => {
+  test("links every product rail and hero product item to its detail route", async ({ page }) => {
     await page.goto("/");
     for (const product of products) {
       const href = `/products/${product.slug}/`;
       await expect(page.locator(`.product-rail a[href="${href}"]`)).toHaveCount(1);
-      await expect(page.locator(`.hero-spotlight a[href="${href}"]`)).toHaveCount(1);
+      await expect(page.locator(`[data-hero-product-rail] a[href="${href}"]`)).toHaveCount(1);
     }
   });
 
@@ -189,11 +191,13 @@ test.describe("Buckleson rebuild homepage", () => {
     const motionState = await page.locator("[data-cinematic-hero]").evaluate((root) => ({
       animations: root.getAnimations({ subtree: true }).length,
       opacity: getComputedStyle(root.querySelector<HTMLElement>("[data-hero-reveal]")!).opacity,
-      spotlightTransform: getComputedStyle(root.querySelector<HTMLElement>("[data-hero-float]")!).transform,
+      mediaTransform: getComputedStyle(root.querySelector<HTMLElement>("[data-hero-media] img")!).transform,
+      cardTransition: getComputedStyle(root.querySelector<HTMLElement>("[data-hero-product-card]")!).transitionDuration,
     }));
     expect(motionState.animations).toBe(0);
     expect(Number.parseFloat(motionState.opacity)).toBeGreaterThan(0);
-    expect(motionState.spotlightTransform).toBe("none");
+    expect(motionState.mediaTransform).toBe("none");
+    expect(motionState.cardTransition.split(", ").every((duration) => duration === "0s")).toBe(true);
   });
 });
 

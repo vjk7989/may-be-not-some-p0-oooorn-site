@@ -114,7 +114,7 @@ Taste settings are **variance 6**, **motion 5**, and **density 4**. Pages vary t
 - **Soft violet (#EDE9FE):** Designed-for and explanatory states that must not be confused with verified capability.
 - **Muted (#5F6068), border (#D9D9E0), and surface white (#FFFFFF):** Supporting copy, dividers, and readable content surfaces.
 
-Use solid colors throughout content surfaces. Do not use gradients, neon glows, or color as the sole carrier of status. The shared navigation is the sole glass-material exception: a translucent floating surface with explicit solid fallbacks for unsupported blur, reduced transparency, and increased contrast.
+Use solid colors throughout content surfaces. Do not use gradients, neon glows, or color as the sole carrier of status. Glass is limited to two intentional surfaces: the shared translucent navigation and the dark hero product rail. Both require explicit solid fallbacks for unsupported blur, reduced transparency, and increased contrast.
 
 ## Typography
 
@@ -138,6 +138,7 @@ Controls use 6px corners, content surfaces 10px, and major technical panels 16px
 - **Cards:** Used only for independently actionable or comparable content; never nested.
 - **Status badges:** Always pair color with explicit text such as “Current capability,” “Pilot stage,” “Designed for,” or “Long-term vision.”
 - **Navigation:** Sticky, inset, and visually light. The shared shell uses one restrained translucent material with a subtle edge and short shadow; it must remain legible over page content and become near-solid when blur is unsupported, transparency is reduced, or contrast is increased. Desktop links remain visible; mobile uses an accessible sheet with focus return and Escape support. No other component inherits the glass treatment.
+- **Hero product rail:** Exactly three compact product links use restrained dark glass on desktop and horizontal scroll-snap on mobile. Product name, role, status, and destination remain readable without motion or backdrop-filter.
 - **Risk funnel:** Semantic ordered content is primary. SVG and moving tokens are decorative reinforcement only.
 - **Outcome chain:** Three semantic outcome articles share one visible connective path on desktop and stack into the same ordered path on mobile.
 - **Service list:** Use an asymmetric ruled list with explicit summaries and boundaries; do not present services as equal numbered cards.

@@ -1,114 +1,41 @@
----
-name: handoff
-description: Compact the current conversation into a handoff document for another agent to pick up.
-argument-hint: "What will the next session be used for?"
-disable-model-invocation: true
----
+# Buckleson handoff
 
-# Buckleson rebuild handoff
+## Current state
 
-## Next-session focus
+The full-site cinematic rebuild is implemented in the working tree. The pre-rebuild recovery branch remains `codex/pre-spartan-rebuild` at `de245a4`. Use `src/content/buckleson-site-content.ts` as the authoritative source for company, navigation, products, services, risks, statuses, CTA, media references, homepage order, and prohibited claims.
 
-Commit and push the completed Buckleson rebuild, monitor GitHub Pages, verify
-the live routes against the pushed SHA, and then review the deployed experience
-with the user. Preserve the approved content boundaries and treat each
-follow-up as a small graph-scoped task rather than reopening the whole design
-system.
+The homepage now has fifteen ordered scenes and an eager cinematic hero extending behind the preserved sticky glass navbar. Its product rail contains exactly three equal desktop glass links and becomes horizontal scroll-snap on mobile. Original local Buckleson media is delivered as responsive AVIF/WebP; supporting routes and product tiles use lazy, dimensioned media. About, Products, all three product details, Services, Blog, articles, and the custom 404 retain the shared cinematic system and static export.
 
-## Current status
+Implementation and rationale are recorded in `docs/architecture/DECISIONS.md` D-050. The independent contract is `tests/FULL_SITE_CINEMATIC_REBUILD_TEST_MATRIX.md`; inspect the current diff rather than duplicating it here.
 
-- The recoverable pre-rebuild site is preserved on branch
-  `codex/pre-spartan-rebuild` at commit `de245a4`.
-- The authoritative typed content contract was committed to `main` at
-  `9ea8efd`. Use
-  [`src/content/buckleson-site-content.ts`](../src/content/buckleson-site-content.ts)
-  as the source of company, navigation, page, product, service, risk, FAQ, CTA,
-  status, and prohibited-claim data.
-- The working tree contains the completed Buckleson rebuild: new homepage
-  presentation, shared navigation updates, product bento, original generated
-  responsive hero media, product detail routes, and refreshed About, Services,
-  Products, Blog, sitemap, styles, and validation coverage. Inspect the current
-  Git diff for the exact file set and implementation rather than relying on
-  this summary.
-- Superseded hero, platform, risk-landscape components and presentation-only
-  tests are removed in the working tree. Reusable accessibility utilities,
-  static-export configuration, local fonts, shadcn primitives, Anime.js,
-  existing articles, official brand assets, and the custom 404 remain part of
-  the project.
-- The generated hero source and its 960/1600 WebP derivatives live under
-  [`public/media`](../public/media). `CinematicHero` is a static Server
-  Component whose native `<picture>` keeps the mobile derivative and fallback
-  eagerly discoverable with high fetch priority, synchronous decoding, and
-  intrinsic dimensions. Its restrained product-spotlight drift is CSS-only;
-  reduced motion is static. Anime.js remains route-scoped to the custom 404.
-  Keep the official Buckleson and Hyper-0x source artwork unchanged.
-- The independent rebuild validation contract is in
-  [`tests/BUCKLESON_REBUILD_TEST_MATRIX.md`](../tests/BUCKLESON_REBUILD_TEST_MATRIX.md).
-  Focused rebuild coverage passes 18/18, accessibility passes 11/11, and the
-  preceding full E2E regression passes 90/90. The GitHub Pages validator also
-  passed before final publication.
-- The latest three-run Lighthouse cohort scored Performance 95/95/94,
-  Accessibility 100, Best Practices 96, and SEO 100. CLS is 0 and TBT is 42
-  ms. The simulated median LCP is 2,974.93 ms, so the 2,500 ms threshold still
-  fails and must not be claimed as passing. Raw browser LCP samples are
-  313–344 ms. A further modeled-LCP repair requires a larger shared-header
-  hydration redesign; this remains recorded debt in D-049.
-- The rebuild is deployed from commit
-  `3242325110f8b0e3fe35eb9ea20a953d52fc97f9`. GitHub Pages run
-  `35504119559` completed successfully. Live checks returned HTTP 200 for the
-  homepage, About, Products, all three product details, Services, Blog, and an
-  article; an unknown nested path returned the custom HTTP 404. The recoverable
-  `codex/pre-spartan-rebuild` branch is also present on the remote.
+## Validation
 
-## Sources of truth
-
-- Read [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) for design
-  decisions, constraints, consequences, implementation notes, and the current
-  codebase map.
-- Read
-  [`tests/BUCKLESON_REBUILD_TEST_MATRIX.md`](../tests/BUCKLESON_REBUILD_TEST_MATRIX.md)
-  for acceptance coverage and explicit not-applicable categories.
-- Read
-  [`src/content/buckleson-site-content.ts`](../src/content/buckleson-site-content.ts)
-  for approved content and claim boundaries.
-- Use `git diff` and `git status --short` for the exact uncommitted rebuild
-  state. Do not duplicate the architecture record, test matrix, or diff here.
+- Design lint, ESLint, typecheck, content, links, SEO, production build: passed.
+- Unit tests: 22/22 passed.
+- Focused cinematic browser tests: 7/7 passed.
+- Full browser suite: 97/97 passed.
+- Accessibility: 11/11 passed.
+- Aggregate `npm run test`: passed.
+- GitHub Pages deployment build and deterministic validator: passed.
+- Lighthouse: Performance 94/95/95, Accessibility 100, Best Practices 96, SEO 100, CLS 0, TBT 110/69/72 ms. Selected simulated LCP is 2,921.59 ms and still fails the 2.5-second budget; do not report performance as fully passing.
 
 ## Next steps
 
-1. Review the deployed experience with the user and limit the next edit to the
-   requested visual, copy, or interaction refinement.
-2. Preserve the qualified security language and do not represent the simulated
-   Lighthouse LCP budget as passing.
-3. Treat a shared-header hydration redesign as a separate measured task if the
-   user prioritizes closing the remaining modeled LCP debt.
+1. Review the working-tree diff and refreshed Graft graph.
+2. Commit and push the rebuild only after ensuring the deployment build remains the desired `out/` state.
+3. Monitor GitHub Pages and verify all live routes plus the custom 404.
+4. Treat closing the remaining modeled LCP debt as a separate measured header-hydration/performance task; do not hide the LCP candidate.
 
 ## Suggested skills
 
-- `impeccable` — audit hierarchy, editorial rhythm, bento composition,
-  responsiveness, and visual consistency during post-deployment review.
-- `emil-design-eng` — refine hover, focus, accordion, rail, and mega-menu motion
-  without adding unnecessary interaction machinery.
-- `apple-design` — assess the physical feel, interruption behavior, and
-  reduced-motion fallbacks of cinematic and navigation transitions.
-- `understand-anything:understand-diff` — map the blast radius and regressions
-  of requested follow-up changes before editing.
+- `impeccable` for visual refinement and hierarchy review.
+- `emil-design-eng` for interaction polish without expanding runtime scope.
+- `apple-design` for motion and reduced-motion review.
+- `understand-anything:understand-diff` before broad follow-up edits.
 
 ## Guardrails
 
-- Follow the graph-first dependency DAG, YAGNI, workspace-only storage,
-  independent test roles, Graft refresh, and documentation rules in
-  `AGENTS.md`.
-- Preserve the navbar order `Home · About · Products · Services · Blog ·
-  Contact Us`, centered primary links, mega-menu pointer corridor, keyboard and
-  touch behavior, and the violet Cal.com CTA unless the user explicitly asks
-  to change them.
-- Do not introduce copied reference assets, fabricated clients, testimonials,
-  team members, prices, certifications, deployments, or unsupported
-  performance claims.
-- Do not publish guarantees of safety, privacy, universal attack detection,
-  model-truth verification, or confidential computing.
-- Keep social navigation hidden until real links are supplied.
-- Keep static export and GitHub Pages base-path behavior intact. Do not add a
-  CMS, database, authentication, analytics, newsletter backend, pricing
-  system, contact-form backend, or another animation framework.
+- Preserve the exact navbar order, centered links, mega-menu behavior, violet Cal.com CTA, official brand files, qualified security claims, static export, and Pages base-path behavior.
+- Do not add copied reference assets, fabricated customers, statistics, testimonials, team members, prices, certifications, deployment claims, or guarantees.
+- Keep glass limited to the navbar and hero product rail. Keep social links hidden until supplied.
+- Continue the graph-first DAG, YAGNI, workspace-only tools, independent test roles, and focused-gate workflow from `AGENTS.md`.

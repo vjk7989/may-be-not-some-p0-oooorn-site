@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, ShieldCheck } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { bucklesonSiteContent } from "@/content/buckleson-site-content";
@@ -10,15 +10,17 @@ export function CinematicHero() {
 
   return (
     <div className="cinematic-hero" data-cinematic-hero>
-      <div className="cinematic-hero-media">
+      <div className="cinematic-hero-media" data-hero-media>
         <picture>
+          <source media="(max-width: 62rem)" type="image/avif" srcSet={withBasePath("/media/buckleson-execution-boundary-960.avif")} />
           <source
             media="(max-width: 62rem)"
             srcSet={withBasePath("/media/buckleson-execution-boundary-960.webp")}
           />
+          <source type="image/avif" srcSet={withBasePath("/media/buckleson-execution-boundary-1586.avif")} />
           {/* The responsive files are pre-generated; a native image avoids delaying the LCP paint behind Next's client image runtime. */}
           <img
-            src={withBasePath("/media/buckleson-execution-boundary-1600.webp")}
+            src={withBasePath("/media/buckleson-execution-boundary-1586.webp")}
             alt="A sculptural execution boundary in a warm technical landscape"
             width={1586}
             height={992}
@@ -40,13 +42,17 @@ export function CinematicHero() {
             <Button asChild variant="secondary"><Link href="/products/">Explore the platform <ArrowRight aria-hidden="true" /></Link></Button>
           </div>
         </div>
-        <aside className="hero-spotlight" data-hero-float aria-label="Buckleson platform spotlight">
-          <div className="hero-spotlight-topline"><span><ShieldCheck aria-hidden="true" /> Execution boundary</span><span className="live-status"><i /> Current capability</span></div>
-          <p className="hero-spotlight-title">One protected path from context to action.</p>
-          <div className="hero-spotlight-products">
-            {products.map((product, index) => <Link href={`/products/${product.slug}/`} key={product.slug}><span>0{index + 1}</span><strong>{product.name}</strong><small>{product.role}</small><ArrowUpRight aria-hidden="true" /></Link>)}
-          </div>
-        </aside>
+        <nav className="hero-product-rail" data-hero-product-rail aria-label="Buckleson products">
+          {products.map((product, index) => (
+            <Link className="hero-product-card" data-hero-product-card href={`/products/${product.slug}/`} aria-label={`Explore ${product.name}`} key={product.slug}>
+              <span className="hero-product-index">0{index + 1}</span>
+              <span className="hero-product-status"><i aria-hidden="true" />Current capability</span>
+              <h2>{product.name}</h2>
+              <p>{product.role}</p>
+              <span className="hero-product-link" aria-hidden="true">Explore <ArrowUpRight /></span>
+            </Link>
+          ))}
+        </nav>
       </div>
     </div>
   );
