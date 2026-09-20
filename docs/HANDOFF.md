@@ -5,99 +5,112 @@ argument-hint: "What will the next session be used for?"
 disable-model-invocation: true
 ---
 
-# Spinning execution sphere release handoff
+# Buckleson rebuild handoff
 
 ## Next-session focus
 
-Review the deployed homepage hero with the user, make only requested visual or
-interaction refinements, then begin the previously deferred Cloudflare-inspired
-navbar expansion as a separate graph-scoped task. Do not combine speculative
-navbar changes with hero feedback.
+Commit and push the completed Buckleson rebuild, monitor GitHub Pages, verify
+the live routes against the pushed SHA, and then review the deployed experience
+with the user. Preserve the approved content boundaries and treat each
+follow-up as a small graph-scoped task rather than reopening the whole design
+system.
 
-## Current release state
+## Current status
 
-- The homepage hero's right-side execution card has been replaced locally by an
-  open Buckleson execution-sphere composition. Data, Identity, Tools, and
-  Actions flow through rotating boundary layers to Protected context,
-  Controlled action, and Execution evidence. The official Buckleson logo stays
-  fixed above the moving SVG field.
-- Protect data is initially selected. Pointer hover, keyboard focus, and button
-  activation persistently select one outcome at a time. All stages remain
-  present in server-rendered markup for no-JavaScript and assistive-technology
-  use.
-- Anime.js is loaded inside the hero client boundary after fonts are ready and
-  the browser grants idle time. The implementation cancels pending startup,
-  skips motion for reduced-motion users, and scopes cleanup to the component.
-  Supporting routes remain outside this hero boundary.
-- Production changes are limited to
-  [`src/components/hero-execution-sphere.tsx`](../src/components/hero-execution-sphere.tsx),
-  [`src/app/page.tsx`](../src/app/page.tsx), and
-  [`src/app/globals.css`](../src/app/globals.css).
-- The risk-based contract and focused browser coverage are maintained in
-  [`tests/HERO_EXECUTION_SPHERE_TEST_MATRIX.md`](../tests/HERO_EXECUTION_SPHERE_TEST_MATRIX.md)
-  and
-  [`tests/e2e/hero-execution-sphere.spec.ts`](../tests/e2e/hero-execution-sphere.spec.ts).
-  Use the latest hero-sphere decision in
-  [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) for rationale,
-  constraints, and verified gate results rather than duplicating them here.
-- Hero release commit `7f5535a` is pushed to `main`. GitHub Pages run
-  `35494941594` completed successfully, and the live page was verified at
-  `https://vjk7989.github.io/may-be-not-some-p0-oooorn-site/`, including the
-  deployed input/output content, fixed logo, motion, and persistent Control
-  actions selection.
-- The existing Lighthouse LCP and dependency-audit findings remain separate
-  accepted debt. Do not report either as resolved unless fresh evidence in the
-  architecture record says otherwise, and do not use `npm audit fix --force`.
+- The recoverable pre-rebuild site is preserved on branch
+  `codex/pre-spartan-rebuild` at commit `de245a4`.
+- The authoritative typed content contract was committed to `main` at
+  `9ea8efd`. Use
+  [`src/content/buckleson-site-content.ts`](../src/content/buckleson-site-content.ts)
+  as the source of company, navigation, page, product, service, risk, FAQ, CTA,
+  status, and prohibited-claim data.
+- The working tree contains the completed Buckleson rebuild: new homepage
+  presentation, shared navigation updates, product bento, original generated
+  responsive hero media, product detail routes, and refreshed About, Services,
+  Products, Blog, sitemap, styles, and validation coverage. Inspect the current
+  Git diff for the exact file set and implementation rather than relying on
+  this summary.
+- Superseded hero, platform, risk-landscape components and presentation-only
+  tests are removed in the working tree. Reusable accessibility utilities,
+  static-export configuration, local fonts, shadcn primitives, Anime.js,
+  existing articles, official brand assets, and the custom 404 remain part of
+  the project.
+- The generated hero source and its 960/1600 WebP derivatives live under
+  [`public/media`](../public/media). `CinematicHero` is a static Server
+  Component whose native `<picture>` keeps the mobile derivative and fallback
+  eagerly discoverable with high fetch priority, synchronous decoding, and
+  intrinsic dimensions. Its restrained product-spotlight drift is CSS-only;
+  reduced motion is static. Anime.js remains route-scoped to the custom 404.
+  Keep the official Buckleson and Hyper-0x source artwork unchanged.
+- The independent rebuild validation contract is in
+  [`tests/BUCKLESON_REBUILD_TEST_MATRIX.md`](../tests/BUCKLESON_REBUILD_TEST_MATRIX.md).
+  Focused rebuild coverage passes 18/18, accessibility passes 11/11, and the
+  preceding full E2E regression passes 90/90. The GitHub Pages validator also
+  passed before final publication.
+- The latest three-run Lighthouse cohort scored Performance 95/95/94,
+  Accessibility 100, Best Practices 96, and SEO 100. CLS is 0 and TBT is 42
+  ms. The simulated median LCP is 2,974.93 ms, so the 2,500 ms threshold still
+  fails and must not be claimed as passing. Raw browser LCP samples are
+  313–344 ms. A further modeled-LCP repair requires a larger shared-header
+  hydration redesign; this remains recorded debt in D-049.
+- GitHub push, Pages deployment monitoring, and live-route verification are
+  still pending. Do not claim the rebuild is deployed until the pushed commit
+  SHA and successful Pages run are verified against the live site.
 
-## Release evidence
+## Sources of truth
 
-- Focused hero suite: 18/18 passing.
-- Full browser regression: 121/121 passing after an isolated Axe rerun confirmed
-  one aggregate timeout was transient worker contention.
-- Design lint, lint, typecheck, unit, content, links, SEO, accessibility,
-  static build, GitHub Pages pre-deployment validation, and Graft check pass.
-- Latest Lighthouse cohort: Performance 0.96, Accessibility 1.00, Best
-  Practices 0.96, SEO 1.00, CLS 0, and median TBT 32.5 ms. Median LCP is
-  2,825.15 ms, restored to the prior baseline but still above the 2.5 s budget;
-  `test:performance` therefore correctly exits 1 and must not be described as
-  green.
+- Read [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) for design
+  decisions, constraints, consequences, implementation notes, and the current
+  codebase map.
+- Read
+  [`tests/BUCKLESON_REBUILD_TEST_MATRIX.md`](../tests/BUCKLESON_REBUILD_TEST_MATRIX.md)
+  for acceptance coverage and explicit not-applicable categories.
+- Read
+  [`src/content/buckleson-site-content.ts`](../src/content/buckleson-site-content.ts)
+  for approved content and claim boundaries.
+- Use `git diff` and `git status --short` for the exact uncommitted rebuild
+  state. Do not duplicate the architecture record, test matrix, or diff here.
 
-## Post-deployment review
+## Completion sequence
 
-- Ask for feedback on the sphere's scale, spatial balance, rotation speed,
-  input/output legibility, and control density before changing the approved
-  hero copy or information architecture.
-- Treat any accepted hero refinement as its own small dependency graph with
-  focused tests before regressions.
-- After the hero is accepted, scope the deferred navbar task from the existing
-  shared-header decisions and navbar tests. Preserve the current true-centered
-  primary navigation, separate Contact Us CTA, pointer corridor, route
-  semantics, keyboard behavior, and mobile Sheet unless the user explicitly
-  changes those requirements.
+1. Refresh Graft, run the final deterministic documentation/diff checks, and
+   confirm no unrelated artifact remains in the working tree.
+2. Commit the completed rebuild and push `main`.
+3. Monitor GitHub Pages and verify the homepage, About, Products, three product
+   details, Services, Blog/articles, and an unknown nested 404 against the
+   pushed SHA. Do not represent Lighthouse LCP as passing.
+4. If publication or live verification fails, use an independent
+   failure-analysis role, apply the smallest valid repair, rerun the affected
+   gate, and redeploy.
+5. Review the live result with the user. Limit the next edit to their requested
+   refinement and preserve qualified security language.
 
 ## Suggested skills
 
-- `impeccable` — assess the deployed sphere's hierarchy, composition,
-  responsiveness, and motion restraint before proposing refinements.
-- `emil-design-eng` — tune hover, focus, selection, and animation feedback if
-  the user requests interaction polish.
-- `apple-design` — review physical motion, reduced-motion behavior, and
-  interruptible state transitions when adjusting the sphere or navbar.
-- `understand-anything:understand-diff` — map the blast radius of any follow-up
-  hero or shared-header change before editing.
+- `impeccable` — audit hierarchy, editorial rhythm, bento composition,
+  responsiveness, and visual consistency during post-deployment review.
+- `emil-design-eng` — refine hover, focus, accordion, rail, and mega-menu motion
+  without adding unnecessary interaction machinery.
+- `apple-design` — assess the physical feel, interruption behavior, and
+  reduced-motion fallbacks of cinematic and navigation transitions.
+- `understand-anything:understand-diff` — map the blast radius and regressions
+  of requested follow-up changes before editing.
 
 ## Guardrails
 
-- Follow the graph-first dependency-DAG, YAGNI, workspace-storage, independent
-  test-role, Graft-refresh, and context-update rules in `AGENTS.md`.
-- Keep the official Buckleson source asset unchanged in hash, dimensions, and
-  proportions. Only boundary rings, paths, particles, and the aperture may
-  move; the central logo must remain stationary and readable.
-- Preserve exact product-claim boundaries. The visualization must not imply
-  guaranteed safety, correctness, privacy, or universal approval.
-- Do not add WebGL, canvas, Three.js, cursor tracking, randomness, gradients,
-  neon styling, another animation dependency, or a generalized animation
-  framework.
-- Keep the existing left-side hero copy, CTA destinations, viewport-fit
-  behavior, animated 404, static export, and supporting routes unchanged unless
-  the user explicitly requests otherwise.
+- Follow the graph-first dependency DAG, YAGNI, workspace-only storage,
+  independent test roles, Graft refresh, and documentation rules in
+  `AGENTS.md`.
+- Preserve the navbar order `Home · About · Products · Services · Blog ·
+  Contact Us`, centered primary links, mega-menu pointer corridor, keyboard and
+  touch behavior, and the violet Cal.com CTA unless the user explicitly asks
+  to change them.
+- Do not introduce copied reference assets, fabricated clients, testimonials,
+  team members, prices, certifications, deployments, or unsupported
+  performance claims.
+- Do not publish guarantees of safety, privacy, universal attack detection,
+  model-truth verification, or confidential computing.
+- Keep social navigation hidden until real links are supplied.
+- Keep static export and GitHub Pages base-path behavior intact. Do not add a
+  CMS, database, authentication, analytics, newsletter backend, pricing
+  system, contact-form backend, or another animation framework.

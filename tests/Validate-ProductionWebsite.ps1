@@ -16,7 +16,9 @@ $ArticleSlugs = @(
     'excessive-agency',
     'ai-audit-trails'
 )
+$ProductSlugs = @('hyper-tern', 'hyper-abs', 'hyper-0x')
 $Routes = @('/', '/products', '/services', '/about', '/blog') +
+    @($ProductSlugs | ForEach-Object { "/products/$_" }) +
     @($ArticleSlugs | ForEach-Object { "/blog/$_" })
 $failures = [System.Collections.Generic.List[string]]::new()
 
@@ -254,22 +256,19 @@ if ($pages.ContainsKey('/')) {
         'We help you use AI safely.',
         'A Trust & Execution Layer for AI Infrastructure.',
         'We secure how AI runs — not what AI thinks.',
-        'For companies, organizations, and individual users connecting AI to sensitive data, tools, applications, and devices.'
+        'Buckleson helps companies, organizations, and individual users connect AI to sensitive data, tools, applications, and devices within clearer protection, policy, and evidence boundaries.'
     )) { Assert-Contains $homePageText $phrase "Homepage is missing approved copy: $phrase" }
     $homeH1 = @(Get-H1Texts $pages['/'].Html)
     if ($homeH1.Count -eq 1 -and $homeH1[0].Length -gt 60) { Add-Failure "Homepage H1 exceeds 60 characters" }
-    foreach ($phrase in @('Book a Security Assessment', 'Explore the platform', 'Protect data', 'Control actions', 'Verify execution')) {
+    foreach ($phrase in @('Book a Security Assessment', 'Explore the platform', 'Protect information', 'Control execution', 'Preserve evidence')) {
         Assert-Contains $homePageText $phrase "Homepage is missing: $phrase"
     }
-    Assert-Ordered $homePageText @('copilots', 'Prompt Injection', 'Buckleson', 'individual users') 'Risk Landscape must read from agents through risk and Buckleson to destinations'
     foreach ($risk in @(
         'Prompt Injection', 'Sensitive Information Disclosure', 'Excessive Agency',
         'Intent Breaking & Goal Manipulation (Agentic T6)', 'Tool Misuse (Agentic T2)',
         'Memory Poisoning (Agentic T1)'
     )) { Assert-Contains $homePageText $risk "Homepage Risk Landscape is missing: $risk" }
-    foreach ($destination in @('individual users', 'servers', 'applications', 'devices')) { Assert-Contains $homePageText $destination "Risk Landscape is missing destination: $destination" }
-    if (-not [regex]::IsMatch($pages['/'].Html, '<(?:ol|figure)\b[^>]*(?:aria-label|aria-labelledby)=[\x22\x27][^\x22\x27]+', 'IgnoreCase')) { Add-Failure 'Risk Landscape needs a labelled semantic figure or ordered list' }
-    if (-not [regex]::IsMatch($pages['/'].Html, 'aria-hidden=[\x22\x27]true[\x22\x27]', 'IgnoreCase')) { Add-Failure 'Risk Landscape decorative motion needs aria-hidden=true' }
+    foreach ($section in @('Why Buckleson', 'Platform responsibilities', 'Products', 'Capabilities', 'Mission', 'AI risk scenarios', 'Engagement process', 'Company principles', 'Security FAQ', 'Field notes')) { Assert-Contains $homePageText $section "Homepage is missing section: $section" }
 }
 
 if ($pages.ContainsKey('/products')) {
@@ -278,8 +277,7 @@ if ($pages.ContainsKey('/products')) {
         'Hyper Tern', 'routing', 'identity', 'permissions', 'policy', 'tools', 'action boundaries',
         'Hyper-ABS', 'masking', 'redaction', 'tokenization', 'abstraction', 'pre-inference',
         'Hyper-0x', 'in-house blockchain', 'tamper-evident', 'execution records', 'verification', 'audit', 'settlement',
-        'Current', 'Designed for', 'quantum-resistant', 'four-layer encryption', 'interoperability',
-        'account abstraction', 'task side-chains', 'high-velocity finality'
+        'Current', 'Designed for', 'quantum-resistant', 'four-layer encryption'
     )) {
         Assert-Contains $text $phrase "Products page is missing product/status content: $phrase"
     }

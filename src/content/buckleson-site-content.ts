@@ -90,7 +90,7 @@ export interface SiteContent {
   prohibitedClaims: readonly string[];
 }
 
-export const bucklesonSiteContent = {
+export const bucklesonSiteContent: SiteContent = {
   company: {
     name: "Buckleson",
     positioning: "We secure how AI runs — not what AI thinks.",
@@ -335,7 +335,7 @@ export const bucklesonSiteContent = {
     "confidential computing",
     "proves model truth",
   ],
-} as const satisfies SiteContent;
+};
 
 export const getProductBySlug = (slug: ProductContent["slug"]) =>
   bucklesonSiteContent.products.find((product) => product.slug === slug);

@@ -58,19 +58,19 @@ function cssTimeToSeconds(value: string) {
 
 const outcomes = [
   {
-    title: "Protect data",
+    title: "Protect information",
     description:
-      "Reduce unnecessary sensitive-data exposure before approved information reaches a model.",
+      "Reduces unnecessary sensitive-data exposure while retaining the context needed for an approved AI task.",
   },
   {
-    title: "Control actions",
+    title: "Control execution",
     description:
-      "Check identities, permissions, tools, resources, and downstream actions against policy.",
+      "Mediates AI requests so identities, permissions, tools, resources, and downstream actions can be checked against policy before execution.",
   },
   {
-    title: "Verify execution",
+    title: "Preserve evidence",
     description:
-      "Preserve attributable, tamper-evident records that support audit and settlement.",
+      "Buckleson’s in-house blockchain for attributable, tamper-evident execution records, verification, audit, and settlement.",
   },
 ] as const;
 
@@ -78,7 +78,7 @@ const services = [
   {
     name: "AI Security",
     summary:
-      "Assess the data, permissions, tools, and actions around an AI workflow, then define practical control boundaries.",
+      "Assess the data, permissions, tools, actions, and evidence around an AI workflow, then define practical control boundaries.",
     boundary:
       "Security controls help reduce risk; they do not guarantee that every attack or unsafe outcome is prevented.",
   },
@@ -87,25 +87,15 @@ const services = [
     summary:
       "Protect and control information around the inference path through minimization, transformation, routing, and policy enforcement.",
     boundary:
-      "This describes protection around inference. It is not a claim of confidential computing or proof of model correctness.",
+      "This is protection around inference, not a claim of confidential computing or proof of model correctness.",
   },
   {
     name: "Custom AI",
     summary:
-      "Provide custom AI model development and fine-tuning for defined business requirements while keeping deployment controls and evaluation criteria explicit.",
+      "Develop or fine-tune models for defined business requirements while keeping data permissions, evaluation criteria, and deployment controls explicit.",
     boundary:
-      "Model work is scoped to agreed requirements, data permissions, evaluation evidence, and deployment responsibilities.",
+      "Model work remains scoped to approved data, measurable requirements, evaluation evidence, and organizational responsibility.",
   },
-] as const;
-
-const hyperExplanation =
-  "Hyper-0x is Buckleson’s in-house blockchain for tamper-evident execution records, verification, audit, and settlement. It can preserve evidence of what was authorized and recorded; it does not prove that a model response is true or make private data confidential.";
-
-const hyperDefinitions = [
-  ["Record", "Attributable events from an approved execution path."],
-  ["Verify", "Detect changes to recorded evidence."],
-  ["Audit", "Reconstruct a useful chain of activity."],
-  ["Settle", "Support accountable machine-to-machine outcomes."],
 ] as const;
 
 test.describe("production route contract", () => {
@@ -527,7 +517,7 @@ test("Buckleson logo rounding preserves original bytes and rendered proportions"
     });
     expect(sourceDimensions).toEqual({ width: 322, height: 308 });
 
-    const logos = page.locator("img.brand-logo-image, img.boundary-logo");
+    const logos = page.locator("img.brand-logo-image");
     expect(await logos.count(), "expected shared header and footer logo instances").toBeGreaterThanOrEqual(2);
 
     for (let index = 0; index < await logos.count(); index += 1) {
@@ -577,9 +567,6 @@ test("Buckleson logo rounding preserves original bytes and rendered proportions"
         "Buckleson home",
       );
     }
-
-    await expect(page.locator(".boundary-logo")).toHaveAttribute("alt", "");
-    await expect(page.locator(".boundary-logo").locator("xpath=ancestor::a[1]")).toHaveCount(0);
 
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -940,7 +927,7 @@ test("homepage polish preserves meaning while changing composition", async ({ pa
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
 
-  const outcomeItems = page.locator(".outcomes-section article.outcome-item");
+  const outcomeItems = page.locator(".responsibilities-scene .responsibility-grid article");
   await expect(outcomeItems).toHaveCount(outcomes.length);
   for (const [index, outcome] of outcomes.entries()) {
     const item = outcomeItems.nth(index);
@@ -948,55 +935,35 @@ test("homepage polish preserves meaning while changing composition", async ({ pa
     await expect(item.getByText(outcome.description, { exact: true })).toBeVisible();
   }
 
-  const outcomeConnectors = outcomeItems.locator(
-    ".outcome-connector[aria-hidden=\"true\"]",
-  );
-  await expect(outcomeConnectors).toHaveCount(2);
-  await expect(
-    outcomeItems.nth(0).locator('.outcome-connector[aria-hidden="true"]'),
-  ).toHaveCount(1);
-  await expect(
-    outcomeItems.nth(1).locator('.outcome-connector[aria-hidden="true"]'),
-  ).toHaveCount(1);
-  await expect(
-    outcomeItems.nth(2).locator('.outcome-connector[aria-hidden="true"]'),
-  ).toHaveCount(0);
-
-  const serviceItems = page.locator(".services-section .service-layout article");
+  const serviceItems = page.locator(".capability-scene .disclosure-list > details");
   await expect(serviceItems).toHaveCount(services.length);
   for (const [index, service] of services.entries()) {
     const item = serviceItems.nth(index);
-    await expect(item.getByRole("heading", { name: service.name, exact: true })).toBeVisible();
-    await expect(item.getByText(service.summary, { exact: true })).toBeVisible();
-    await expect(item.getByText(service.boundary, { exact: true })).toBeVisible();
+    await expect(item.locator("summary")).toContainText(service.name);
+    await expect(item).toContainText(service.summary);
+    await expect(item).toContainText(service.boundary);
   }
-  await expect(page.locator(".services-section .service-number")).toHaveCount(0);
-  await expect(page.locator(".services-section .service-featured")).toHaveCount(0);
-  await expect(
-    page.getByRole("link", { name: /view all services/i, exact: false }),
-  ).toHaveAttribute("href", "/services/");
 
-  const hyper = page.locator(".hyper-section");
+  const hyper = page.locator(".hyper-band");
   await expect(hyper.getByText("Current capability", { exact: true })).toBeVisible();
   await expect(
     hyper.getByRole("heading", {
-      name: "Evidence that is harder to rewrite after the fact.",
+      name: "Records that are harder to rewrite after the fact.",
       exact: true,
     }),
   ).toBeVisible();
-  await expect(hyper.getByText(hyperExplanation, { exact: true })).toBeVisible();
-  const definitionRows = hyper.locator(".hyper-definitions > div");
-  await expect(definitionRows).toHaveCount(hyperDefinitions.length);
-  for (const [index, [term, definition]] of hyperDefinitions.entries()) {
-    await expect(definitionRows.nth(index).locator("dt")).toHaveText(term);
-    await expect(definitionRows.nth(index).locator("dd")).toHaveText(definition);
+  const evidenceSteps = hyper.locator(".evidence-diagram span");
+  const expectedSteps = ["Attribute", "Record", "Verify", "Audit"];
+  await expect(evidenceSteps).toHaveCount(expectedSteps.length);
+  for (const [index, step] of expectedSteps.entries()) {
+    await expect(evidenceSteps.nth(index)).toHaveText(step);
   }
   await expect(hyper.getByRole("link", { name: "Explore Hyper-0x", exact: true })).toHaveAttribute(
     "href",
-    "/products/#hyper-0x",
+    "/products/hyper-0x/",
   );
 
-  const hyperOverflow = await page.locator(".hyper-layout").evaluate((layout) => {
+  const hyperOverflow = await page.locator(".hyper-band-layout").evaluate((layout) => {
     const container = layout.getBoundingClientRect();
     const tolerance = 1;
 
@@ -1047,14 +1014,14 @@ for (const viewport of [
     await expect(page.locator("h1")).toBeVisible();
     await expect(page.getByRole("link", { name: /book a security assessment/i }).first()).toBeVisible();
     for (const outcome of outcomes) {
-      await expect(page.getByRole("heading", { name: outcome.title, exact: true })).toBeVisible();
+      await expect(page.locator(".responsibilities-scene").getByRole("heading", { name: outcome.title, exact: true })).toBeVisible();
     }
     for (const service of services) {
-      await expect(page.getByRole("heading", { name: service.name, exact: true })).toBeVisible();
+      await expect(page.locator(".capability-scene").getByText(service.name, { exact: true })).toBeVisible();
     }
     await expect(
       page.getByRole("heading", {
-        name: "Evidence that is harder to rewrite after the fact.",
+        name: "Records that are harder to rewrite after the fact.",
         exact: true,
       }),
     ).toBeVisible();
@@ -1081,12 +1048,12 @@ test("200 percent text sizing preserves the core path", async ({ page }) => {
   await expect(page.getByRole("link", { name: /book a security assessment/i }).first()).toBeVisible();
 });
 
-test("reduced motion keeps the full Risk Landscape visible", async ({ page }) => {
+test("reduced motion keeps every AI risk scenario visible", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  const landscape = page.getByRole("region", { name: /risk landscape/i }).or(page.locator('[aria-label*="Risk Landscape"]')).first();
+  const landscape = page.getByRole("region", { name: "Scrollable AI risk scenarios" });
   await expect(landscape).toBeVisible();
-  for (const phrase of ["Prompt Injection", "Buckleson", "individual users", "servers", "applications", "devices"]) {
+  for (const phrase of ["Prompt Injection", "Sensitive Information Disclosure", "Excessive Agency", "Tool Misuse (Agentic T2)"]) {
     await expect(landscape.getByText(phrase, { exact: false }).first()).toBeVisible();
   }
   const moving = landscape.locator('[data-motion], .motion-token, [class*="animate"]');

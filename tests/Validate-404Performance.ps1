@@ -103,7 +103,6 @@ foreach ($sourceFile in (Get-SourceFiles $resolvedSource)) {
 }
 $allowedAnimeImports = @{
     'not-found-motion' = @('animejs')
-    'hero-execution-sphere' = @('animejs/animation', 'animejs/scope', 'animejs/engine')
 }
 $animeImportsByComponent = $animeImportRecords | Group-Object {
     [IO.Path]::GetFileNameWithoutExtension([string]$_.Path)

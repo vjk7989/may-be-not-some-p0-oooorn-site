@@ -16,36 +16,25 @@ const topLevel = [
 const groups = {
   about: [
     { label: "About Buckleson", href: "/about/" },
-    { label: "Protection layers", href: "/about/#protect-title" },
-    { label: "Human responsibility", href: "/about/#responsibility-title" },
-    { label: "Journey and vision", href: "/about/#status-title" },
+    { label: "How we protect", href: "/about/#how-we-protect" },
+    { label: "Vision", href: "/about/#vision" },
   ],
   products: [
-    { label: "All products", href: "/products/" },
-    { label: "Hyper Tern", href: "/products/#hyper-tern" },
-    { label: "Hyper-ABS", href: "/products/#hyper-abs" },
-    { label: "Hyper-0x", href: "/products/#hyper-0x" },
+    { label: "Product overview", href: "/products/" },
+    { label: "Hyper Tern", href: "/products/hyper-tern/" },
+    { label: "Hyper-ABS", href: "/products/hyper-abs/" },
+    { label: "Hyper-0x", href: "/products/hyper-0x/" },
   ],
   services: [
-    { label: "All services", href: "/services/" },
     { label: "AI Security", href: "/services/#ai-security" },
     { label: "Secure Inference", href: "/services/#secure-inference" },
     { label: "Custom AI", href: "/services/#custom-ai" },
   ],
   blog: [
-    { label: "All articles", href: "/blog/" },
-    {
-      label: "AI Agent Security: A Practical Guide to Data, Tools, and Actions",
-      href: "/blog/ai-agent-security/",
-    },
-    {
-      label: "Prompt Injection Prevention for AI Agents",
-      href: "/blog/prompt-injection-prevention/",
-    },
-    {
-      label: "Secure AI Inference: Protecting Data Around Model Execution",
-      href: "/blog/secure-ai-inference/",
-    },
+    { label: "All guides", href: "/blog/" },
+    { label: "AI agent security", href: "/blog/ai-agent-security/" },
+    { label: "Prompt injection", href: "/blog/prompt-injection-prevention/" },
+    { label: "Secure inference", href: "/blog/secure-ai-inference/" },
   ],
 } as const;
 

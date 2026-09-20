@@ -18,14 +18,18 @@ const viewports = [
 ] as const;
 
 const sectionClasses = [
-  "hero-section",
-  "risk-section",
-  "outcomes-section",
-  "products-section",
-  "hyper-section",
-  "services-section",
-  "industries-section",
-  "articles-section",
+  "home-hero",
+  "statement-scene",
+  "responsibilities-scene",
+  "product-rail-scene",
+  "capability-scene",
+  "mission-scene",
+  "hyper-band",
+  "risk-scenarios",
+  "process-scene",
+  "principles-scene",
+  "faq-scene",
+  "insights-scene",
   "assessment-cta",
 ] as const;
 
@@ -277,7 +281,7 @@ test("404 supports a 200 percent text-scale equivalent", async ({ page }) => {
 test.describe("bounded homepage performance regressions", () => {
   test("hero stays eager while every non-hero scene defers rendering", async ({ page }) => {
     await page.goto("/");
-    const sections = page.locator("main#main-content > [data-viewport-section]");
+    const sections = page.locator("main#main-content > section");
     await expect(sections).toHaveCount(sectionClasses.length);
     for (const [index, expectedClass] of sectionClasses.entries()) {
       const section = sections.nth(index);
@@ -302,95 +306,52 @@ test.describe("bounded homepage performance regressions", () => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
     await page.goto("/");
-    const sections = page.locator("main#main-content > [data-viewport-section]");
+    const sections = page.locator("main#main-content > section");
     await expect(sections).toHaveCount(sectionClasses.length);
-    await expect(page.locator("#platform")).toHaveCount(1);
+    await expect(page.locator(".product-rail-card")).toHaveCount(3);
     for (const section of await sections.all()) {
       expect((await section.textContent())?.trim().length).toBeGreaterThan(0);
     }
     await context.close();
   });
 
-  test("critical and deferred images use reserved optimized local assets", async ({ page }) => {
+  test("critical identity and hero images are local, reserved, and optimized", async ({ page }) => {
     await page.goto("/");
-    const brandImages = [page.locator(".brand-logo-image").first(), page.locator(".boundary-logo")];
-    const hyperImage = page.locator(".hyper-mark");
+    const images = [page.locator(".brand-logo-image").first(), page.locator("[data-cinematic-hero] img")];
 
-    for (const image of brandImages) {
+    for (const image of images) {
       await expect(image).toBeVisible();
       const data = await image.evaluate((element) => {
-        const image = element as HTMLImageElement;
+        const asset = element as HTMLImageElement;
         return {
-          src: image.currentSrc || image.src,
-          width: image.getAttribute("width"),
-          height: image.getAttribute("height"),
-          loading: image.getAttribute("loading"),
-          decoding: image.decoding,
+          src: asset.currentSrc || asset.src,
+          width: asset.getAttribute("width"),
+          height: asset.getAttribute("height"),
+          naturalWidth: asset.naturalWidth,
+          naturalHeight: asset.naturalHeight,
         };
       });
-      expect(new URL(data.src).hostname).toMatch(/^(?:127\.0\.0\.1|localhost)$/);
-      expect(new URL(data.src).pathname).not.toMatch(/\/brand\/buckleson-logo\.jpg$/);
+      const source = new URL(data.src);
+      expect(source.hostname).toMatch(/^(?:127\.0\.0\.1|localhost)$/);
       expect(data.width).toMatch(/^\d+$/);
       expect(data.height).toMatch(/^\d+$/);
-      expect(data.loading).not.toBe("lazy");
-      expect(data.decoding).toBe("async");
-      const brandPath = new URL(data.src).pathname.slice(new URL(data.src).pathname.indexOf("/brand/") + 1);
-      expect(statSync(resolve(process.cwd(), "public", brandPath)).size).toBeLessThan(
-        statSync(resolve(process.cwd(), "public", "brand/buckleson-logo.jpg")).size,
-      );
+      expect(data.naturalWidth).toBeGreaterThan(0);
+      expect(data.naturalHeight).toBeGreaterThan(0);
     }
 
-    const hyperData = await hyperImage.evaluate((element) => {
-      const image = element as HTMLImageElement;
-      return {
-        src: image.currentSrc || image.src,
-        width: image.getAttribute("width"),
-        height: image.getAttribute("height"),
-        loading: image.getAttribute("loading"),
-        decoding: image.decoding,
-      };
-    });
-    expect(new URL(hyperData.src).hostname).toMatch(/^(?:127\.0\.0\.1|localhost)$/);
-    expect(new URL(hyperData.src).pathname).not.toMatch(/\/brand\/hyper-0x-logo\.png$/);
-    expect(hyperData.width).toMatch(/^\d+$/);
-    expect(hyperData.height).toMatch(/^\d+$/);
-    expect(hyperData.loading).toBe("lazy");
-    expect(hyperData.decoding).toBe("async");
-    const hyperPath = new URL(hyperData.src).pathname.slice(new URL(hyperData.src).pathname.indexOf("/brand/") + 1);
-    expect(statSync(resolve(process.cwd(), "public", hyperPath)).size).toBeLessThan(
-      statSync(resolve(process.cwd(), "public", "brand/hyper-0x-logo.png")).size,
-    );
+    const heroPath = new URL(await page.locator("[data-cinematic-hero] img").getAttribute("src") ?? "", page.url()).pathname;
+    const localHeroPath = heroPath.slice(heroPath.indexOf("/media/") + 1);
+    expect(statSync(resolve(process.cwd(), "public", localHeroPath)).size).toBeLessThan(200_000);
   });
 
-  test("Products uses the optimized Hyper-0x derivative below its page hero", async ({ page }) => {
-    await page.goto("/products/");
-    const productLogo = page.locator(".product-logo");
-    await expect(productLogo).toBeVisible();
-    const data = await productLogo.evaluate((element) => {
-      const image = element as HTMLImageElement;
-      return {
-        src: image.currentSrc || image.src,
-        width: image.getAttribute("width"),
-        height: image.getAttribute("height"),
-        loading: image.getAttribute("loading"),
-        decoding: image.decoding,
-        naturalWidth: image.naturalWidth,
-        naturalHeight: image.naturalHeight,
-      };
+  test("Products bento uses code-native diagrams without remote media", async ({ page }) => {
+    const remoteRequests: string[] = [];
+    page.on("request", (request) => {
+      const hostname = new URL(request.url()).hostname;
+      if (!/^(?:127\.0\.0\.1|localhost)$/.test(hostname)) remoteRequests.push(request.url());
     });
-    const source = new URL(data.src);
-    expect(source.hostname).toMatch(/^(?:127\.0\.0\.1|localhost)$/);
-    expect(source.pathname).not.toMatch(/\/brand\/hyper-0x-logo\.png$/);
-    expect(data.width).toMatch(/^\d+$/);
-    expect(data.height).toMatch(/^\d+$/);
-    expect(data.loading).toBe("lazy");
-    expect(data.decoding).toBe("async");
-    expect(data.naturalWidth).toBeGreaterThan(0);
-    expect(data.naturalHeight).toBeGreaterThan(0);
-    expect(Math.abs(data.naturalWidth / data.naturalHeight - 1)).toBeLessThanOrEqual(0.01);
-    const publicPath = source.pathname.slice(source.pathname.indexOf("/brand/") + 1);
-    expect(statSync(resolve(process.cwd(), "public", publicPath)).size).toBeLessThan(
-      statSync(resolve(process.cwd(), "public", "brand/hyper-0x-logo.png")).size,
-    );
+    await page.goto("/products/", { waitUntil: "networkidle" });
+    await expect(page.locator("[data-product-diagram]")).toHaveCount(3);
+    expect(remoteRequests).toEqual([]);
   });
 });

@@ -17,13 +17,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import {
-  articleRegistry,
   navigation,
-  products,
-  services,
   siteConfig,
   withBasePath,
 } from "@/lib/site-data";
+import { bucklesonSiteContent } from "@/content/buckleson-site-content";
 
 type NavigationKey = "home" | "about" | "products" | "services" | "blog";
 
@@ -47,80 +45,31 @@ const navigationKeys: Record<string, NavigationKey> = {
   "/blog/": "blog",
 };
 
+function destinationsFor(label: string): NavigationDestination[] {
+  const item = bucklesonSiteContent.navigation.find((entry) => entry.label === label);
+  return item?.items?.map(({ label, href, description }) => ({ label, href, summary: description })) ?? [];
+}
+
 const navigationGroups: Partial<Record<NavigationKey, NavigationGroup>> = {
   about: {
     title: "Know what Buckleson stands for.",
     summary: "Mission, protection layers, responsibility, and the path from current capability to long-term vision.",
-    destinations: [
-      {
-        label: "About Buckleson",
-        href: "/about/",
-        summary: "Our mission and the execution boundary we are building.",
-      },
-      {
-        label: "Protection layers",
-        href: "/about/#protect-title",
-        summary: "How Hyper-ABS, Hyper Tern, and Hyper-0x work together.",
-      },
-      {
-        label: "Human responsibility",
-        href: "/about/#responsibility-title",
-        summary: "What organizations and people must still decide and govern.",
-      },
-      {
-        label: "Journey and vision",
-        href: "/about/#status-title",
-        summary: "Current capability, pilot work, designed-for features, and vision.",
-      },
-    ],
+    destinations: destinationsFor("About"),
   },
   products: {
     title: "Three products. One execution boundary.",
     summary: "Protect information, control what AI can do, and preserve attributable evidence.",
-    destinations: [
-      {
-        label: "All products",
-        href: "/products/",
-        summary: "See the complete Buckleson trust and execution layer.",
-      },
-      ...products.map((product) => ({
-        label: product.name,
-        href: `/products/#${product.slug}`,
-        summary: product.summary,
-      })),
-    ],
+    destinations: destinationsFor("Products"),
   },
   services: {
     title: "Apply the controls to real AI work.",
     summary: "Start from the workflow, its data, permissions, actions, and intended outcome.",
-    destinations: [
-      {
-        label: "All services",
-        href: "/services/",
-        summary: "Explore security, inference, and custom-model support.",
-      },
-      ...services.map((service) => ({
-        label: service.slug === "custom-ai" ? "Custom AI" : service.name,
-        href: `/services/#${service.slug}`,
-        summary: service.summary,
-      })),
-    ],
+    destinations: destinationsFor("Services"),
   },
   blog: {
     title: "Practical guidance for safer AI.",
     summary: "Clear explanations of agent risks, inference controls, data exposure, and accountable execution.",
-    destinations: [
-      {
-        label: "All articles",
-        href: "/blog/",
-        summary: "Browse every Buckleson AI security guide.",
-      },
-      ...articleRegistry.slice(0, 3).map((article) => ({
-        label: article.title,
-        href: `/blog/${article.slug}/`,
-        summary: article.description,
-      })),
-    ],
+    destinations: destinationsFor("Blog"),
   },
 };
 
