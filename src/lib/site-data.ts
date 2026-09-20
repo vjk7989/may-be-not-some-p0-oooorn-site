@@ -7,6 +7,7 @@ import type {
   SiteConfig,
   SocialLink,
 } from "@/lib/types";
+import { bucklesonSiteContent } from "@/content/buckleson-site-content";
 
 const configuredSiteUrl = process.env.SITE_URL?.replace(/\/$/, "");
 export const basePath = process.env.NEXT_PUBLIC_BASE_PATH?.replace(/\/$/, "") ?? "";
@@ -19,141 +20,48 @@ export function withBasePath(path: string) {
 }
 
 export const siteConfig: SiteConfig = {
-  name: "Buckleson",
-  description:
-    "A trust and execution layer that helps companies, organizations, and individual users use AI safely.",
+  name: bucklesonSiteContent.company.name,
+  description: bucklesonSiteContent.company.description,
   siteUrl: configuredSiteUrl ?? "https://buckleson.example",
-  calendarUrl: "https://cal.com/buckleson-group/30min",
+  calendarUrl: bucklesonSiteContent.company.calendarUrl,
 };
 
 export const isProductionSite = Boolean(configuredSiteUrl);
 
-export const navigation: NavItem[] = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about/" },
-  { label: "Products", href: "/products/" },
-  { label: "Services", href: "/services/" },
-  { label: "Blog", href: "/blog/" },
-];
+export const navigation: NavItem[] = bucklesonSiteContent.navigation.map(
+  ({ label, href }) => ({ label, href }),
+).filter(({ href }) => href.startsWith("/"));
 
 export const socialLinks: SocialLink[] = [];
 
-export const products: Product[] = [
-  {
-    name: "Hyper Tern",
-    slug: "hyper-tern",
-    status: "Current capability",
-    summary:
-      "Mediates AI requests before execution so identities, permissions, tools, resources, and actions can be checked against policy.",
-    controls: [
-      "Approved model and request routing",
-      "Identity, permission, and policy checks",
-      "Tool and resource access boundaries",
-      "Explicit limits for downstream actions",
-    ],
-  },
-  {
-    name: "Hyper-ABS",
-    slug: "hyper-abs",
-    status: "Current capability",
-    summary:
-      "Helps reduce unnecessary sensitive-data exposure before information reaches a model while retaining the context needed for an approved task.",
-    controls: [
-      "Masking and redaction",
-      "Tokenization and abstraction",
-      "Policy-aligned pre-inference transformation",
-      "Controlled reconstruction at approved boundaries",
-    ],
-  },
-  {
-    name: "Hyper-0x",
-    slug: "hyper-0x",
-    status: "Current capability",
-    summary:
-      "Buckleson’s in-house blockchain for tamper-evident execution records, verification, audit, and settlement.",
-    controls: [
-      "Attributable execution evidence",
-      "Tamper-evident event records",
-      "Audit and settlement support",
-      "Clear separation from model-output truth",
-    ],
-    designedFor: [
-      "Quantum-resistant architecture and four-layer encryption",
-      "EVM, Solana, and Sui interoperability",
-      "Account abstraction and task side-chains",
-      "High-velocity finality",
-    ],
-  },
-];
+export const products: Product[] = bucklesonSiteContent.products.map(
+  (product) => ({
+    name: product.name,
+    slug: product.slug,
+    status: product.status,
+    summary: product.summary,
+    controls: [...product.capabilities],
+    designedFor: product.designedFor ? [...product.designedFor] : undefined,
+  }),
+);
 
-export const services: Service[] = [
-  {
-    name: "AI Security",
-    slug: "ai-security",
-    summary:
-      "Assess the data, permissions, tools, and actions around an AI workflow, then define practical control boundaries.",
-    boundary:
-      "Security controls help reduce risk; they do not guarantee that every attack or unsafe outcome is prevented.",
-    relatedProduct: "Hyper Tern and Hyper-ABS",
-  },
-  {
-    name: "Secure Inference",
-    slug: "secure-inference",
-    summary:
-      "Protect and control information around the inference path through minimization, transformation, routing, and policy enforcement.",
-    boundary:
-      "This describes protection around inference. It is not a claim of confidential computing or proof of model correctness.",
-    relatedProduct: "Hyper-ABS and Hyper Tern",
-  },
-  {
-    name: "Custom AI",
-    slug: "custom-ai",
-    summary:
-      "Provide custom AI model development and fine-tuning for defined business requirements while keeping deployment controls and evaluation criteria explicit.",
-    boundary:
-      "Model work is scoped to agreed requirements, data permissions, evaluation evidence, and deployment responsibilities.",
-    relatedProduct: "Buckleson platform controls",
-  },
-];
+export const services: Service[] = bucklesonSiteContent.services.map(
+  (service) => ({
+    name: service.name,
+    slug: service.slug,
+    summary: service.summary,
+    boundary: service.boundary,
+    relatedProduct: service.relatedProducts.join(" and "),
+  }),
+);
 
-export const risks: RiskItem[] = [
-  {
-    name: "Prompt Injection",
-    category: "LLM",
-    explanation:
-      "Untrusted instructions attempt to redirect a model or agent away from the approved task.",
-  },
-  {
-    name: "Sensitive Information Disclosure",
-    category: "LLM",
-    explanation:
-      "Protected or unnecessary information reaches a model, response, tool, or destination.",
-  },
-  {
-    name: "Excessive Agency",
-    category: "LLM",
-    explanation:
-      "An agent receives more permissions, autonomy, or functionality than the task requires.",
-  },
-  {
-    name: "Intent Breaking & Goal Manipulation (Agentic T6)",
-    category: "Agentic",
-    explanation:
-      "The agent’s assigned purpose is altered or displaced during a workflow.",
-  },
-  {
-    name: "Tool Misuse (Agentic T2)",
-    category: "Agentic",
-    explanation:
-      "An agent invokes an available tool outside the intended policy or operating boundary.",
-  },
-  {
-    name: "Memory Poisoning (Agentic T1)",
-    category: "Agentic",
-    explanation:
-      "Untrusted information changes persistent context that can influence later decisions.",
-  },
-];
+export const risks: RiskItem[] = bucklesonSiteContent.risks
+  .filter((risk) => risk.category !== "Operational")
+  .map((risk) => ({
+    name: risk.name,
+    category: risk.category as RiskItem["category"],
+    explanation: risk.explanation,
+  }));
 
 export const articleRegistry: ArticleMetadata[] = [
   {
@@ -224,11 +132,4 @@ export const articleRegistry: ArticleMetadata[] = [
   },
 ];
 
-export const industries = [
-  "Financial services",
-  "Healthcare",
-  "Government",
-  "Enterprise software",
-  "Manufacturing",
-  "Professional services",
-];
+export const industries = [...bucklesonSiteContent.industries];
