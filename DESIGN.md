@@ -12,6 +12,8 @@ colors:
   soft-violet: "#EDE9FE"
   verified: "#137A55"
   verified-soft: "#E2F3EC"
+  blocked: "#B42318"
+  blocked-soft: "#FCEBE8"
   border: "#D9D9E0"
   inverse: "#FFFFFF"
   dark-surface: "#18151F"
@@ -110,6 +112,7 @@ Taste settings are **variance 6**, **motion 5**, and **density 4**. Pages vary t
 - **Canvas (#F6F5F2):** Neutral application field with only a slight violet relationship; never beige or parchment.
 - **Ink (#111114):** Primary text and structural silhouettes.
 - **Verified green (#137A55):** Reserved for current or verified states. Never decorative.
+- **Blocked red (#B42318):** Reserved for detected harmful activity and blocked states; pair it with explicit status text and a non-color symbol.
 - **Dark surface (#18151F):** Technical cutaways such as the Hyper-0x evidence section.
 - **Soft violet (#EDE9FE):** Designed-for and explanatory states that must not be confused with verified capability.
 - **Muted (#5F6068), border (#D9D9E0), and surface white (#FFFFFF):** Supporting copy, dividers, and readable content surfaces.
@@ -139,6 +142,7 @@ Controls use 6px corners, content surfaces 10px, and major technical panels 16px
 - **Status badges:** Always pair color with explicit text such as “Current capability,” “Pilot stage,” “Designed for,” or “Long-term vision.”
 - **Navigation:** Sticky, inset, and visually light. The shared shell uses one restrained translucent material with a subtle edge and short shadow; it must remain legible over page content and become near-solid when blur is unsupported, transparency is reduced, or contrast is increased. Desktop links remain visible; mobile uses an accessible sheet with focus return and Escape support. No other component inherits the glass treatment.
 - **Risk funnel:** Semantic ordered content is primary. SVG and moving tokens are decorative reinforcement only.
+- **Hero request flow:** Labeled tokens use red for known or detected harmful activity, violet for approved requests, and neutral ink for inspection. Static HTML must state each fate; motion is illustrative and never a universal-detection claim.
 - **Outcome chain:** Three semantic outcome articles share one visible connective path on desktop and stack into the same ordered path on mobile.
 - **Service list:** Use an asymmetric ruled list with explicit summaries and boundaries; do not present services as equal numbered cards.
 

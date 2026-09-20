@@ -1238,6 +1238,53 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 - **References:** D-011, D-020, D-032, D-041,
   `tests/HERO_EXECUTION_SPHERE_TEST_MATRIX.md`
 
+### D-048 — Model labeled hero requests as deterministic, qualified examples
+
+- **Date:** 2026-09-20
+- **Status:** Accepted
+- **Context:** The execution-sphere hero used anonymous particles and paths
+  whose independently approximated transforms could drift away from their SVG
+  routes. The requested refinement needed the scene to distinguish a known
+  prompt-injection attack, an approved user request, and a deceptive input
+  discovered at inspection, without turning an illustrative animation into a
+  universal detection or security claim.
+- **Decision:** Keep the existing homepage-only `HeroExecutionSphere` island
+  and define exactly three deterministic token examples with fixed identifiers,
+  labels, initial statuses, paths, timing, and transitions: Prompt injection
+  starts as an attack and is blocked; User request starts approved and passes;
+  Deceptive input starts under inspection and is blocked when detected. Drive
+  each SVG token from its matching SVG path through Anime.js
+  `createMotionPath`, so token centers and route geometry share one source of
+  truth. Give every token an explicit SVG `transform` at its path start in the
+  server-rendered markup; reduced-motion and no-JavaScript states therefore
+  retain a complete, correctly aligned first frame without depending on the
+  animation runtime. Reserve semantic red for attack, detected, and blocked
+  request states; retain violet for approved/active requests and green for
+  completed outputs. Pair every color with a text status, symbol, or semantic
+  summary.
+- **Rationale:** A typed three-token model is the smallest representation that
+  makes the visual understandable and testable while avoiding a generalized
+  simulation engine. Motion-path binding removes duplicated coordinate math,
+  and authored start transforms make progressive enhancement deterministic.
+  Visible copy identifies the diagram as an illustrative request flow and says
+  only that detected harmful requests can be blocked at the boundary.
+- **Consequences:** Known and detected harmful examples stop before the
+  aperture and dissolve into labeled fragments; approved input traverses the
+  boundary toward the selected outcome. The semantic summary preserves the
+  same meaning when the decorative SVG is hidden from assistive technology,
+  motion is reduced, JavaScript is unavailable, or hue cannot be perceived.
+  The implementation does not claim that Buckleson detects, destroys, or
+  prevents every attack, and adds no runtime dependency beyond the already
+  pinned Anime.js package. Stable token/status/path hooks support black-box
+  geometry, state, route-isolation, and fallback verification without becoming
+  a public API.
+- **Affected paths:** `src/components/hero-execution-sphere.tsx`,
+  `src/app/globals.css`, `tests/Validate-404Performance.ps1`,
+  `tests/HERO_TOKEN_FLOW_TEST_MATRIX.md`,
+  `tests/e2e/hero-token-flow.spec.ts`
+- **References:** D-020, D-032, D-047,
+  `tests/HERO_TOKEN_FLOW_TEST_MATRIX.md`
+
 ## Compact codebase map
 
 | Path | Purpose | Current status |
@@ -1275,7 +1322,7 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `src/app/globals.css` | Production tokens, responsive layouts, restored below-fold content visibility, execution-sphere geometry and state styling, 404-only chrome/layout rules, true-center header grid, rounded soft-violet mega-menu destination states, Contact CTA presentation, focus styles, motion, and preference fallbacks | Active |
 | `src/components/site-header.tsx` | Shared ordered navigation with a three-column header grid, true-centered Home-through-Blog links, real top-level destinations, one-open desktop mega-menu previews, a header-wide pointer corridor, grouped mobile Sheet and no-JavaScript destinations, current-route semantics, and a separate external violet Contact CTA | Active; focused navbar 13/13 and combined E2E 103/103 passing |
 | `src/components/not-found-motion.tsx` | Route-local client island that dynamically imports Anime.js 4.5.0, scopes deterministic SVG motion, and cleans up without affecting normal routes | Active |
-| `src/components/hero-execution-sphere.tsx` | Homepage-only client island with a static-first SVG request flow, persistent three-stage controls, stationary Buckleson identity, post-font idle granular Anime.js imports, reduced-motion fallback, hidden-document pausing, cancellable idle initialization, and scoped cleanup | Active; focused acceptance 18/18 and combined E2E 121/121 passing |
+| `src/components/hero-execution-sphere.tsx` | Homepage-only client island with three deterministic labeled request tokens, Anime.js SVG motion-path alignment, server-rendered start transforms, qualified static semantics, persistent three-stage controls, stationary Buckleson identity, reduced-motion fallback, hidden-document pausing, cancellable idle initialization, and scoped cleanup | Active |
 | `src/components/platform-showcase.tsx` | One-open product disclosure with keyboard, pointer, mobile, reduced-motion, and no-JavaScript paths; hover activation is restricted to desktop-width fine pointers that report hover capability | Active; focused mobile guard 1/1 and combined E2E 101/101 passing |
 | `src/components/ui/viewport-section.tsx` | Semantic homepage scene boundary with stable test hook and CSS-driven usable-viewport minimum | Active; no client measurement or dependency |
 | `src/components/` | Shared assessment CTA, logo, status, risk funnel, header, and local UI primitives | Active |
@@ -1297,6 +1344,8 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `tests/e2e/not-found-performance.spec.ts` | Focused browser coverage for missing routes, static/reduced-motion behavior, responsive containment, chunk isolation, image loading, and accessibility | Active |
 | `tests/HERO_EXECUTION_SPHERE_TEST_MATRIX.md` | Risk-based contract for hero content and claims, deterministic selection, sphere motion, fixed brand identity, lifecycle cleanup, route isolation, fallbacks, responsive containment, accessibility, and performance | Active |
 | `tests/e2e/hero-execution-sphere.spec.ts` | Focused browser coverage for the homepage execution sphere's semantic content, state transitions, touch, motion, fixed logo, reduced-motion/no-JavaScript behavior, route isolation, geometry, and Axe checks | Passing 18/18; included in combined E2E 121/121 |
+| `tests/HERO_TOKEN_FLOW_TEST_MATRIX.md` | Risk-based contract for deterministic labeled request examples, qualified claims, non-color state meaning, SVG path alignment, blocking/pass-through behavior, fallbacks, lifecycle, route isolation, responsive containment, accessibility, and performance | Active |
+| `tests/e2e/hero-token-flow.spec.ts` | Focused browser coverage for token labels and status transitions, path geometry, blocked and passed outcomes, static/reduced-motion behavior, interaction state, route isolation, responsive containment, and Axe | Active |
 | `tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md` | Risk-based contract for mega-menu structure, hover and keyboard state, mobile and no-JavaScript parity, Contact CTA treatment, responsive containment, preferences, and accessibility | Active |
 | `tests/e2e/site-header-mega-menu.spec.ts` | Focused browser coverage for true-centered desktop geometry, link order, rounded destination states, one-open panels, physical mouse travel through every trigger-to-panel corridor, focus/Escape behavior, route state, separate Contact CTA, mobile grouping, reduced motion, reflow, Axe, and no-JavaScript destinations | Passing 13/13; included in combined E2E 103/103 |
 | `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction and alignment, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Combined E2E passing 121/121; dedicated a11y 11/11 |
