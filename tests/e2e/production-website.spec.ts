@@ -30,6 +30,8 @@ const headerNavigation = [
   { label: "Contact Us", href: calendarUrl },
 ] as const;
 
+const desktopNavigation = headerNavigation.slice(0, -1);
+
 async function expectHeaderLinks(links: Locator) {
   await expect(links).toHaveCount(headerNavigation.length);
   for (const [index, item] of headerNavigation.entries()) {
@@ -39,7 +41,12 @@ async function expectHeaderLinks(links: Locator) {
 }
 
 async function expectHeaderNavigation(navigation: Locator) {
-  await expectHeaderLinks(navigation.getByRole("link"));
+  const links = navigation.getByRole("link");
+  await expect(links).toHaveCount(desktopNavigation.length);
+  for (const [index, item] of desktopNavigation.entries()) {
+    await expect(links.nth(index)).toHaveAccessibleName(item.label);
+    await expect(links.nth(index)).toHaveAttribute("href", item.href);
+  }
 }
 
 function cssTimeToSeconds(value: string) {
@@ -172,8 +179,12 @@ test("desktop header exposes the exact requested navigation", async ({ page }) =
     "page",
   );
   await expect(
-    navigation.getByRole("link", { name: "Contact Us", exact: true }),
+    page.locator('.header-inner > [data-nav-link="contact"]'),
   ).not.toHaveAttribute("target", "_blank");
+  await expect(page.locator('.header-inner > [data-nav-link="contact"]')).toHaveAttribute(
+    "href",
+    calendarUrl,
+  );
 });
 
 test("desktop header keeps one glass shell with animated unboxed navigation links", async ({ page }) => {
@@ -227,7 +238,7 @@ test("desktop header keeps one glass shell with animated unboxed navigation link
   expect(material.boxShadow).not.toBe("none");
 
   const cells = navigation.locator("a.nav-cell");
-  await expect(cells).toHaveCount(headerNavigation.length);
+  await expect(cells).toHaveCount(desktopNavigation.length);
   const home = navigation.getByRole("link", { name: "Home", exact: true });
   const about = navigation.getByRole("link", { name: "About", exact: true });
   const activeColor = await home.evaluate((element) => getComputedStyle(element).color);
@@ -390,7 +401,9 @@ test("navbar label roll is exactly eighteen percent slower at every timing bound
   });
 
   for (const item of headerNavigation) {
-    const link = navigation.getByRole("link", { name: item.label, exact: true });
+    const link = item.label === "Contact Us"
+      ? page.locator('.header-inner > [data-nav-link="contact"]')
+      : navigation.getByRole("link", { name: item.label, exact: true });
     const semanticLabel = link.locator(".nav-label > .sr-only");
     const base = link.locator('.nav-label-base[aria-hidden="true"]');
     const hover = link.locator('.nav-label-hover[aria-hidden="true"]');
@@ -774,7 +787,7 @@ test("every internal route exposes exactly one current destination", async ({ pa
       "page",
     );
     await expect(
-      navigation.getByRole("link", { name: "Contact Us", exact: true }),
+      page.locator('.header-inner > [data-nav-link="contact"]'),
     ).not.toHaveAttribute("aria-current", "page");
   }
 });

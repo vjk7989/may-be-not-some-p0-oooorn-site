@@ -1145,6 +1145,41 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 - **References:** D-042, D-044,
   `tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md`
 
+### D-046 — Center primary navigation independently from header edge content
+
+- **Date:** 2026-09-20
+- **Status:** Accepted
+- **Context:** The brand lockup and highlighted Contact CTA have different
+  widths, so a single flex row could make the Home-through-Blog navigation
+  appear centered only within the leftover space rather than at the true
+  horizontal midpoint of the header. Mega-menu destinations also needed a
+  clearer hover treatment without changing their content or interaction model.
+- **Decision:** Use a three-column header grid: keep the logo and Buckleson name
+  in the left column, center Home through Blog in the middle column at the true
+  header midpoint, and keep Contact Us in the right column. Contact remains a
+  separate external CTA outside the Primary navigation landmark. Preserve the
+  existing soft-violet destination-link highlight for both hover and keyboard
+  focus, and apply the design-system radius token so each highlighted
+  destination has visibly curved edges. Add no dependency.
+- **Rationale:** The grid directly expresses the three independent alignment
+  responsibilities and remains deterministic across differing brand and CTA
+  widths. Reusing the existing color and radius tokens supplies the requested
+  affordance without a new component, animation system, or state model.
+- **Consequences:** Home through Blog remain visually centered while the brand
+  and Contact CTA stay anchored to opposite edges. Mega-menu destination links
+  use the same rounded highlight for pointer and keyboard interaction, and the
+  Contact CTA retains its separate semantics and presentation. Independent
+  validation passes: focused navbar 13/13, production browser specification
+  35/35, combined E2E 103/103, accessibility 11/11, aggregate tests, GitHub
+  Pages validation, and Graft. Lighthouse was not rerun; the retained LCP debt
+  in D-041 remains unchanged and separate. No push or deployment status is
+  implied.
+- **Affected paths:** `src/components/site-header.tsx`,
+  `src/app/globals.css`, `tests/e2e/site-header-mega-menu.spec.ts`,
+  `tests/e2e/production-website.spec.ts`
+- **References:** D-042, D-045,
+  `tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md`
+
 ## Compact codebase map
 
 | Path | Purpose | Current status |
@@ -1179,8 +1214,8 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `src/app/blog/[slug]/page.tsx` | Six statically generated MDX article routes, article metadata, and structured data | Active |
 | `src/app/robots.ts` | Static crawl policy metadata route | Active |
 | `src/app/sitemap.ts` | Static sitemap for pages and articles | Active |
-| `src/app/globals.css` | Production tokens, responsive layouts, restored below-fold content visibility, 404-only chrome/layout rules, mega-menu and Contact CTA presentation, focus styles, motion, and preference fallbacks | Active |
-| `src/components/site-header.tsx` | Shared ordered navigation with real top-level links, one-open desktop mega-menu previews, a header-wide pointer corridor, grouped mobile Sheet and no-JavaScript destinations, current-route semantics, and the external violet Contact CTA | Active; focused navbar 11/11 and combined E2E 101/101 passing |
+| `src/app/globals.css` | Production tokens, responsive layouts, restored below-fold content visibility, 404-only chrome/layout rules, true-center header grid, rounded soft-violet mega-menu destination states, Contact CTA presentation, focus styles, motion, and preference fallbacks | Active |
+| `src/components/site-header.tsx` | Shared ordered navigation with a three-column header grid, true-centered Home-through-Blog links, real top-level destinations, one-open desktop mega-menu previews, a header-wide pointer corridor, grouped mobile Sheet and no-JavaScript destinations, current-route semantics, and a separate external violet Contact CTA | Active; focused navbar 13/13 and combined E2E 103/103 passing |
 | `src/components/not-found-motion.tsx` | Route-local client island that dynamically imports Anime.js 4.5.0, scopes deterministic SVG motion, and cleans up without affecting normal routes | Active |
 | `src/components/platform-showcase.tsx` | One-open product disclosure with keyboard, pointer, mobile, reduced-motion, and no-JavaScript paths; hover activation is restricted to desktop-width fine pointers that report hover capability | Active; focused mobile guard 1/1 and combined E2E 101/101 passing |
 | `src/components/ui/viewport-section.tsx` | Semantic homepage scene boundary with stable test hook and CSS-driven usable-viewport minimum | Active; no client measurement or dependency |
@@ -1202,8 +1237,8 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 | `tests/Validate-404Performance.ps1` | Deterministic static validator for 404 content, Anime.js isolation, metadata, social-link, brand-integrity, and performance-source contracts | Active |
 | `tests/e2e/not-found-performance.spec.ts` | Focused browser coverage for missing routes, static/reduced-motion behavior, responsive containment, chunk isolation, image loading, and accessibility | Active |
 | `tests/CLOUDFLARE_NAVBAR_TEST_MATRIX.md` | Risk-based contract for mega-menu structure, hover and keyboard state, mobile and no-JavaScript parity, Contact CTA treatment, responsive containment, preferences, and accessibility | Active |
-| `tests/e2e/site-header-mega-menu.spec.ts` | Focused browser coverage for link order, one-open panels, physical mouse travel through every trigger-to-panel corridor, focus/Escape behavior, route state, Contact CTA, mobile grouping, reduced motion, reflow, Axe, and no-JavaScript destinations | Passing 11/11; included in combined E2E 101/101 |
-| `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Combined E2E passing 101/101; dedicated a11y 11/11 |
+| `tests/e2e/site-header-mega-menu.spec.ts` | Focused browser coverage for true-centered desktop geometry, link order, rounded destination states, one-open panels, physical mouse travel through every trigger-to-panel corridor, focus/Escape behavior, route state, separate Contact CTA, mobile grouping, reduced motion, reflow, Axe, and no-JavaScript destinations | Passing 13/13; included in combined E2E 103/103 |
+| `tests/e2e/production-website.spec.ts` | Responsive, navigation interaction and alignment, keyboard, reduced-motion, route, CTA, logo, and Axe browser coverage | Production specification passing 35/35; combined E2E passing 103/103; dedicated a11y 11/11 |
 | `tests/e2e/platform-panels.spec.ts` | Focused PlatformShowcase state, keyboard, guarded desktop-hover, mobile, no-JavaScript, reduced-motion, and layout coverage | Mobile hover-guard check passing 1/1; included in combined E2E 101/101 |
 | `tests/e2e/viewport-sections.spec.ts` | Homepage usable-height, natural-overflow, containment, resize, text-scale, fallback, Platform-state, and anchor coverage | Passing 18/18 |
 | `tests/VIEWPORT_SECTIONS_TEST_MATRIX.md` | Risk-based acceptance and applicability contract for homepage viewport scenes | Active |

@@ -94,3 +94,50 @@ grouped no-script destinations exist and Contact Us is still an unboxed nav
 cell. Existing route, rolling-label, Sheet, and 404 tests should remain green;
 implementation must update any superseded assertion that still requires
 Contact Us to be unboxed.
+
+## Centered navigation and rounded destination-state addendum
+
+This addendum covers the follow-up visual request without changing the existing
+menu-content or interaction contract. The Buckleson logo/name remains the left
+anchor, Home through Blog form the centered navigation group, and Contact Us
+remains the right anchor. "Centered" means the internal-link group's visual
+midpoint aligns with the header shell's midpoint; it does not mean equal free
+space between all individual elements.
+
+| Category | Check | Acceptance |
+| --- | --- | --- |
+| Happy path | Three-zone desktop geometry | At 1366, 1440, and 1920px, the logo/name is wholly left of the Home–Blog group, Contact Us is wholly right of it, and the Home–Blog group's horizontal midpoint is within 2px of the header shell's midpoint. The three zones do not overlap. |
+| Boundary | Smallest desktop header | At the first desktop width above the mobile breakpoint, the three zones remain non-overlapping and inside the header shell. If their intrinsic content cannot fit safely, the existing mobile control is shown instead of compressing, clipping, or wrapping the desktop navigation. |
+| Pointer state | Rounded violet destination highlight | For every submenu destination, hover changes the destination surface to the approved soft-violet/violet treatment. Its computed corner radius is greater than zero and is visually meaningful (at least the established small-radius token), with the highlight contained inside the panel. Supporting text remains readable and does not lose contrast. |
+| Keyboard state | Focus-equivalent destination highlight | Tabbing into every submenu destination produces the same rounded violet surface as hover plus an independently visible focus indicator. The highlight is not pointer-only and the link remains natively activatable with Enter. |
+| State recovery | Highlight clears cleanly | Moving the pointer to another destination or tabbing away transfers/removes the highlight without leaving a stale background, changing panel size, or closing the active panel. Escape and focus-exit behavior remain unchanged. |
+| Responsive | Reflow and overflow | At 1025, 1366, 1440, and 1920px, and at 200% root text size, there is no horizontal overflow, clipping, wrapping into a second header row, or overlap among brand, centered links, and Contact Us. Mobile widths continue to use the Sheet and do not inherit desktop-only absolute/centering geometry. |
+| Motion | Stable geometry | Hover/focus highlighting may transition color but must not change destination dimensions or panel geometry. The existing trigger label-roll duration and pointer corridor remain unchanged. |
+| Reduced motion | Immediate highlight | Under `prefers-reduced-motion: reduce`, destination background, color, and radius reach their final state without non-zero transition/animation duration; the visible rounded focus indicator remains. |
+| Missing script | Readable fallback | With JavaScript disabled, the fallback navigation remains readable and operable. Centering and submenu hover styling are progressive presentation only; all destinations remain native links. |
+| Regression | Header behavior | Logo/home semantics, active-route state, one-open-panel behavior, physical trigger-to-panel travel, Contact Us oval/inversion, mobile Sheet focus restoration, sticky positioning, base-path routing, and static export remain unchanged. |
+| Accessibility | Contrast and target size | Destination links retain at least 44px effective target height, WCAG AA text contrast in rest/hover/focus states, a visible non-color-only focus indication, and no serious or critical Axe violations with a panel open. |
+
+### Applicability for this follow-up
+
+- **Malformed or missing input — not applicable.** This is a CSS/layout change
+  over existing typed local navigation data; the established content and link
+  validators remain the relevant missing-data gate.
+- **State transitions and recovery — applicable.** Hover-to-hover,
+  hover-to-focus, Tab, Escape, and focus exit are the meaningful transitions.
+- **Failure handling — regression only.** There is no new recoverable runtime
+  failure mode; narrow widths must fall back to the existing mobile navigation
+  rather than produce broken desktop geometry.
+- **Concurrency — not applicable.** No asynchronous or shared mutation is
+  introduced.
+- **Time — presentation only.** Existing deterministic transitions apply; no
+  timer, delayed dismissal, or clock-backed state is permitted.
+- **Randomness — not applicable.** Alignment and highlight states are fully
+  deterministic.
+- **I/O and network — not applicable.** No fetch, storage, form, or external
+  request is added; existing link-destination validation remains sufficient.
+- **Security — regression only.** This change introduces no new data or script
+  boundary; existing safe-protocol and no-inline-handler checks remain active.
+- **Accessibility — fully applicable.** Keyboard parity, visible focus,
+  contrast, target sizing, reduced motion, zoom/reflow, and Axe remain release
+  gates.

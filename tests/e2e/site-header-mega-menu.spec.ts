@@ -56,7 +56,9 @@ function desktopNav(page: Page) {
 }
 
 function topLink(page: Page, key: (typeof topLevel)[number]["key"]) {
-  return desktopNav(page).locator(`[data-nav-link="${key}"]`);
+  return key === "contact"
+    ? page.locator('.header-inner > [data-nav-link="contact"]')
+    : desktopNav(page).locator(`[data-nav-link="${key}"]`);
 }
 
 function panel(page: Page, key: GroupKey) {
@@ -81,6 +83,24 @@ async function expectNoHorizontalOverflow(page: Page) {
     scrollWidth: document.documentElement.scrollWidth,
   }));
   expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.clientWidth + 1);
+}
+
+async function destinationPresentation(destination: Locator) {
+  return destination.evaluate((element) => {
+    const styles = getComputedStyle(element);
+    const bounds = element.getBoundingClientRect();
+    return {
+      background: styles.backgroundColor,
+      borderRadius: Number.parseFloat(styles.borderTopLeftRadius),
+      height: bounds.height,
+      width: bounds.width,
+      x: bounds.x,
+      y: bounds.y,
+      outlineStyle: styles.outlineStyle,
+      outlineWidth: Number.parseFloat(styles.outlineWidth),
+      boxShadow: styles.boxShadow,
+    };
+  });
 }
 
 async function movePointerFromTriggerToDestination(
@@ -129,12 +149,14 @@ test.describe("Cloudflare-inspired shared navigation", () => {
     const nav = desktopNav(page);
     await expect(nav).toBeVisible();
 
-    const directLinks = nav.locator(":scope > [data-nav-item] > [data-nav-link], :scope > [data-nav-link]");
-    await expect(directLinks).toHaveCount(topLevel.length);
-    for (const [index, item] of topLevel.entries()) {
+    const directLinks = nav.locator(":scope > [data-nav-item] > [data-nav-link]");
+    await expect(directLinks).toHaveCount(topLevel.length - 1);
+    for (const [index, item] of topLevel.slice(0, -1).entries()) {
       await expect(directLinks.nth(index)).toHaveAccessibleName(item.label);
       await expect(directLinks.nth(index)).toHaveAttribute("href", item.href);
     }
+    await expect(topLink(page, "contact")).toHaveAccessibleName("Contact Us");
+    await expect(topLink(page, "contact")).toHaveAttribute("href", calendarUrl);
 
     await expect(topLink(page, "home")).not.toHaveAttribute("aria-controls", /.+/);
     await expect(page.locator('[data-nav-panel="home"]')).toHaveCount(0);
@@ -167,6 +189,93 @@ test.describe("Cloudflare-inspired shared navigation", () => {
     await topLink(page, "about").hover();
     await topLink(page, "about").click();
     await expect(page).toHaveURL(/\/about\/$/);
+  });
+
+  test("keeps the brand and Contact Us at the edges while centering Home through Blog", async ({ page }) => {
+    for (const width of [1089, 1366, 1440, 1920]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/");
+
+      const nav = desktopNav(page);
+      await expect(nav, `desktop navigation should be available at ${width}px`).toBeVisible();
+
+      const shell = page.locator(".header-inner");
+      const brand = shell.getByRole("link", { name: "Buckleson home", exact: true });
+      const contact = topLink(page, "contact");
+      const home = topLink(page, "home");
+      const blog = topLink(page, "blog");
+      const [shellBox, brandBox, contactBox, homeBox, blogBox] = await Promise.all([
+        shell.boundingBox(),
+        brand.boundingBox(),
+        contact.boundingBox(),
+        home.boundingBox(),
+        blog.boundingBox(),
+      ]);
+
+      if (!shellBox || !brandBox || !contactBox || !homeBox || !blogBox) {
+        throw new Error(`Unable to resolve three-zone header geometry at ${width}px`);
+      }
+
+      const internalLeft = homeBox.x;
+      const internalRight = blogBox.x + blogBox.width;
+      const internalMidpoint = (internalLeft + internalRight) / 2;
+      const shellMidpoint = shellBox.x + shellBox.width / 2;
+
+      expect(Math.abs(internalMidpoint - shellMidpoint), `${width}px internal-link centering`).toBeLessThanOrEqual(2);
+      expect(brandBox.x).toBeGreaterThanOrEqual(shellBox.x - 1);
+      expect(brandBox.x + brandBox.width, `${width}px brand/internal separation`).toBeLessThanOrEqual(internalLeft);
+      expect(internalRight, `${width}px internal/Contact separation`).toBeLessThanOrEqual(contactBox.x);
+      expect(contactBox.x + contactBox.width).toBeLessThanOrEqual(shellBox.x + shellBox.width + 1);
+      await expectNoHorizontalOverflow(page);
+    }
+  });
+
+  test("gives every submenu destination a stable rounded violet hover and focus state", async ({ page }) => {
+    const violetSurfaces = ["rgb(237, 233, 254)", "rgb(109, 40, 217)"];
+
+    for (const key of Object.keys(groups) as GroupKey[]) {
+      await topLink(page, key).hover();
+      const disclosure = panel(page, key);
+      await expect(disclosure).toBeVisible();
+      await expect.poll(() => disclosure.evaluate((element) => getComputedStyle(element).transform))
+        .toBe("matrix(1, 0, 0, 1, 0, 0)");
+
+      const destinations = disclosure.getByRole("link");
+      for (let index = 0; index < groups[key].length; index += 1) {
+        const destination = destinations.nth(index);
+        const rest = await destinationPresentation(destination);
+
+        await destination.hover();
+        await expect.poll(async () => (await destinationPresentation(destination)).background)
+          .toBe("rgb(237, 233, 254)");
+        const hovered = await destinationPresentation(destination);
+        expect(violetSurfaces).toContain(hovered.background);
+        expect(hovered.borderRadius).toBeGreaterThanOrEqual(6);
+        expect(hovered.x).toBeCloseTo(rest.x, 1);
+        expect(hovered.y).toBeCloseTo(rest.y, 1);
+        expect(hovered.width).toBeCloseTo(rest.width, 1);
+        expect(hovered.height).toBeCloseTo(rest.height, 1);
+
+        await destination.focus();
+        await expect.poll(async () => (await destinationPresentation(destination)).background)
+          .toBe("rgb(237, 233, 254)");
+        const focused = await destinationPresentation(destination);
+        expect(violetSurfaces).toContain(focused.background);
+        expect(focused.borderRadius).toBeGreaterThanOrEqual(6);
+        expect(
+          (focused.outlineStyle !== "none" && focused.outlineWidth >= 2) ||
+            focused.boxShadow !== "none",
+        ).toBeTruthy();
+        expect(focused.x).toBeCloseTo(rest.x, 1);
+        expect(focused.y).toBeCloseTo(rest.y, 1);
+        expect(focused.width).toBeCloseTo(rest.width, 1);
+        expect(focused.height).toBeCloseTo(rest.height, 1);
+        await expect(disclosure).toBeVisible();
+      }
+
+      await page.keyboard.press("Escape");
+      await expect(disclosure).toBeHidden();
+    }
   });
 
   test("keeps one pointer-open panel stable while the pointer enters it", async ({ page }) => {
@@ -269,7 +378,7 @@ test.describe("Cloudflare-inspired shared navigation", () => {
       await expect(current).toHaveCount(1);
       await expect(current).toHaveAccessibleName(currentCase.current);
       await expect(
-        desktopNav(page).getByRole("link", { name: "Contact Us", exact: true }),
+        topLink(page, "contact"),
       ).not.toHaveAttribute("aria-current", "page");
     }
   });

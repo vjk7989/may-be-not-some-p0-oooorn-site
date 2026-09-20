@@ -265,15 +265,16 @@ export function SiteHeader() {
               </div>
             );
           })}
-          <a
-            href={siteConfig.calendarUrl}
-            className="nav-cell nav-contact desktop-assessment"
-            data-nav-link="contact"
-            onFocus={() => setActiveMenu(null)}
-          >
-            <NavLabel>Contact Us</NavLabel>
-          </a>
         </nav>
+
+        <a
+          href={siteConfig.calendarUrl}
+          className="nav-cell nav-contact desktop-assessment"
+          data-nav-link="contact"
+          onFocus={() => setActiveMenu(null)}
+        >
+          <NavLabel>Contact Us</NavLabel>
+        </a>
 
         <Sheet>
           <SheetTrigger asChild>

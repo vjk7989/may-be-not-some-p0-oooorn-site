@@ -96,8 +96,8 @@ p { text-wrap: pretty; }
   position: relative;
   height: var(--header-height);
   min-height: var(--header-height);
-  display: flex;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 1.25rem;
   border: 1px solid rgba(255, 255, 255, 0.72);
@@ -112,6 +112,7 @@ p { text-wrap: pretty; }
 .brand-lockup {
   display: inline-flex;
   flex: 0 0 auto;
+  justify-self: start;
   align-items: center;
   gap: 0.72rem;
   color: var(--ink);
@@ -132,13 +133,11 @@ p { text-wrap: pretty; }
 .desktop-navigation {
   display: flex;
   min-width: 0;
-  flex: 1 1 0;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 0.35rem;
   max-width: 100%;
-  margin-left: auto;
 }
 
 .nav-item {
@@ -297,6 +296,7 @@ p { text-wrap: pretty; }
 .mega-menu-link {
   min-width: 0;
   border-bottom: 1px solid var(--line);
+  border-radius: var(--radius-md);
   color: var(--ink);
   padding: 0.85rem clamp(0.75rem, 1.5vw, 1rem);
   text-decoration: none;
@@ -325,9 +325,12 @@ p { text-wrap: pretty; }
 .mega-menu-link:focus-visible {
   position: relative;
   z-index: 1;
+  background: var(--soft-violet);
+  color: var(--primary-hover);
 }
 
 .nav-contact {
+  justify-self: end;
   min-height: 2.75rem;
   border: 1px solid var(--primary);
   border-radius: 999px;
