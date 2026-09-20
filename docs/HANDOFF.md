@@ -25,9 +25,10 @@ navbar changes with hero feedback.
   activation persistently select one outcome at a time. All stages remain
   present in server-rendered markup for no-JavaScript and assistive-technology
   use.
-- Anime.js is loaded inside the hero client boundary only after hydration. The
-  implementation skips motion for reduced-motion users and scopes cleanup to
-  the component. Supporting routes remain outside this hero boundary.
+- Anime.js is loaded inside the hero client boundary after fonts are ready and
+  the browser grants idle time. The implementation cancels pending startup,
+  skips motion for reduced-motion users, and scopes cleanup to the component.
+  Supporting routes remain outside this hero boundary.
 - Production changes are limited to
   [`src/components/hero-execution-sphere.tsx`](../src/components/hero-execution-sphere.tsx),
   [`src/app/page.tsx`](../src/app/page.tsx), and
@@ -39,28 +40,27 @@ navbar changes with hero feedback.
   Use the latest hero-sphere decision in
   [`docs/architecture/DECISIONS.md`](architecture/DECISIONS.md) for rationale,
   constraints, and verified gate results rather than duplicating them here.
-- The last known deployed baseline before this release is commit `ca390c4`. The
-  current session owns final validation, commit, push, GitHub Pages monitoring,
-  and live verification of the sphere before this handoff is considered
-  release-complete.
+- Hero release commit `7f5535a` is pushed to `main`. GitHub Pages run
+  `35494941594` completed successfully, and the live page was verified at
+  `https://vjk7989.github.io/may-be-not-some-p0-oooorn-site/`, including the
+  deployed input/output content, fixed logo, motion, and persistent Control
+  actions selection.
 - The existing Lighthouse LCP and dependency-audit findings remain separate
   accepted debt. Do not report either as resolved unless fresh evidence in the
   architecture record says otherwise, and do not use `npm audit fix --force`.
 
-## Release completion sequence
+## Release evidence
 
-1. Finish the independent focused and regression gates defined by the hero
-   matrix, including reduced motion, no JavaScript, responsive containment,
-   route isolation, brand integrity, accessibility, GitHub Pages mode, and
-   performance measurement.
-2. If a gate fails, use the required independent failure-analysis role and make
-   the smallest valid repair before rerunning it.
-3. Refresh Graft, commit the hero implementation, tests, architecture record,
-   and this handoff, then push `main`.
-4. Monitor the exact GitHub Pages run and verify the deployed commit SHA, hero
-   content, stationary logo, rotating field, selected-state persistence,
-   reduced-motion state, mobile layout, and absence of horizontal overflow.
-5. Stop the local preview and leave the working tree clean.
+- Focused hero suite: 18/18 passing.
+- Full browser regression: 121/121 passing after an isolated Axe rerun confirmed
+  one aggregate timeout was transient worker contention.
+- Design lint, lint, typecheck, unit, content, links, SEO, accessibility,
+  static build, GitHub Pages pre-deployment validation, and Graft check pass.
+- Latest Lighthouse cohort: Performance 0.96, Accessibility 1.00, Best
+  Practices 0.96, SEO 1.00, CLS 0, and median TBT 32.5 ms. Median LCP is
+  2,825.15 ms, restored to the prior baseline but still above the 2.5 s budget;
+  `test:performance` therefore correctly exits 1 and must not be described as
+  green.
 
 ## Post-deployment review
 
