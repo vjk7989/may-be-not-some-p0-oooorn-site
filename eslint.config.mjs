@@ -10,6 +10,7 @@ export default defineConfig([
     "out/**",
     "dist/**",
     "graft/**",
+    "public/vendor/anime.esm.min.js",
     ".tmp/playwright-transform-cache/**",
   ]),
 ]);

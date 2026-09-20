@@ -7,41 +7,23 @@ export function createPageMetadata({
   description,
   path,
   type = "website",
+  noIndex = false,
 }: {
   title: string;
   description: string;
   path: string;
   type?: "website" | "article";
+  noIndex?: boolean;
 }): Metadata {
   const canonicalPath = path.endsWith("/") ? path : `${path}/`;
   const canonicalUrl = `${siteConfig.siteUrl}${canonicalPath === "/" ? "" : canonicalPath}`;
-  const logoUrl = `${siteConfig.siteUrl}/brand/buckleson-logo.jpg`;
   return {
-    title: { absolute: `${title} — Buckleson` },
+    title: { absolute: `${title} — Spartan` },
     description,
     alternates: { canonical: canonicalUrl },
-    openGraph: {
-      type,
-      title: `${title} — Buckleson`,
-      description,
-      url: canonicalUrl,
-      siteName: "Buckleson",
-      images: [
-        {
-          url: logoUrl,
-          width: 322,
-          height: 308,
-          alt: "Buckleson logo",
-        },
-      ],
-    },
-    twitter: {
-      card: "summary",
-      title: `${title} — Buckleson`,
-      description,
-      images: [logoUrl],
-    },
-    robots: { index: true, follow: true },
+    openGraph: { type, title: `${title} — Spartan`, description, url: canonicalUrl, siteName: "Spartan" },
+    twitter: { card: "summary", title: `${title} — Spartan`, description },
+    robots: noIndex ? { index: false, follow: false } : { index: true, follow: true },
   };
 }
 

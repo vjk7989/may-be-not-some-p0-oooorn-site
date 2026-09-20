@@ -1339,7 +1339,18 @@ writes elsewhere. It deliberately does not alter user or machine settings.
 - **Affected paths:** `src/content/buckleson-site-content.ts`, `src/components/cinematic-hero.tsx`, `src/components/cinematic-picture.tsx`, `src/components/product-bento.tsx`, `src/app/page.tsx`, `src/app/about/page.tsx`, `src/app/products/`, `src/app/services/page.tsx`, `src/app/blog/page.tsx`, `src/app/globals.css`, `public/media/`, `tests/FULL_SITE_CINEMATIC_REBUILD_TEST_MATRIX.md`
 - **References:** `DESIGN.md`, `tests/e2e/cinematic-hero-product-rail.spec.ts`, `tests/e2e/buckleson-rebuild.spec.ts`, `tests/e2e/not-found-performance.spec.ts`
 
-## Compact codebase map
+### D-051 — Replace the public surface with the Spartan information architecture
+
+- **Date:** 2026-09-20
+- **Status:** Accepted; supersedes D-048 through D-050 for the active public site
+- **Context:** The approved rebuild replaces Buckleson with a close, observation-based recreation of the paid Spartan reference while prohibiting copied source, protected media, customer claims, prices, metrics, testimonials, and remote reference resources.
+- **Decision:** Use `spartanSiteContent` as the sole typed content contract for sixteen static routes, five project concepts, three rewritten articles, policies, local responsive media, and the Cal.com conversion boundary. Keep the first frame semantic and server-rendered. Use native disclosures and Popover for zero-hydration interaction, and load a local Anime.js ESM bundle only after user input. Inline the small production CSS bundle and contain below-fold home sections to meet the measured mobile performance budget.
+- **Rationale:** This is the smallest complete system that reproduces the reference's editorial silhouette and motion cadence while remaining original, deterministic, accessible, base-path safe, and fast on GitHub Pages.
+- **Consequences:** `/products/`, `/services/`, and `/blog/` are intentionally absent and resolve to the custom 404. No CMS, auth, persistence, submission backend, redirects, pricing, analytics, or speculative compatibility layer exists. The native mobile popover replaces the initial Radix Sheet hydration boundary after traces showed it caused non-deterministic LCP failures; shadcn Button, Card, Badge, and Separator remain active. Three-run Lighthouse gates now pass.
+- **Affected paths:** `src/content/spartan-site-content.ts`, `src/app/`, `src/components/`, `src/lib/`, `public/media/`, `public/vendor/anime.esm.min.js`, `tests/`, `DESIGN.md`, `next.config.mjs`, `.github/workflows/deploy-pages.yml`
+- **References:** `tests/SPARTAN_FULL_SITE_TEST_MATRIX.md`, `tests/e2e/spartan-full-site.spec.ts`, `tests/Validate-ProductionWebsite.ps1`
+
+## Historical codebase map (superseded by the current map below)
 
 | Path | Purpose | Current status |
 | --- | --- | --- |
@@ -1437,3 +1448,24 @@ Copy this section for each material decision. Keep entries concise and reference
 - **Affected paths:** `path/to/file`
 - **References:** Links or repository paths to relevant artifacts
 ```
+
+## Current compact codebase map
+
+| Path | Purpose | Status |
+| --- | --- | --- |
+| `src/content/spartan-site-content.ts` | Authoritative typed company, route relations, projects, articles, capabilities, process, engagements, FAQ, and local media registry | Active source of truth |
+| `src/app/page.tsx` | Spartan editorial homepage with cinematic hero, projects, capabilities, product, process, engagements, FAQ, and articles | Active static route |
+| `src/app/digital-brain/`, `project/`, `about/`, `articles/`, `contact/`, `policies/` | Complete Spartan public route families and static detail generation | Active; 16 indexable routes total |
+| `src/app/not-found.tsx`, `sitemap.ts`, `robots.ts` | Custom missing-route recovery and crawl metadata | Active static output |
+| `src/app/globals.css`, `DESIGN.md` | Responsive visual system, token contract, focus/preferences, containment, and mobile popover presentation | Active; design lint passing |
+| `src/components/site-header.tsx`, `site-footer.tsx`, `brand-logo.tsx` | Server-rendered shared navigation and original Spartan identity | Active; base-path safe |
+| `src/components/spartan-motion.tsx`, `public/vendor/anime.esm.min.js` | Interaction-gated local Anime.js bootstrap with pagehide cleanup | Active; no initial React hydration |
+| `src/components/cinematic-picture.tsx`, `public/media/` | Intrinsically sized local AVIF/WebP delivery and original source scenes | Active; no reference-host requests |
+| `src/components/ui/` | Installed shadcn primitives; Button, Card, Badge, and Separator are used by the active site | Active; Sheet retained but not on the initial performance path |
+| `tests/SPARTAN_FULL_SITE_TEST_MATRIX.md`, `src/content/spartan-site-content.test.ts` | Independent risk matrix and deterministic typed-content assertions | Active |
+| `tests/e2e/spartan-full-site.spec.ts` | Route, navigation, disclosure, 404, no-JS, reduced-motion, responsive, Axe, and local-request browser coverage | Active |
+| `tests/Validate-ProductionWebsite.ps1`, `Validate-404Performance.ps1`, `Validate-GitHubPages.ps1` | Static content, link, SEO, 404, base-path, and deployment validators | Active |
+| `tests/lighthouserc.cjs` | Three-sample mobile budgets: category scores ≥95, LCP ≤2.5s, CLS ≤0.10, TBT ≤200ms | Active; passing |
+| `.github/workflows/deploy-pages.yml` | Main-branch static build, deterministic validation, artifact upload, and Pages deployment | Active |
+| `graft/` | Generated context graph | Refresh after this rebuild |
+| `docs/HANDOFF.md` | Session-specific completion and deployment state | Active |

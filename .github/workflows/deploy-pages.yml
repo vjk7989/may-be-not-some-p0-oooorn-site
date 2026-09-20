@@ -36,6 +36,9 @@ jobs:
           SITE_URL: https://vjk7989.github.io/may-be-not-some-p0-oooorn-site
           NEXT_PUBLIC_BASE_PATH: /may-be-not-some-p0-oooorn-site
         run: ./scripts/Invoke-WorkspaceNodeTool.ps1 npm run build
+      - name: Validate static export
+        shell: pwsh
+        run: ./tests/Validate-GitHubPages.ps1 -Owner vjk7989 -Repository may-be-not-some-p0-oooorn-site -SiteUrl https://vjk7989.github.io/may-be-not-some-p0-oooorn-site -BasePath /may-be-not-some-p0-oooorn-site
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:

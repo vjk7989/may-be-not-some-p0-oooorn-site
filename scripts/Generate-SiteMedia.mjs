@@ -2,23 +2,23 @@ import sharp from "sharp";
 
 const assets = [
   {
-    source: "public/media/source/buckleson-execution-boundary.png",
-    name: "buckleson-execution-boundary",
+    source: "public/media/source/spartan-frontier.png",
+    name: "spartan-frontier",
     widths: [960, 1586],
   },
   {
-    source: "public/media/source/hyper-tern-boundary.png",
-    name: "hyper-tern-boundary",
+    source: "public/media/source/spartan-gateway.png",
+    name: "spartan-gateway",
     widths: [768, 1536],
   },
   {
-    source: "public/media/source/hyper-abs-chamber.png",
-    name: "hyper-abs-chamber",
+    source: "public/media/source/spartan-neural-core.png",
+    name: "spartan-neural-core",
     widths: [768, 1536],
   },
   {
-    source: "public/media/source/hyper-0x-evidence.png",
-    name: "hyper-0x-evidence",
+    source: "public/media/source/spartan-evidence-grid.png",
+    name: "spartan-evidence-grid",
     widths: [768, 1536],
   },
 ];

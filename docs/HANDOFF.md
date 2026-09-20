@@ -1,41 +1,32 @@
-# Buckleson handoff
+# Spartan full-site rebuild handoff
 
 ## Current state
 
-The full-site cinematic rebuild is implemented in the working tree. The pre-rebuild recovery branch remains `codex/pre-spartan-rebuild` at `de245a4`. Use `src/content/buckleson-site-content.ts` as the authoritative source for company, navigation, products, services, risks, statuses, CTA, media references, homepage order, and prohibited claims.
+The active application is the completed Spartan-branded static Next.js rebuild. `src/content/spartan-site-content.ts` is the authoritative contract for all public copy, navigation, five project concepts, three rewritten articles, engagements, FAQs, and local media. The route inventory contains sixteen indexable pages plus the custom 404; legacy Products, Services, and Blog routes are intentionally absent.
 
-The homepage now has fifteen ordered scenes and an eager cinematic hero extending behind the preserved sticky glass navbar. Its product rail contains exactly three equal desktop glass links and becomes horizontal scroll-snap on mobile. Original local Buckleson media is delivered as responsive AVIF/WebP; supporting routes and product tiles use lazy, dimensioned media. About, Products, all three product details, Services, Blog, articles, and the custom 404 retain the shared cinematic system and static export.
+The implementation recreates the observed reference silhouette with original copy and local media. It does not copy Framer source, protected images, logos, testimonials, customers, metrics, prices, or certifications. Contact conversion is limited to the approved Cal.com URL. Durable rationale is recorded in `docs/architecture/DECISIONS.md` D-051; acceptance scope is in `tests/SPARTAN_FULL_SITE_TEST_MATRIX.md`.
 
-Implementation and rationale are recorded in `docs/architecture/DECISIONS.md` D-050. The independent contract is `tests/FULL_SITE_CINEMATIC_REBUILD_TEST_MATRIX.md`; inspect the current diff rather than duplicating it here.
+The first frame is server-rendered and usable without JavaScript. Native disclosures and a native mobile popover avoid initial hydration. Anime.js is vendored locally and imported only after scroll, pointer, or keyboard input; reduced-motion users bypass it and pagehide cleanup reverts the scope. Local responsive AVIF/WebP media has intrinsic dimensions. Production CSS is inlined and below-fold homepage sections use `content-visibility:auto` to satisfy the measured first-load budget.
 
 ## Validation
 
-- Design lint, ESLint, typecheck, content, links, SEO, production build: passed.
-- Unit tests: 22/22 passed.
-- Focused cinematic browser tests: 7/7 passed.
-- Full browser suite: 97/97 passed.
-- Accessibility: 11/11 passed.
-- Aggregate `npm run test`: passed.
-- GitHub Pages deployment build and deterministic validator: passed.
-- Lighthouse: Performance 94/95/95, Accessibility 100, Best Practices 96, SEO 100, CLS 0, TBT 110/69/72 ms. Selected simulated LCP is 2,921.59 ms and still fails the 2.5-second budget; do not report performance as fully passing.
+- ESLint, TypeScript, static export, typed-content tests, deterministic production validation, and 10/10 browser tests pass.
+- Browser coverage includes all route families, mobile menu focus restoration, FAQ state, legacy/custom 404s, no-JavaScript content, reduced motion, eight viewport sizes, no horizontal overflow, local-only requests, and zero serious/critical Axe violations.
+- The final three-sample Lighthouse cohort passes Performance, Accessibility, Best Practices, and SEO ≥95; LCP ≤2.5 seconds; CLS ≤0.10; TBT ≤200 ms.
+- The independent runner passed every executable gate; its only failure was three extra EOF blank lines, which were removed. The focused `git diff --check`, lint, and typecheck rerun passed. The production base-path build and `tests/Validate-GitHubPages.ps1` also pass for all sixteen routes.
 
 ## Next steps
 
-1. Review the working-tree diff and refreshed Graft graph.
-2. Commit and push the rebuild only after ensuring the deployment build remains the desired `out/` state.
-3. Monitor GitHub Pages and verify all live routes plus the custom 404.
-4. Treat closing the remaining modeled LCP debt as a separate measured header-hydration/performance task; do not hide the LCP candidate.
+1. Commit the verified rebuild on `main` and push to `origin`.
+2. Monitor the Pages workflow and verify all live routes, assets, sitemap, robots, favicon, canonical URLs, and custom 404.
 
 ## Suggested skills
 
-- `impeccable` for visual refinement and hierarchy review.
-- `emil-design-eng` for interaction polish without expanding runtime scope.
-- `apple-design` for motion and reduced-motion review.
-- `understand-anything:understand-diff` before broad follow-up edits.
+- `impeccable` for any future visual critique without expanding product scope.
+- `understand-anything:understand-diff` for a later architectural review.
 
 ## Guardrails
 
-- Preserve the exact navbar order, centered links, mega-menu behavior, violet Cal.com CTA, official brand files, qualified security claims, static export, and Pages base-path behavior.
-- Do not add copied reference assets, fabricated customers, statistics, testimonials, team members, prices, certifications, deployment claims, or guarantees.
-- Keep glass limited to the navbar and hero product rail. Keep social links hidden until supplied.
-- Continue the graph-first DAG, YAGNI, workspace-only tools, independent test roles, and focused-gate workflow from `AGENTS.md`.
+- Preserve YAGNI: no CMS, auth, persistence, form backend, newsletter, analytics, redirects, fake success state, pricing logic, or speculative compatibility layer.
+- Keep public assets local and base-path safe. Do not reintroduce reference-host requests or unsupported claims.
+- Keep the server-first/no-hydration homepage boundary unless a measured regression justifies revisiting it.

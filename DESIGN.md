@@ -1,48 +1,45 @@
 ---
 version: "alpha"
-name: Buckleson Branded Technical
-description: A precise trust-infrastructure identity that makes AI execution controls legible without crypto spectacle.
+name: Spartan Editorial Systems
+description: Monumental editorial layouts, cinematic technical imagery, and restrained violet motion for an independent AI systems studio.
 colors:
-  primary: "#6D28D9"
-  primary-hover: "#5820B2"
-  canvas: "#F6F5F2"
+  primary: "#6748E0"
+  primary-hover: "#5E43E5"
+  canvas: "#F2F1EC"
   surface: "#FFFFFF"
-  ink: "#111114"
-  muted: "#5F6068"
-  soft-violet: "#EDE9FE"
-  verified: "#137A55"
-  verified-soft: "#E2F3EC"
-  border: "#D9D9E0"
-  inverse: "#FFFFFF"
-  dark-surface: "#18151F"
+  ink: "#101010"
+  muted: "#686867"
+  border: "#D5D3CB"
+  inverse: "#F7F6F1"
+  dark-surface: "#111111"
 typography:
   display:
-    fontFamily: Onest
-    fontSize: 4.75rem
-    fontWeight: 680
-    lineHeight: 0.98
-    letterSpacing: -0.035em
+    fontFamily: Arial
+    fontSize: 6rem
+    fontWeight: 600
+    lineHeight: 0.92
+    letterSpacing: -0.06em
   heading:
-    fontFamily: Onest
-    fontSize: 2.75rem
-    fontWeight: 650
-    lineHeight: 1.08
-    letterSpacing: -0.025em
+    fontFamily: Arial
+    fontSize: 3rem
+    fontWeight: 600
+    lineHeight: 1
+    letterSpacing: -0.04em
   body:
-    fontFamily: Onest
+    fontFamily: Arial
     fontSize: 1rem
-    fontWeight: 420
-    lineHeight: 1.65
+    fontWeight: 400
+    lineHeight: 1.55
   label:
-    fontFamily: Onest
-    fontSize: 0.875rem
-    fontWeight: 620
-    lineHeight: 1.35
-    letterSpacing: 0.01em
+    fontFamily: Arial
+    fontSize: 0.75rem
+    fontWeight: 600
+    lineHeight: 1.3
+    letterSpacing: 0.08em
 rounded:
-  sm: 6px
-  md: 10px
-  lg: 16px
+  sm: 8px
+  md: 16px
+  lg: 28px
 spacing:
   xs: 4px
   sm: 8px
@@ -50,101 +47,54 @@ spacing:
   lg: 24px
   xl: 32px
   2xl: 48px
-  3xl: 64px
-  4xl: 96px
+  3xl: 72px
+  4xl: 112px
 components:
   button-primary:
-    backgroundColor: "{colors.primary}"
+    backgroundColor: "{colors.ink}"
     textColor: "{colors.inverse}"
     typography: "{typography.label}"
     rounded: "{rounded.sm}"
-    padding: 12px
+    padding: 14px
     height: 48px
   button-primary-hover:
-    backgroundColor: "{colors.primary-hover}"
+    backgroundColor: "{colors.primary}"
     textColor: "{colors.inverse}"
-  button-secondary:
+  content-panel:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
-    typography: "{typography.label}"
-    rounded: "{rounded.sm}"
-    padding: 12px
-    height: 48px
-  status-current:
-    backgroundColor: "{colors.verified-soft}"
-    textColor: "{colors.verified}"
-    typography: "{typography.label}"
-    rounded: "{rounded.sm}"
-  status-designed:
-    backgroundColor: "{colors.soft-violet}"
-    textColor: "{colors.primary-hover}"
-    typography: "{typography.label}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.md}"
+    padding: 24px
   technical-panel:
     backgroundColor: "{colors.dark-surface}"
     textColor: "{colors.inverse}"
     rounded: "{rounded.lg}"
-    padding: 24px
-  content-panel:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.md}"
-    padding: 24px
-  muted-copy:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.muted}"
-  structural-line:
-    backgroundColor: "{colors.border}"
-    textColor: "{colors.ink}"
+    padding: 32px
 ---
 
 ## Overview
 
-Buckleson should feel like a carefully engineered control boundary made visible: bright, calm working light; dark technical cutaways; precise violet paths; and green only when the interface is stating a verified current condition. The system is branded technical rather than generic cyberpunk, crypto-native, or editorial.
+Spartan uses a monumental editorial silhouette: oversized type, high-contrast light and dark scenes, locally authored cinematic technical imagery, and generous spatial rhythm. The visual language is inspired by the observed public composition while all identity, copy, and media remain original.
 
-Taste settings are **variance 6**, **motion 5**, and **density 4**. Pages vary their composition while keeping the same grid, type hierarchy, navigation, and evidence boundaries.
+## Color and typography
 
-## Colors
-
-- **Primary violet (#6D28D9):** Actions, active navigation, platform paths, and focused controls.
-- **Canvas (#F6F5F2):** Neutral application field with only a slight violet relationship; never beige or parchment.
-- **Ink (#111114):** Primary text and structural silhouettes.
-- **Verified green (#137A55):** Reserved for current or verified states. Never decorative.
-- **Dark surface (#18151F):** Technical cutaways such as the Hyper-0x evidence section.
-- **Soft violet (#EDE9FE):** Designed-for and explanatory states that must not be confused with verified capability.
-- **Muted (#5F6068), border (#D9D9E0), and surface white (#FFFFFF):** Supporting copy, dividers, and readable content surfaces.
-
-Use solid colors throughout content surfaces. Do not use gradients, neon glows, or color as the sole carrier of status. Glass is limited to two intentional surfaces: the shared translucent navigation and the dark hero product rail. Both require explicit solid fallbacks for unsupported blur, reduced transparency, and increased contrast.
-
-## Typography
-
-Onest is the single family for display and body copy. It is loaded as a variable font and self-hosted by the build. Headlines are compact and assured rather than enormous; body copy remains at least 1rem with a maximum measure of 70 characters. Use weight and space for hierarchy instead of uppercase eyebrow labels on every section.
+Warm off-white is the default field, near-black creates immersive process and project scenes, and violet is a controlled signal for focus and motion. Arial is used as a deterministic system sans; hierarchy comes from scale, compressed leading, and weight rather than ornamental type.
 
 ## Layout
 
-Use a 4px-derived spacing system, a maximum 1200px shell, and mobile-first compositions. Related information stays tight; distinct ideas receive 48-96px separation. Alternate split layouts, ruled lists, and technical diagrams instead of repeating equal card grids. Desktop diagrams read left to right; mobile diagrams become an ordered top-to-bottom narrative.
+The shell is fluid up to 1440px. Desktop sections alternate asymmetric editorial grids, large media fields, ruled lists, and dense card systems. Mobile collapses to one readable column without changing source order. The floating rounded header remains compact and becomes an accessible Sheet below the desktop breakpoint.
 
-## Elevation & Depth
+## Motion
 
-The interface is predominantly flat. Depth comes from overlap, line weight, tonal contrast, and an occasional short shadow on floating navigation surfaces. No decorative glow or stacked-card shadow system.
-
-## Shapes
-
-Controls use 6px corners, content surfaces 10px, and major technical panels 16px. Pills are reserved for compact status badges. Buckleson logo instances use the approved subtle rounded-edge mask while preserving the source artwork, proportions, and colors; other brand artwork is never masked, stretched, cropped, recolored, or filtered.
+Anime.js is limited to progressively enhanced section and item entrances. The server-rendered first frame is complete. Timelines are scoped, observers disconnect on unmount, background work pauses when hidden, and reduced-motion users receive no scripted transforms.
 
 ## Components
 
-- **Buttons:** 48px minimum height, verb-led labels, visible focus ring, violet primary and white/outlined secondary variants.
-- **Cards:** Used only for independently actionable or comparable content; never nested.
-- **Status badges:** Always pair color with explicit text such as “Current capability,” “Pilot stage,” “Designed for,” or “Long-term vision.”
-- **Navigation:** Sticky, inset, and visually light. The shared shell uses one restrained translucent material with a subtle edge and short shadow; it must remain legible over page content and become near-solid when blur is unsupported, transparency is reduced, or contrast is increased. Desktop links remain visible; mobile uses an accessible sheet with focus return and Escape support. No other component inherits the glass treatment.
-- **Hero product rail:** Exactly three compact product links use restrained dark glass on desktop and horizontal scroll-snap on mobile. Product name, role, status, and destination remain readable without motion or backdrop-filter.
-- **Risk funnel:** Semantic ordered content is primary. SVG and moving tokens are decorative reinforcement only.
-- **Outcome chain:** Three semantic outcome articles share one visible connective path on desktop and stack into the same ordered path on mobile.
-- **Service list:** Use an asymmetric ruled list with explicit summaries and boundaries; do not present services as equal numbered cards.
+- Buttons, cards, badges, separators, and the mobile Sheet reuse the installed shadcn primitives.
+- Native `details` and `summary` provide FAQ disclosure with a usable no-JavaScript state.
+- Responsive `picture` elements use only local AVIF and WebP derivatives with fixed dimensions.
+- Focus rings are always visible; touch targets are at least 44px; dark scenes maintain WCAG AA contrast.
 
-## Do's and Don'ts
+## Content boundaries
 
-Do make the execution path understandable in the first viewport, use source-defined threat names, qualify security outcomes, preserve useful static states, and keep touch targets at least 44px.
-
-Do not claim universal protection, use blockchain as proof of model truth, expose confidential fundraising data, copy AIR branding or metrics, restore Hyper Wallet, add a “controlled request path” section, or rely on motion to explain the system.
+Project records are clearly presented as concepts, not customer claims. Engagements use “Custom engagement” and “Contact for scope”; no fabricated prices, testimonials, metrics, certifications, or logos appear. The only external conversion is the approved Cal.com destination. No runtime resource is requested from Framer or the observed reference.

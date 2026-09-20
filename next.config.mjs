@@ -9,6 +9,7 @@ const nextConfig = {
   basePath,
   trailingSlash: true,
   images: { unoptimized: true },
+  experimental: { inlineCss: true },
   pageExtensions: ["ts", "tsx", "md", "mdx"],
 };
 

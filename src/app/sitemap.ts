@@ -1,27 +1,18 @@
 import type { MetadataRoute } from "next";
 
-import { articleRegistry, siteConfig } from "@/lib/site-data";
-import { bucklesonSiteContent } from "@/content/buckleson-site-content";
+import { spartanSiteContent as content } from "@/content/spartan-site-content";
+import { siteConfig } from "@/lib/site-data";
 
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = ["", "/products", "/services", "/about", "/blog"];
-  const productRoutes = bucklesonSiteContent.products.map(
-    (product) => `/products/${product.slug}`,
-  );
-  return [
-    ...[...staticRoutes, ...productRoutes].map((path) => ({
-      url: `${siteConfig.siteUrl}${path}/`.replace(/([^:]\/)\/+/, "$1"),
-      lastModified: "2026-09-16",
-      changeFrequency: path === "" ? ("weekly" as const) : ("monthly" as const),
-      priority: path === "" ? 1 : 0.8,
-    })),
-    ...articleRegistry.map((article) => ({
-      url: `${siteConfig.siteUrl}/blog/${article.slug}/`,
-      lastModified: article.publishedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    })),
-  ];
+  const staticRoutes = ["", "/digital-brain", "/project", "/about", "/articles", "/contact", "/policies/terms-conditions", "/policies/privacy-policy"];
+  const projectRoutes = content.projects.map((project) => `/project/${project.slug}`);
+  const articleRoutes = content.articles.map((article) => `/articles/${article.slug}`);
+  return [...staticRoutes, ...projectRoutes, ...articleRoutes].map((path) => ({
+    url: `${siteConfig.siteUrl}${path}/`.replace(/([^:]\/)\/+/, "$1"),
+    lastModified: "2026-09-20",
+    changeFrequency: path === "" ? "weekly" as const : "monthly" as const,
+    priority: path === "" ? 1 : 0.8,
+  }));
 }

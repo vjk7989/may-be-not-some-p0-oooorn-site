@@ -1,184 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
-import { AssessmentCta } from "@/components/assessment-cta";
 import { CinematicPicture } from "@/components/cinematic-picture";
-import { StatusBadge } from "@/components/status-badge";
-import { Button } from "@/components/ui/button";
-import { bucklesonSiteContent } from "@/content/buckleson-site-content";
+import { spartanSiteContent as content } from "@/content/spartan-site-content";
 import { createPageMetadata } from "@/lib/metadata";
 
-const aboutPage = bucklesonSiteContent.pages.find(
-  (page) => page.route === "/about/",
-)!;
-
-const protectionLayers = [
-  {
-    eyebrow: "Protect",
-    product: bucklesonSiteContent.products.find(
-      (product) => product.slug === "hyper-abs",
-    )!,
-    description:
-      "Reduce unnecessary exposure before information reaches an approved inference path.",
-  },
-  {
-    eyebrow: "Control",
-    product: bucklesonSiteContent.products.find(
-      (product) => product.slug === "hyper-tern",
-    )!,
-    description:
-      "Keep identities, permissions, tools, resources, and actions inside explicit policy boundaries.",
-  },
-  {
-    eyebrow: "Verify",
-    product: bucklesonSiteContent.products.find(
-      (product) => product.slug === "hyper-0x",
-    )!,
-    description:
-      "Preserve attributable, tamper-evident execution evidence for review, audit, and settlement.",
-  },
-] as const;
-
-export const metadata = createPageMetadata({
-  title: aboutPage.title,
-  description: aboutPage.description,
-  path: aboutPage.route,
-});
+export const metadata: Metadata = createPageMetadata({ title: "About", description: "The disciplines and operating principles behind Spartan.", path: "/about/" });
 
 export default function AboutPage() {
-  const { company } = bucklesonSiteContent;
-
   return (
-    <main id="main-content" tabIndex={-1}>
-      <section className="page-hero about-hero shell" aria-labelledby="about-title">
-        <p className="section-label">About Buckleson</p>
-        <h1 id="about-title">Infrastructure for accountable AI execution.</h1>
-        <p className="page-hero-lede">{company.mission}</p>
-        <div className="page-hero-actions">
-          <Button asChild>
-            <a href={company.calendarUrl}>
-              Book a security assessment
-              <ArrowUpRight aria-hidden="true" />
-            </a>
-          </Button>
-          <Button asChild variant="secondary">
-            <Link href="/products/">Explore the platform</Link>
-          </Button>
-        </div>
-        <CinematicPicture mediaId="hyper-0x-evidence" className="page-hero-media" />
-      </section>
-
-      <section
-        className="page-section page-section-white about-protection"
-        id="how-we-protect"
-        aria-labelledby="protection-title"
-      >
-        <div className="shell">
-          <div className="section-heading">
-            <p className="section-label">How we protect</p>
-            <h2 id="protection-title">
-              Three responsibilities around one execution path.
-            </h2>
-            <p>
-              Buckleson focuses on what enters an AI workflow, what it may do,
-              and what evidence remains afterward.
-            </p>
-          </div>
-
-          <ol className="about-protection-grid">
-            {protectionLayers.map(({ eyebrow, product, description }, index) => (
-              <li className="about-protection-card" key={product.slug}>
-                <span className="about-card-index" aria-hidden="true">
-                  0{index + 1}
-                </span>
-                <p className="section-label">{eyebrow}</p>
-                <h3>{product.name}</h3>
-                <p>{description}</p>
-                <StatusBadge status={product.status} />
-                <Link href={`/products/${product.slug}/`}>
-                  Explore {product.name}
-                  <ArrowUpRight aria-hidden="true" />
-                </Link>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section
-        className="page-section shell about-status"
-        id="journey"
-        aria-labelledby="status-title"
-      >
-        <div className="section-heading section-heading-split">
-          <div>
-            <p className="section-label">Where we are</p>
-            <h2 id="status-title">Current capability stays separate from ambition.</h2>
-          </div>
-          <p>
-            Buckleson distinguishes what can be evaluated now, what is being
-            tested through pilots, what the architecture is designed for, and
-            the direction of the company.
-          </p>
-        </div>
-
-        <ol className="about-status-list">
-          {company.stages.map((stage, index) => (
-            <li className="about-status-item" key={stage.status}>
-              <span className="about-card-index" aria-hidden="true">
-                0{index + 1}
-              </span>
-              <StatusBadge status={stage.status} />
-              <h3>{stage.title}</h3>
-              <p>{stage.description}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section
-        className="page-section page-section-white about-principles"
-        aria-labelledby="principles-title"
-      >
-        <div className="shell">
-          <div className="section-heading">
-            <p className="section-label">Operating principles</p>
-            <h2 id="principles-title">Boundaries before promises.</h2>
-          </div>
-          <div className="about-principles-grid">
-            {company.principles.map((principle, index) => (
-              <article key={principle.title}>
-                <span className="about-card-index" aria-hidden="true">
-                  0{index + 1}
-                </span>
-                <h3>{principle.title}</h3>
-                <p>{principle.description}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section
-        className="page-section shell about-vision"
-        id="vision"
-        aria-labelledby="vision-title"
-      >
-        <div className="about-vision-statement">
-          <p className="section-label">Long-term vision</p>
-          <h2 id="vision-title">{company.vision}</h2>
-          <StatusBadge status="Long-term vision" />
-        </div>
-        <div className="about-responsibility" aria-labelledby="responsibility-title">
-          <p className="section-label">Human responsibility</p>
-          <h3 id="responsibility-title">People remain responsible.</h3>
-          {company.responsibility.map((statement) => (
-            <p key={statement}>{statement}</p>
-          ))}
-        </div>
-      </section>
-
-      <AssessmentCta />
+    <main id="main-content">
+      <section className="page-hero"><div className="shell page-hero__grid"><div><p className="eyebrow">About Spartan</p><h1>We build the operating layer around ambitious AI.</h1></div><p className="page-hero__intro">Spartan is an independent concept studio bringing systems architecture, model engineering, experience design, and reliability practice into one delivery process.</p></div></section>
+      <div className="page-media"><CinematicPicture mediaId="frontier" eager sizes="100vw" /></div>
+      <section className="content-section shell split-section"><div><p className="eyebrow">Our point of view</p><h2>Complex systems need clear human ownership.</h2></div><div><p>We start with the work: who makes the decision, what context matters, which actions are allowed, and what recovery looks like. That keeps technology in service of an operating model people can actually use.</p><div className="ruled-list">{content.disciplines.map((item, index) => <article key={item.title}><span>0{index + 1}</span><div><h3>{item.title}</h3><p>{item.description}</p></div></article>)}</div></div></section>
+      <section className="vision-scene"><CinematicPicture mediaId="gateway" className="vision-media" /><div className="shell vision-layout"><div><p className="eyebrow">Independent by design</p><h2>Small enough to stay close. Technical enough to go deep.</h2></div><div><p>The studio forms focused teams around the boundary of each project and leaves behind a system, evidence, and a team that understands how to operate it.</p><Link href="/contact/">Start the conversation <ArrowUpRight aria-hidden="true" /></Link></div></div></section>
     </main>
   );
 }
