@@ -1,13 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-
 import { createPageMetadata } from "@/lib/metadata";
-
-export const metadata: Metadata = createPageMetadata({ title: "Privacy", description: "Privacy boundaries for the static Spartan concept website.", path: "/policies/privacy-policy/" });
-
-export default function PrivacyPage() {
-  return (
-    <main id="main-content" className="shell policy-page"><header><p className="eyebrow">Policies</p><h1>Privacy.</h1><p className="page-hero__intro">This static website is intentionally designed without account creation, contact forms, or newsletter collection.</p></header><div className="policy-body"><section><h2>Information you submit</h2><p>Spartan does not accept personal information through forms on this website. The only conversion action is an external scheduling link that opens after you choose it.</p></section><section><h2>Static delivery</h2><p>The pages and media are delivered as static files. This policy does not claim that the hosting platform, your browser, or an external scheduling service collects no technical information.</p></section><section><h2>External destinations</h2><p>External services apply their own privacy practices. Review them before entering information outside this website.</p></section><section><h2>Questions</h2><p>Use the <Link href="/contact/">contact page</Link> to reach the approved scheduling destination.</p></section></div></main>
-  );
-}
-
+export const metadata:Metadata=createPageMetadata({title:"Privacy Policy",description:"Spartan AI privacy policy.",path:"/policies/privacy-policy/"});
+const sections=[["1. INTRODUCTION","This Privacy Policy explains how Spartan AI collects, uses, and protects information."],["2. INFORMATION WE COLLECT","We may collect personal data you provide and usage or technical data generated when you interact with our services."],["3. HOW WE USE INFORMATION","We use information to provide, secure, support, and improve our services."],["4. HOW WE SHARE INFORMATION","We share information only with service providers, where legally required, or with your direction."],["5. DATA RETENTION","We retain information only as long as needed for the purposes described or required by law."],["6. YOUR RIGHTS","Depending on your location, you may request access, correction, deletion, restriction, or portability of personal data."],["7. DATA SECURITY","We use administrative, technical, and organizational measures designed to protect information."],["8. THIRD-PARTY SERVICES","Third-party services are governed by their own privacy practices."],["9. CHILDREN'S PRIVACY","Our services are not directed to children."],["10. CHANGES TO THIS POLICY","We may update this policy and will post the revised version here."],["11. CONTACT US","Privacy questions may be sent to info@spartanai.org."]] as const;
+export default function PrivacyPage(){return <main id="main-content" className="reference-inner legal-replica"><header><span>POLICIES</span><h1>Privacy Policy</h1></header><article>{sections.map(x=><section key={x[0]}><h2>{x[0]}</h2><p>{x[1]}</p></section>)}<section><h2>CONSENT</h2><p>By using our services, you consent to this Privacy Policy.</p></section></article></main>}

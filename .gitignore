@@ -9,6 +9,7 @@
 /.next/
 /out/
 /.artifacts/
+/test-results/
 /.sites-runtime/
 /.lighthouseci/
 *.tsbuildinfo

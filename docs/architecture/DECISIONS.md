@@ -1473,17 +1473,28 @@ Copy this section for each material decision. Keep entries concise and reference
 
 ## Current compact codebase map
 
+### D-054 — Supersede the inspired build with observed one-to-one parity
+
+- **Date:** 2026-09-21
+- **Status:** Accepted; supersedes D-052 where it required independently authored visible content and media
+- **Context:** The user explicitly rejected an inspired reinterpretation and required the public reference to be reproduced as-is before requesting later changes.
+- **Decision:** Rebuild every public page family around the observed Spartan route structure, section order, visible copy, customer/project labels, proof metrics, testimonials, team, pricing, FAQ, legal pages, and custom 404. Freeze the public media and fonts needed for the replica under `public/spartan-reference/`; production makes no runtime request to Framer or the reference host. Preserve static export, base-path handling, server-rendered first content, local Anime.js, reduced-motion behavior, and the existing 16-route inventory.
+- **Rationale:** Direct visual and behavioral parity is the explicit acceptance criterion. Localizing the observed public assets provides deterministic rendering and avoids a runtime dependency on the source site.
+- **Consequences:** The prior neutral-copy, fictional-project, custom-engagement, and no-affiliation contracts are removed. The homepage now owns pricing/capability/process/carousel/FAQ enhancement hooks; the postbuild runtime stripping remains valid because these interactions are implemented in the standalone module. Public third-party links remain links only and do not load runtime resources.
+- **Affected paths:** `src/app/`, `src/components/site-header.tsx`, `src/components/site-footer.tsx`, `src/components/brand-logo.tsx`, `src/components/reference-faq.tsx`, `src/components/spartan-motion.tsx`, `src/content/spartan-site-content.ts`, `src/app/globals.css`, `public/spartan-reference/`, `tests/`
+- **References:** `DESIGN.md`, `PRODUCT.md`, `tests/e2e/spartan-full-site.spec.ts`
+
 | Path | Purpose | Status |
 | --- | --- | --- |
 | `src/content/spartan-site-content.ts` | Authoritative typed company, route relations, projects, articles, capabilities, process, engagements, FAQ, and local media registry | Active source of truth |
-| `src/app/page.tsx` | Spartan editorial homepage with cinematic hero, proof mosaic, works, capabilities, experiences, film, process, practice, engagements, FAQ, and insights | Active static route |
+| `src/app/page.tsx` | Observed Spartan homepage sequence with exact public labels, metrics, projects, capabilities, testimonials, process, team, pricing, FAQ, insights, and template CTA | Active static route |
 | `src/app/digital-brain/`, `project/`, `about/`, `articles/`, `contact/`, `policies/` | Complete Spartan public route families and static detail generation | Active; 16 indexable routes total |
 | `src/app/not-found.tsx`, `sitemap.ts`, `robots.ts` | Custom missing-route recovery and crawl metadata | Active static output |
-| `src/app/globals.css`, `DESIGN.md` | Responsive visual system, token contract, focus/preferences, containment, and mobile popover presentation | Active; design lint passing |
-| `src/components/site-header.tsx`, `site-footer.tsx`, `brand-logo.tsx` | Server-rendered shared navigation and original Spartan identity | Active; base-path safe |
+| `src/app/globals.css`, `DESIGN.md` | Reference-matched typography, geometry, dark/light scenes, responsive collapse, and interaction states | Active |
+| `src/components/site-header.tsx`, `site-footer.tsx`, `brand-logo.tsx` | Server-rendered floating reference navigation, Spartan mark, newsletter/social/footer structure | Active; base-path safe |
 | `src/components/spartan-motion.tsx`, `public/vendor/anime.esm.min.js` | Interaction-gated local Anime.js bootstrap with pagehide cleanup | Active; no initial React hydration |
 | `scripts/Strip-HomepageNextRuntime.mjs` | Fail-closed homepage-only removal of unused Next JavaScript and flight payloads after static export | Active; preserves critical CSS, JSON-LD, and SpartanMotion |
-| `src/components/cinematic-picture.tsx`, `public/media/` | Intrinsically sized local AVIF/WebP delivery and original source scenes, including the generated signal-horizon hero | Active; no reference-host requests |
+| `public/spartan-reference/`, `src/components/cinematic-picture.tsx`, `public/media/` | Frozen reference media/fonts plus retained responsive local media; all production rendering is local | Active; no reference-host requests |
 | `src/components/ui/` | Installed shadcn primitives; Button, Card, Badge, and Separator are used by the active site | Active; Sheet retained but not on the initial performance path |
 | `tests/SPARTAN_FULL_SITE_TEST_MATRIX.md`, `src/content/spartan-site-content.test.ts` | Independent risk matrix and deterministic typed-content assertions | Active |
 | `tests/e2e/spartan-full-site.spec.ts` | Route, navigation, disclosure, 404, no-JS, reduced-motion, responsive, Axe, and local-request browser coverage | Active |

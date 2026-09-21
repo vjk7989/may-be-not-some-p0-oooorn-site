@@ -31,9 +31,9 @@ describe("Spartan authoritative content", () => {
     expect(routes.some((route) => /^\/(products|services|blog)\//.test(route))).toBe(false);
   });
 
-  it("keeps navigation canonical and conversion limited to the approved calendar", () => {
-    expect(spartanSiteContent.navigation.map(({ label }) => label)).toEqual(["Home", "Digital Brain", "Projects", "About", "Articles", "Contact"]);
-    expect(spartanSiteContent.navigation.every(({ href }) => href.startsWith("/") && href.endsWith("/"))).toBe(true);
+  it("keeps the observed navigation and booking destination canonical", () => {
+    expect(spartanSiteContent.navigation.map(({ label }) => label)).toEqual(["Works", "Services", "Insights", "Pricing", "Company"]);
+    expect(spartanSiteContent.navigation.every(({ href }) => href.startsWith("/"))).toBe(true);
     expect(spartanSiteContent.company.calendarUrl).toBe("https://cal.com/buckleson-group/30min");
   });
 
@@ -70,13 +70,14 @@ describe("Spartan authoritative content", () => {
     }
   });
 
-  it("contains rewritten neutral copy without copied hosts or unsupported proof", () => {
+  it("contains the reference-visible content contract without runtime media hosts", () => {
     const copy = publicCopy();
-    for (const term of [
-      "Buckleson", "Hyper Tern", "Hyper-ABS", "Hyper-0x", "framerusercontent", "framer.com", "contra.com", "delani.pro",
-      "Buy Spartan AI Template", "Lorem ipsum", "SOC2", "HIPAA", "near-perfect", "zero latency", "millions of users",
-    ]) expect(copy).not.toContain(term);
-    expect(copy).not.toMatch(/\$\s?\d|\d+%|\d+x\b/i);
+    expect(copy).toContain("Own Your Private Neural Engine");
+    expect(copy).toContain("Cigna Smart Health Systems");
+    expect(copy).toContain("The Sovereign Cloud: Why On-Premise AI is the Future of Data Privacy");
+    expect(copy).toContain("How do you ensure our data remains secure?");
+    for (const term of ["Buckleson", "Hyper Tern", "Hyper-ABS", "Hyper-0x", "framerusercontent", "spartanai.framer.website"])
+      expect(copy).not.toContain(term);
   });
 
   it("is stable across repeated serialization", () => {

@@ -1,16 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 import type { Metadata } from "next";
 import { ArrowUpRight } from "lucide-react";
-
-import { siteConfig } from "@/lib/site-data";
+import { ReferenceFaq } from "@/components/reference-faq";
 import { createPageMetadata } from "@/lib/metadata";
+import { withBasePath } from "@/lib/site-data";
 
-export const metadata: Metadata = createPageMetadata({ title: "Contact", description: "Book a focused working session with Spartan.", path: "/contact/" });
-
-export default function ContactPage() {
-  return (
-    <main id="main-content" className="contact-page">
-      <div className="shell contact-layout"><div><p className="eyebrow">Start a project</p><h1>Bring the hard part.</h1><p>Use a focused working session to map the workflow, constraints, decision owners, and the smallest useful first build.</p></div><aside className="contact-card"><p className="eyebrow">30-minute working session</p><h2>One conversation. A clearer boundary.</h2><p>No form, mailing list, or automated funnel. Choose a time and bring the context that matters.</p><a className="button button--light" href={siteConfig.calendarUrl}>Choose a time <ArrowUpRight aria-hidden="true" /></a></aside></div>
-    </main>
-  );
-}
-
+export const metadata: Metadata=createPageMetadata({title:"Contact",description:"Let's build your neural future together.",path:"/contact/"});
+export default function ContactPage(){return <main id="main-content" className="reference-inner contact-replica"><section className="contact-lead"><div><img src={withBasePath("/spartan-reference/64l3Qidyw4y3D5wng0mTJwvxA.jpg")} alt=""/><h1>Let&apos;s build your neural future together.</h1></div><form action="https://cal.com/" method="get"><h2>Deploy your first agent today.</h2><p>Ready to transform your legacy data into a strategic asset?</p><label>Name<input name="name" required/></label><label>Email<input name="email" type="email" required/></label><label>Budget<span><i>$</i><input name="budget" inputMode="numeric"/></span></label><label>Message<textarea name="message" rows={4}/></label><button type="submit">Submit <ArrowUpRight/></button></form></section><section className="contact-statement"><a href="mailto:info@spartanai.org">info@spartanai.org</a><div><img src={withBasePath("/spartan-reference/BaYHimDgZ5LwxTNRFLREkNHCO0.jpg")} alt=""/><h2>Forging the secure neural foundations for the next generation of global leaders.</h2><p>We empower global leaders with private, scalable neural layers.</p></div></section><ReferenceFaq/></main>}

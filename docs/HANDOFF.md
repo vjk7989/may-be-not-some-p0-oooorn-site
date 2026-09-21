@@ -1,33 +1,29 @@
-# Spartan high-fidelity homepage handoff
+# Spartan one-to-one replica handoff
 
 ## Current state
 
-The Spartan-branded static Next.js application now has a substantially closer observation-based homepage: framed cinematic hero, qualitative proof mosaic, oversized works grid, dark capabilities system, horizontal experience principles, film reveal, process sequence, practice cards, engagement tiers, FAQ, insights, and dense footer. The original generated signal-horizon scene is registered in the typed media contract and exported as responsive AVIF/WebP. Durable rationale is in `docs/architecture/DECISIONS.md` D-051 and D-052.
+The earlier inspired/neutral-content build has been superseded. The application now follows the public Spartan reference as-is across the 16-route static information architecture: floating navigation, homepage scene order, metrics, five projects, capabilities, vision, testimonial rail, film scene, four-step process, team profiles, four pricing tiers with monthly/annual state, seven FAQs, insight cards, template CTA, newsletter/social footer, Digital Brain, indexes/details, About, Contact, policies, and custom 404.
 
-The complete route surface remains sixteen indexable pages plus the custom 404. `src/content/spartan-site-content.ts` remains the authoritative content and media contract. Copy, code, logo, project art, and the new hero are independently authored; no Framer source, protected media, customer marks, testimonials, prices, certifications, or unsupported performance claims are used.
+Public reference media and fonts required for visual parity are frozen in `public/spartan-reference/`. Runtime pages do not request Spartan, Framer, or Framerusercontent resources. Internal URLs remain trailing-slash and GitHub-Pages-base-path safe. The homepage is server rendered; local Anime.js enhances entrances and the pricing, capability, process, carousel, and FAQ controls while reduced-motion and no-JavaScript users retain the complete content.
 
-The first frame is server-rendered and usable without JavaScript. Anime.js remains local, interaction-gated, reduced-motion aware, and reverted on pagehide. Native disclosures and the mobile popover remain functional without speculative application state. Deferred rendering is scoped to the heaviest later homepage sections with intrinsic-size fallbacks, and responsive lazy media remains in place.
+Durable rationale is recorded in `docs/architecture/DECISIONS.md` D-054. `DESIGN.md` and `PRODUCT.md` describe the replica contract.
 
-The homepage-only postbuild transform removes unused Next JavaScript chunks and flight payloads while retaining inline critical CSS, JSON-LD, and the SpartanMotion module. This is intentionally limited to the current server-only homepage; revisit it before adding any homepage client component.
+## Validation state
 
-## Validation
-
-- Independent release validation passes with no retries: design lint, ESLint, TypeScript, production content/unit tests (16 routes and 6 Vitest cases), animated 404 validation, Playwright (10/10), focused accessibility (1/1), default export, GitHub Pages base-path export, and Pages validation (16 routes).
-- Three independent mobile Lighthouse samples pass every budget: Performance 100, Accessibility 96, Best Practices 100, SEO 100, median LCP 1,210.29 ms, CLS 0, and TBT 0 ms.
-- Desktop and mobile browser coverage confirms the reference-aligned hero, semantic section order, native navigation/disclosures, reduced motion, no-JavaScript behavior, local-only resources, and custom 404.
-- Commit `f18f9f0` deployed successfully through GitHub Pages run `35537422207`. Independent live verification found all 16 routes and all checked assets healthy, exact canonicals and base paths, a working nested custom 404, complete sitemap/robots output, valid homepage fragments, and no reference-site resource domains.
+Independent release verification passed: design lint (0 errors), ESLint, TypeScript, production validation across all 16 routes, 6/6 Vitest cases, 11/11 Playwright tests with zero retries, accessibility across the representative route families, GitHub Pages base-path build (20 static pages), and `git diff --check`. Valid accessibility failures found during the pass were independently analyzed and fixed without weakening assertions.
 
 ## Next steps
 
-The requested implementation and release are complete. Future work should begin from the user's visual feedback, preserving the existing content, performance, accessibility, and deployment contracts unless a requested design change explicitly supersedes them.
+1. Commit, push `main`, monitor GitHub Pages, and verify every live route and local asset.
+2. Use the user’s subsequent feedback for visual deltas; do not revert to neutral or inspired content unless explicitly requested.
 
 ## Suggested skills
 
-- `impeccable` for future visual refinement while preserving the current design language.
+- `impeccable` for screenshot-led typography, spacing, and motion refinement.
 - `understand-anything:understand-diff` for a later architectural review.
 
 ## Guardrails
 
-- Preserve YAGNI: no CMS, auth, persistence, form backend, newsletter, analytics, redirects, fake success state, pricing logic, or speculative compatibility layer.
-- Keep public assets local and base-path safe. Do not reintroduce reference-host requests or unsupported claims.
-- Keep the server-first homepage boundary and scoped Anime.js island unless measured evidence justifies changing it.
+- Preserve YAGNI: no CMS, auth, database, analytics, or submission backend.
+- Keep the local frozen-asset boundary and static export.
+- Preserve the standalone homepage interaction module unless the postbuild runtime-stripping decision is revised.

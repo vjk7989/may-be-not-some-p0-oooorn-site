@@ -1,37 +1,37 @@
 ---
 version: "alpha"
-name: Spartan Editorial Systems
-description: Monumental editorial layouts, cinematic technical imagery, and restrained violet motion for an independent AI systems studio.
+name: Spartan AI Reference Replica
+description: Exact observed Spartan AI typography, rounded framing, monochrome editorial scenes, neon-lime accents, and restrained Anime.js motion.
 colors:
-  primary: "#6748E0"
-  primary-hover: "#5E43E5"
-  canvas: "#F2F1EC"
+  primary: "#B9FF75"
+  primary-hover: "#A7ED67"
+  canvas: "#F1F1EF"
   surface: "#FFFFFF"
-  ink: "#101010"
+  ink: "#1A1A1A"
   muted: "#686867"
   border: "#D5D3CB"
   inverse: "#F7F6F1"
-  dark-surface: "#111111"
+  dark-surface: "#1A1A1A"
 typography:
   display:
-    fontFamily: Arial
-    fontSize: 6rem
-    fontWeight: 600
-    lineHeight: 0.92
-    letterSpacing: -0.06em
+    fontFamily: Inter Display
+    fontSize: 12.5rem
+    fontWeight: 500
+    lineHeight: 1.1
+    letterSpacing: -0.04em
   heading:
-    fontFamily: Arial
-    fontSize: 3rem
-    fontWeight: 600
-    lineHeight: 1
+    fontFamily: Inter Display
+    fontSize: 3.375rem
+    fontWeight: 500
+    lineHeight: 1.1
     letterSpacing: -0.04em
   body:
-    fontFamily: Arial
+    fontFamily: Inter Display
     fontSize: 1rem
     fontWeight: 400
     lineHeight: 1.55
   label:
-    fontFamily: Arial
+    fontFamily: Inter Display
     fontSize: 0.75rem
     fontWeight: 600
     lineHeight: 1.3
@@ -58,8 +58,8 @@ components:
     padding: 14px
     height: 48px
   button-primary-hover:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.inverse}"
+    backgroundColor: "{colors.primary-hover}"
+    textColor: "{colors.ink}"
   content-panel:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
@@ -74,7 +74,7 @@ components:
 
 ## Overview
 
-Spartan uses a monumental editorial silhouette: oversized type, high-contrast light and dark scenes, locally authored cinematic technical imagery, and generous spatial rhythm. The visual language is inspired by the observed public composition while all identity, copy, and media remain original.
+Spartan reproduces the observed public reference: oversized 200px desktop marquees, 54px section headings, alternating warm-gray and charcoal scenes, 12px outer page gutters, 20px scene radii, the floating white pill navigation, and locally frozen reference media. Mobile uses the observed 128px marquees, 35px section headings, stacked grids, horizontal swipe rails, and logo-only header.
 
 ## Color and typography
 

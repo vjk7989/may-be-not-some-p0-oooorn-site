@@ -1,36 +1,14 @@
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand-logo";
-import { Button } from "@/components/ui/button";
-import { navigation, withBasePath } from "@/lib/site-data";
+import { withBasePath } from "@/lib/site-data";
+
+const links = [["Works", "/project/"], ["Services", "/#capabilities"], ["Insights", "/articles/"], ["Pricing", "/#pricing"], ["Company", "/about/"]] as const;
 
 export function SiteHeader() {
-  const primary = [
-    { label: "Works", href: "/project/" },
-    { label: "Services", href: "/#capabilities" },
-    { label: "Insights", href: "/articles/" },
-    { label: "Engagements", href: "/#engagements" },
-    { label: "Company", href: "/about/" },
-  ];
-
-  return (
-    <header className="site-header">
-      <div className="site-header__inner">
-        <BrandLogo eager />
-        <nav className="desktop-nav" aria-label="Primary navigation">
-          {primary.map((item) => <a key={item.href} href={withBasePath(item.href)}>{item.label}</a>)}
-        </nav>
-        <Button asChild className="header-cta"><a href={withBasePath("/contact/")}>Hire team <ArrowUpRight aria-hidden="true" /></a></Button>
-        <Button className="menu-trigger" variant="secondary" size="icon" aria-label="Open navigation" popoverTarget="mobile-navigation"><Menu aria-hidden="true" /></Button>
-        <aside id="mobile-navigation" className="mobile-sheet" popover="auto" role="dialog" aria-labelledby="mobile-navigation-title">
-          <button className="mobile-sheet__close" type="button" aria-label="Close menu" popoverTarget="mobile-navigation" popoverTargetAction="hide"><X aria-hidden="true" /></button>
-          <h2 id="mobile-navigation-title">Navigate Spartan</h2>
-          <p>Explore the studio, systems, and working notes.</p>
-          <nav aria-label="Mobile navigation">
-            {navigation.map((item, index) => <a href={withBasePath(item.href)} key={item.href}><span>0{index + 1}</span>{item.label}</a>)}
-          </nav>
-        </aside>
-      </div>
-    </header>
-  );
+  return <header className="site-header"><div className="site-header__inner">
+    <BrandLogo eager />
+    <nav className="desktop-nav" aria-label="Primary navigation">{links.map(([label, href]) => <a key={label} href={withBasePath(href)}>{label}</a>)}</nav>
+    <a className="header-cta" href={withBasePath("/contact/")}>Hire Team <ArrowUpRight aria-hidden="true" /></a>
+  </div></header>;
 }

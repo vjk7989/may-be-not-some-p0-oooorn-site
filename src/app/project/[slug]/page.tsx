@@ -1,31 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
-
-import { CinematicPicture } from "@/components/cinematic-picture";
-import { getProjectBySlug, spartanSiteContent as content } from "@/content/spartan-site-content";
+import { getProjectBySlug,spartanSiteContent as content } from "@/content/spartan-site-content";
 import { createPageMetadata } from "@/lib/metadata";
+import { withBasePath } from "@/lib/site-data";
 
-export function generateStaticParams() { return content.projects.map(({ slug }) => ({ slug })); }
-
-export async function generateMetadata({ params }: PageProps<"/project/[slug]">): Promise<Metadata> {
-  const project = getProjectBySlug((await params).slug);
-  if (!project) return {};
-  return createPageMetadata({ title: project.title, description: project.summary, path: `/project/${project.slug}/` });
-}
-
-export default async function ProjectDetailPage({ params }: PageProps<"/project/[slug]">) {
-  const project = getProjectBySlug((await params).slug);
-  if (!project) notFound();
-  const index = content.projects.findIndex((item) => item.slug === project.slug);
-  const next = content.projects[(index + 1) % content.projects.length];
-  return (
-    <main id="main-content">
-      <section className="detail-hero"><CinematicPicture mediaId={project.mediaId} eager sizes="100vw" /><div className="shell detail-hero__copy"><p className="eyebrow">{project.category}</p><h1>{project.title}</h1><p>{project.summary}</p></div></section>
-      <section className="shell project-story"><article><h2>The challenge</h2><p>{project.challenge}</p></article><article><h2>The approach</h2><p>{project.approach}</p></article><article><h2>The outcome</h2><p>{project.outcome}</p></article><article><h2>System capabilities</h2><div className="capability-tags">{project.capabilities.map((item) => <span key={item}>{item}</span>)}</div></article></section>
-      <Link className="shell next-project" href={`/project/${next.slug}/`}><span><small>Next concept</small><h2>{next.title}</h2></span><ArrowRight aria-hidden="true" /></Link>
-    </main>
-  );
-}
-
+export function generateStaticParams(){return content.projects.map(({slug})=>({slug}))}
+export async function generateMetadata({params}:PageProps<"/project/[slug]">):Promise<Metadata>{const item=getProjectBySlug((await params).slug);return item?createPageMetadata({title:item.title,description:item.summary,path:`/project/${item.slug}/`}):{}}
+const visuals:Record<string,string[]>={"cigna-smart-health-systems":["sZxYLpvH56E3RznKPcnAPYlPvo.jpg","UNV3FJuJ7cR6G2cJF6WkZu3s2K0.jpg","pquM34ztB7E9u6Ai2dPof99Q87w.jpg","cp2EZlYQ3UIQaOwrfuuhXrI298.jpg"],"aetna-health-data-ecosystem":["4GMiBYbu9SI4dXo9ENcqlNA.jpg","imunCWYXtyK7SBq21Kb23SkaM.jpg","cp2EZlYQ3UIQaOwrfuuhXrI298.jpg","XvWrfSfjUlZdDOxgmjNz9Wsqf5o.jpg"],"anthem-neural-care-network":["0g3E5eja3ueYAXkITtsy9quyYo.jpg","EjeQMWXEeTI99jEBOmESbMHUr4.jpg","0L6Fad5hZHnkJ6YROeIoeOM9k.jpg","gO7oqH62CdjjxnyUBSU5GJTvFnk.jpg"],"cvs-smart-supply-chain-hub":["ZK0k9kMGgE21P7r3puSMYZ8548.jpg","xarB3vJsV9EtuwQrQ8Pue19QBY.jpg","NzRvvlXwoys8d6lGvGI2jHo7A.jpg","RqkSneiEeJCcORPGj3oP3UeArg.jpg"],"united-ai-security-protocol":["LYQLqywSoqlHG7KLRJM70MIk.png","HMEWU6mT85p4KSfghbp5B65fi8.png","rczpeoqJJMbkAUQYvv8Go9CMAfM.png","z7Iwfjz4S2K1bOVuow9h4RKqfnA.jpeg"]};
+const quotes:Record<string,string>={"cigna-smart-health-systems":"The AI implementation transformed how we interact with patient data, allowing our teams to move with unprecedented clarity and speed.","aetna-health-data-ecosystem":"Daemon’s ability to navigate the complexities of healthcare data is unmatched.","anthem-neural-care-network":"Daemon redefined our data strategy.","cvs-smart-supply-chain-hub":"Daemon’s logistics AI has completely transformed how we manage our inventory.","united-ai-security-protocol":"The security framework provided by Daemon is revolutionary."};
+export default async function ProjectDetailPage({params}:PageProps<"/project/[slug]">){const project=getProjectBySlug((await params).slug);if(!project)notFound();const files=visuals[project.slug];return <main id="main-content" className="reference-inner project-detail-replica"><section className="project-detail-hero"><img src={withBasePath(`/spartan-reference/${files[0]}`)} alt=""/><span>{project.category}</span><h1>{project.title}</h1><p>{project.summary}</p><div>{[["$45M+","Funds raised"],["700%","Social growth"],["41x","ATH ROI"],["84","Parternships"]].map(x=><b key={x[1]}>{x[0]}<small>{x[1]}</small></b>)}</div></section><section className="project-narrative"><h2>{quotes[project.slug]}</h2><div className="project-copy"><article><h3>The Challenge</h3><p>{project.challenge}</p></article><article><h3>Our Approach</h3><p>{project.approach}</p></article></div><div className="project-gallery">{files.slice(1).map(file=><img src={withBasePath(`/spartan-reference/${file}`)} alt="" key={file}/>)}</div><div className="outcome-grid">{project.capabilities.map((x,i)=><article key={x}><span>0{i+1}</span><h3>{x}</h3></article>)}</div><h2>This project set a new benchmark for the industry, proving that secure intelligence and ambitious growth can move together.</h2><p>{project.outcome}</p></section><section className="more-projects"><h2>More Projects</h2><div>{content.projects.filter(x=>x.slug!==project.slug).slice(0,3).map(x=><a href={withBasePath(`/project/${x.slug}/`)} key={x.slug}><span>{x.category}</span><h3>{x.title}</h3></a>)}</div></section></main>}

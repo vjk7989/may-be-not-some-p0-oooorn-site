@@ -51,9 +51,16 @@ const websiteSchema = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const fontCss = `
+    @font-face{font-family:"Inter Display";src:url("${withBasePath("/spartan-reference/bHYNJqzTyl2lqvmMiRRS6Y16Es.woff2")}") format("woff2");font-weight:400;font-display:swap}
+    @font-face{font-family:"Inter Display";src:url("${withBasePath("/spartan-reference/iwWTDc49ENF2tCHbqlNARXw6Ug.woff2")}") format("woff2");font-weight:500;font-display:swap}
+    @font-face{font-family:"Inter Display";src:url("${withBasePath("/spartan-reference/PfdOpgzFf7N2Uye9JX7xRKYTgSc.woff2")}") format("woff2");font-weight:600;font-display:swap}
+    @font-face{font-family:"Editorial";src:url("${withBasePath("/spartan-reference/XVuJxrEXb8jdhTKGx0Zqrz5EU.woff2")}") format("woff2");font-weight:400;font-display:swap}
+  `;
   return (
     <html lang="en">
       <body>
+        <style dangerouslySetInnerHTML={{ __html: fontCss }} />
         <a className="skip-link" href="#main-content">
           Skip to main content
         </a>

@@ -57,12 +57,14 @@ if ($Mode -in @('All', 'Content')) {
             ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }
         Get-ChildItem -LiteralPath $resolvedOut -Recurse -File -Include *.html,*.css,*.js | ForEach-Object { Get-Content -LiteralPath $_.FullName -Raw }
     ) -join "`n"
-    foreach ($pattern in @('framerusercontent\.com', 'spartanai\.framer\.website', 'contra\.com', 'Hyper-0x', 'Hyper Tern', 'Hyper-ABS')) {
+    foreach ($pattern in @('framerusercontent\.com', 'spartanai\.framer\.website', 'Hyper-0x', 'Hyper Tern', 'Hyper-ABS')) {
         if ($sourceAndOutput -match $pattern) { Fail "Forbidden copied or legacy resource found: $pattern" }
     }
-    foreach ($required in @('Scale your ideas', 'Digital Brain', 'Our Works', 'Custom engagement', 'No affiliation with the reference template creator')) {
+    foreach ($required in @('Scale your ideas', 'Build with AI', 'Digital Brain', 'Our Works', 'Experiences', 'Pricing', 'Buy Spartan AI Template', 'Cigna Smart Health Systems')) {
         if (-not $pages[''].Text.Contains($required)) { Fail "Homepage missing required content: $required" }
     }
+    if ($pages[''].Text -notmatch '(?i)\bCommon\s+Queries\b') { Fail 'Homepage missing required content: Common Queries' }
+    if ($pages[''].Text -notmatch '\$\s*495\b') { Fail 'Homepage missing required content: $495' }
     $homepageRuntimePatterns = @(
         '<script\b(?=[^>]*\bsrc=["''][^"'']*/_next/static/chunks/[^"'']+["''])[^>]*>',
         '<link\b(?=[^>]*\brel=["'']modulepreload["''])(?=[^>]*\bhref=["''][^"'']*/_next/static/chunks/[^"'']+["''])[^>]*>',
@@ -88,7 +90,10 @@ if ($Mode -in @('All', 'Links')) {
             if ($href -match '^(https?:|mailto:|tel:)' -or -not $href.StartsWith('/')) { continue }
             $clean = $href.Trim('/')
             if ($clean -match '^_next/' -or $clean -eq 'favicon.svg') { continue }
-            if (-not ($routes -contains $clean)) { Fail "Broken internal link on /$($entry.Key)/: $href" }
+            if ($routes -contains $clean) { continue }
+            $assetPath = [System.IO.Path]::GetFullPath((Join-Path $resolvedOut ($clean -replace '/', [System.IO.Path]::DirectorySeparatorChar)))
+            if ($assetPath.StartsWith($resolvedOut) -and (Test-Path -LiteralPath $assetPath -PathType Leaf)) { continue }
+            Fail "Broken internal link on /$($entry.Key)/: $href"
         }
     }
     foreach ($legacy in @('products', 'services', 'blog')) {
@@ -110,7 +115,7 @@ if ($Mode -in @('All', 'Seo')) {
     }
     if (Test-Path -LiteralPath (Join-Path $resolvedOut '404.html')) {
         $notFound = Get-Content -LiteralPath (Join-Path $resolvedOut '404.html') -Raw
-        if ($notFound -notmatch 'outside the system' -or $notFound -notmatch 'noindex') { Fail 'Custom 404 content or noindex is missing.' }
+        if ($notFound -notmatch 'Error 404' -or $notFound -notmatch 'noindex') { Fail 'Custom 404 content or noindex is missing.' }
     }
 }
 

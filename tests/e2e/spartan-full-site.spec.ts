@@ -45,16 +45,12 @@ test("project and article indexes link to every deterministic detail", async ({ 
   for (const slug of articleSlugs) await expect(page.locator(`a[href="/articles/${slug}/"]`).first()).toBeVisible();
 });
 
-test("mobile sheet is keyboard-operable and restores focus", async ({ page }) => {
+test("mobile header matches the reference's logo-only treatment", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  const trigger = page.getByRole("button", { name: "Open navigation" });
-  await trigger.focus();
-  await trigger.press("Enter");
-  await expect(page.getByRole("dialog")).toBeVisible();
-  await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).toBeHidden();
-  await expect(trigger).toBeFocused();
+  await expect(page.getByRole("link", { name: "Spartan home" }).first()).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Primary navigation" })).toBeHidden();
+  await expect(page.getByRole("link", { name: /Hire Team/ })).toBeHidden();
 });
 
 test("FAQ uses native disclosures", async ({ page }) => {
@@ -69,7 +65,7 @@ test("removed legacy paths and unknown nested paths use the custom 404", async (
   for (const route of ["/products/", "/services/", "/blog/", "/missing/nested/path/"]) {
     const response = await page.goto(route);
     expect(response?.status(), route).toBe(404);
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("outside the system");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Error 404");
     const robotDirectives = await page.locator('meta[name="robots"]').evaluateAll((nodes) => nodes.map((node) => node.getAttribute("content") ?? ""));
     expect(robotDirectives.some((content) => /\bnoindex\b/.test(content))).toBe(true);
   }
@@ -80,8 +76,8 @@ test("site remains usable without JavaScript", async ({ browser }) => {
   const page = await context.newPage();
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.locator("a.hero-build")).toBeVisible();
-  await expect(page.locator("a.hero-build")).toHaveAttribute("href", /contact\/$/);
+  await expect(page.locator("a.round-cta")).toBeVisible();
+  await expect(page.locator("a.round-cta")).toHaveAttribute("href", /contact\/$/);
   await expect(page.locator(".faq-list details").first()).toHaveAttribute("open", "");
   await context.close();
 });
@@ -91,6 +87,24 @@ test("reduced motion bypasses Anime.js inline transforms", async ({ page }) => {
   await page.goto("/");
   await page.waitForTimeout(250);
   await expect(page.locator("[data-motion-section]").first()).not.toHaveAttribute("style", /transform|opacity/);
+});
+
+test("pricing, capability, process, carousel, and FAQ states are interactive", async ({ page }) => {
+  await page.goto("/");
+  await page.locator('[data-billing="monthly"]').click();
+  await expect(page.locator('[data-price]').first()).toHaveText("618");
+  await page.locator('[data-capability="1"]').click();
+  await expect(page.locator('.cap-panels article').nth(1)).toHaveClass(/is-active/);
+  await page.locator('[data-process="2"]').click();
+  await expect(page.locator('.process-panels article').nth(2)).toHaveClass(/is-active/);
+  const rail = page.locator('[data-carousel]');
+  const initial = await rail.evaluate((node) => node.scrollLeft);
+  await page.locator('[data-carousel-next]').click();
+  await expect.poll(() => rail.evaluate((node) => node.scrollLeft)).toBeGreaterThan(initial);
+  const secondFaq = page.locator('.faq-list details').nth(1);
+  await secondFaq.locator('summary').click();
+  await expect(secondFaq).toHaveAttribute('open', '');
+  await expect(page.locator('.faq-list details').first()).not.toHaveAttribute('open', '');
 });
 
 test("responsive boundaries have no horizontal overflow", async ({ page }) => {

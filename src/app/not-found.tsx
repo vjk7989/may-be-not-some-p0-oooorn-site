@@ -9,6 +9,6 @@ export const metadata: Metadata = {
 
 export default function NotFoundPage() {
   return (
-    <main id="main-content" className="not-found-page"><div className="shell"><strong aria-hidden="true">404</strong><p className="eyebrow">Boundary lost</p><h1>This route is outside the system.</h1><p>The page may have moved or the address may be incomplete. Return to the homepage to find a working path.</p><Link className="button button--dark" href="/">Return home</Link></div></main>
+    <main id="main-content" className="not-found-page"><div className="shell"><strong aria-hidden="true">404</strong><h1>Error 404</h1><p>Oops! Looks like you took a wrong turn.</p><Link className="button button--dark" href="/">Back To Home</Link></div></main>
   );
 }
