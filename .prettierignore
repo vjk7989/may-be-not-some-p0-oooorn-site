@@ -1,0 +1,20 @@
+# dependencies / lockfiles (Dependabot regenerates these; never format)
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+node_modules/
+
+# build / generated
+dist/
+.astro/
+.vercel/
+graft/.graph/
+
+# repository control / append-only architecture history
+AGENTS.md
+docs/architecture/DECISIONS.md
+
+# env / OS
+.env
+.env.*
+.DS_Store

@@ -1,0 +1,35 @@
+---
+title: Security Boundaries and Recovery
+description: Required safety boundaries and recovery checks for AI agent deployments.
+sidebar:
+  label: Security Boundaries
+  order: 3
+---
+
+import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="Default deny">
+    Grant only the operations, resources, magnitude, and autonomy needed for the
+    task.
+  </Card>
+  <Card title="Independent enforcement">
+    Keep identity, data, policy, and approval controls outside model-visible
+    instructions.
+  </Card>
+  <Card title="Bounded failure">
+    Define what stops, retries, rolls back, or requires review after an outage
+    or partial result.
+  </Card>
+  <Card title="Observable execution">
+    Correlate requests, decisions, approvals, tool calls, and reported outcomes.
+  </Card>
+</CardGrid>
+
+Test direct and indirect prompt injection, unauthorized data access, malformed tool parameters, stale approvals, revoked credentials, duplicate actions, policy-service outages, and cross-tenant requests.
+
+<Aside type="caution">
+  Controls can reduce likelihood and impact, but no Buckleson product guarantees
+  security, correctness, confidentiality, or complete prevention of agent
+  misuse.
+</Aside>

@@ -1,0 +1,24 @@
+---
+title: Deployment Planning
+description: Plan a Buckleson deployment around explicit owners, boundaries, and acceptance gates.
+sidebar:
+  label: Deployment Planning
+  order: 2
+---
+
+import { Card } from '@astrojs/starlight/components';
+
+Begin with one independently verifiable workflow. Record the expected outcome, authorized identities, required data, allowed tools, approval thresholds, evidence requirements, and safe failure behavior.
+
+<Card title="A deployment plan must name" icon="seti:notebook">
+
+- owners for data, model, policy, infrastructure, security, and business outcome;
+- exact model endpoints, tools, resources, and destinations;
+- credential scope, lifetime, rotation, and revocation;
+- actions that are automatic, denied, or approval-bound;
+- required evidence and its retention boundary; and
+- rollback, cancellation, retry, and incident procedures.
+
+</Card>
+
+Use staged gates: map, implement, test, observe, then expand. Unknown dependencies block increased authority rather than becoming implicit defaults.

@@ -1,0 +1,36 @@
+{
+  "title": "Start with the boundary that matters most",
+  "subTitle": "Buckleson scopes work against the workflow, risk, and responsibility boundary. Commercial terms are discussed only after the scope is clear.",
+  "badge": "Focused path",
+  "thirdOption": "Need a different scope?",
+  "btnText": "Book a 30-minute Assessment",
+  "starterKit": {
+    "name": "AI workflow assessment",
+    "description": "Map information, identities, tools, permissions, actions, credentials, and evidence.",
+    "price": "Scope",
+    "cents": "",
+    "billingFrequency": "before implementation",
+    "features": [
+      "Workflow and trust-boundary map",
+      "Risk and permission review",
+      "Control recommendations"
+    ],
+    "purchaseBtnTitle": "Book an Assessment",
+    "purchaseLink": "https://cal.com/buckleson-group/30min"
+  },
+  "professionalToolbox": {
+    "name": "Controlled pilot",
+    "description": "Evaluate selected controls against a defined AI workflow and success criteria.",
+    "price": "Pilot",
+    "cents": "",
+    "billingFrequency": "after assessment",
+    "features": [
+      "Explicit requirements",
+      "Bounded implementation",
+      "Evaluation evidence",
+      "Responsibility handoff"
+    ],
+    "purchaseBtnTitle": "Discuss a Pilot",
+    "purchaseLink": "https://cal.com/buckleson-group/30min"
+  }
+}

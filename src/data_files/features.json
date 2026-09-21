@@ -1,0 +1,22 @@
+[
+  {
+    "heading": "Protect information",
+    "content": "Hyper-ABS minimizes, masks, redacts, tokenizes, or abstracts unnecessary sensitive values before approved context reaches inference.",
+    "svg": "groups"
+  },
+  {
+    "heading": "Control execution",
+    "content": "Hyper Tern checks identity, permissions, routing, tools, resources, and requested actions against explicit policy boundaries.",
+    "svg": "verified"
+  },
+  {
+    "heading": "Manage agent authority",
+    "content": "Hyper Wallet manages agent identity, credentials, policy-bound permissions, and delegated approvals without acting as a custody or payment product.",
+    "svg": "books"
+  },
+  {
+    "heading": "Preserve evidence",
+    "content": "Hyper-0x records attributable, tamper-evident execution evidence for verification, audit, and settlement without claiming model truth.",
+    "svg": "frame"
+  }
+]

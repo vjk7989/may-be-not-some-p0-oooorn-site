@@ -1,0 +1,35 @@
+---
+title: Operating and Maintenance
+description: Maintain Buckleson policy, credentials, data controls, and evidence as AI workflows change.
+sidebar:
+  label: Operating and Maintenance
+  order: 2
+---
+
+import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="Review policy">
+    Revalidate permissions and limits after changes to models, tools, data
+    sources, owners, or business impact.
+  </Card>
+  <Card title="Rotate credentials">
+    Expire and revoke grants that are unused, overbroad, or associated with a
+    changed workflow.
+  </Card>
+  <Card title="Monitor evidence">
+    Alert on missing events, repeated denials, approval reuse, unusual
+    destinations, and unexpected action volume.
+  </Card>
+  <Card title="Test recovery">
+    Regularly exercise outage, retry, partial execution, cancellation, and
+    evidence-restoration procedures.
+  </Card>
+</CardGrid>
+
+Keep production, development, and evaluation identities separate. Define retention for operational evidence and restrict search, export, modification, and deletion by role and tenant.
+
+<Aside type="tip">
+  Reauthorize long-running agents periodically. A permission that was
+  appropriate at deployment may become excessive after the workflow changes.
+</Aside>

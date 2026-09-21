@@ -1,0 +1,42 @@
+---
+title: Getting Started
+description: Map an AI workflow and identify where Buckleson products fit before enabling execution.
+sidebar:
+  label: Getting Started
+  order: 1
+---
+
+import { Aside, Card, CardGrid, Steps } from '@astrojs/starlight/components';
+
+Start with one bounded workflow. Do not begin by granting an agent broad production access.
+
+<Steps>
+
+1. **Map the path.** Record the initiating identity, data sources, model endpoint, tools, destinations, and possible side effects.
+2. **Classify impact.** Identify sensitive data and actions that are destructive, external, financial, legal, or difficult to reverse.
+3. **Place controls.** Use Hyper-ABS before inference, Hyper Tern before execution, Hyper Wallet for agent credentials and delegated approvals, and Hyper-0x for structured evidence.
+4. **Test recovery.** Exercise denial, approval expiry, credential revocation, timeout, retry, duplicate request, partial failure, and evidence-pipeline outage.
+5. **Expand carefully.** Increase data access or autonomy only when observed results show that policy and recovery behave as intended.
+
+</Steps>
+
+<CardGrid>
+  <Card title="Data boundary">
+    Minimize and route context before it reaches a model.
+  </Card>
+  <Card title="Execution boundary">
+    Evaluate structured actions outside the model before a tool runs.
+  </Card>
+  <Card title="Identity boundary">
+    Use scoped, short-lived credentials rather than secrets in prompts.
+  </Card>
+  <Card title="Evidence boundary">
+    Record decisions and outcomes without copying unnecessary sensitive
+    payloads.
+  </Card>
+</CardGrid>
+
+<Aside type="caution">
+  Buckleson helps reduce operational risk. It does not guarantee secure
+  outcomes, model correctness, or complete protection from prompt injection.
+</Aside>

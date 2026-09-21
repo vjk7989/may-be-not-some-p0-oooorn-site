@@ -1,0 +1,72 @@
+---
+import EmailFooterInput from '@components/ui/forms/input/EmailFooterInput.astro';
+import DemoForm from '@components/ui/forms/DemoForm.astro';
+import BrandLogo from '@components/BrandLogo.astro';
+import { SITE } from '@data/constants';
+import { footerSections } from '@data/navigation';
+import { localePath } from '@utils/locale';
+
+const { locale, copy: t } = Astro.locals;
+const footer = t.nav.footer;
+---
+
+<footer class="w-full bg-neutral-300 dark:bg-neutral-900">
+  <div class="mx-auto w-full max-w-[85rem] px-4 py-10 sm:px-6 lg:px-16 lg:pt-20 2xl:max-w-(--breakpoint-2xl)">
+    <div class="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-5">
+      <div class="col-span-full lg:col-span-1">
+        {/* Brand Logo */}
+        <BrandLogo class="h-auto w-32" />
+      </div>
+      {/* Link sections from the copy table (Ecosystem, Company, …) */}
+      {footerSections.map(section => (
+        <div class="col-span-1">
+          <h3 class="font-bold text-neutral-800 dark:text-neutral-200">
+            {footer.sectionTitles[section.id]}
+          </h3>
+          <ul class="mt-3 grid space-y-3">
+            {section.links.map(link => (
+              <li>
+                <a
+                  href={localePath(locale, link.path)}
+                  class="inline-flex gap-x-2 rounded-lg text-neutral-600 ring-zinc-500 outline-hidden transition duration-300 hover:text-neutral-500 focus-visible:ring-3 dark:text-neutral-400 dark:ring-zinc-200 dark:hover:text-neutral-300 dark:focus:outline-hidden"
+                >
+                  {footer.links[link.id]}
+                </a>
+                {link.badge === 'hiring' ? (
+                  <span class="ms-1 inline rounded-lg bg-orange-700 px-2 py-1 text-xs font-bold text-neutral-50">
+                    {footer.hiringBadge}
+                  </span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+      <div class="col-span-2">
+        <h3 class="font-bold text-neutral-800 dark:text-neutral-200">
+          {footer.stayUpToDate}
+        </h3>
+
+        <DemoForm successMessage={footer.newsletterDemoMessage}>
+          <EmailFooterInput />
+          <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
+            {footer.stayUpToDateContent}
+          </p>
+        </DemoForm>
+      </div>
+    </div>
+
+    <div class="mt-9 sm:mt-12">
+      <p class="text-sm text-neutral-600 dark:text-neutral-400">
+        © <span id="current-year"></span> {SITE.title}.
+      </p>
+    </div>
+
+    <script>
+      const year = new Date().getFullYear();
+      const element = document.getElementById('current-year');
+      element!.innerText = year.toString();
+    </script>
+  </div>
+</footer>

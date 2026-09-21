@@ -1,0 +1,88 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import MainSection from '@components/ui/blocks/MainSection.astro';
+import AlternatingSections, {
+  type Article,
+} from '@components/ui/blocks/AlternatingSections.astro';
+import FeaturesStats from '@components/sections/features/FeaturesStats.astro';
+import executionBoundary from '@images/buckleson/execution-boundary.avif';
+import dataShield from '@images/buckleson/data-shield.avif';
+import evidenceLedger from '@images/buckleson/evidence-ledger.avif';
+import agentIdentity from '@images/buckleson/agent-identity.avif';
+import { getCopy } from '@/copy';
+import { localePath, type MarketingLocale } from '@utils/locale';
+
+/** The services page in one locale. */
+interface Props {
+  locale: MarketingLocale;
+}
+
+const { locale } = Astro.props;
+const copy = getCopy(locale).services;
+const articleCopy = copy.articles;
+
+const articles: Article[] = [
+  {
+    title: articleCopy.guidance.title,
+    subTitle: articleCopy.guidance.subTitle,
+    images: [
+      { src: executionBoundary, alt: articleCopy.guidance.imageAlts[0] },
+      { src: agentIdentity, alt: articleCopy.guidance.imageAlts[1] },
+    ],
+  },
+  {
+    title: articleCopy.craftsmanship.title,
+    subTitle: articleCopy.craftsmanship.subTitle,
+    images: [{ src: dataShield, alt: articleCopy.craftsmanship.imageAlts[0] }],
+    cta: {
+      title: articleCopy.craftsmanship.cta,
+      url: localePath(locale, '/contact'),
+    },
+  },
+  {
+    title: articleCopy.oversight.title,
+    subTitle: articleCopy.oversight.subTitle,
+    images: [
+      { src: evidenceLedger, alt: articleCopy.oversight.imageAlts[0] },
+      { src: executionBoundary, alt: articleCopy.oversight.imageAlts[1] },
+    ],
+  },
+  {
+    title: articleCopy.maintenance.title,
+    subTitle: articleCopy.maintenance.subTitle,
+    images: [{ src: agentIdentity, alt: articleCopy.maintenance.imageAlts[0] }],
+  },
+  {
+    title: articleCopy.bespoke.title,
+    subTitle: articleCopy.bespoke.subTitle,
+    images: [
+      { src: dataShield, alt: articleCopy.bespoke.imageAlts[0] },
+      { src: evidenceLedger, alt: articleCopy.bespoke.imageAlts[1] },
+    ],
+    cta: {
+      title: articleCopy.bespoke.cta,
+      url: localePath(locale, '/contact'),
+    },
+  },
+];
+---
+
+<MainLayout
+  title={copy.title}
+  description={copy.metaDescription}
+  ogTitle={copy.ogTitle}
+>
+  <MainSection
+    title={copy.intro.title}
+    subTitle={copy.intro.subTitle}
+    cta={{ title: copy.intro.cta, url: localePath(locale, '/contact') }}
+  />
+  <AlternatingSections articles={articles} />
+  <FeaturesStats
+    title={copy.stats.title}
+    subTitle={copy.stats.subTitle}
+    mainStatTitle={copy.stats.mainStatTitle}
+    mainStatSubTitle={copy.stats.mainStatSubTitle}
+    stats={copy.stats.stats}
+  />
+</MainLayout>

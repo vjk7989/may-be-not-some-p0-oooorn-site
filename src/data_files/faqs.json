@@ -1,0 +1,29 @@
+{
+  "subTitle": "Direct answers about Buckleson's scope, products, and responsibility boundaries.",
+  "faqs": [
+    {
+      "question": "What does Buckleson secure?",
+      "answer": "Buckleson focuses on how AI executes: the information entering a workflow, the identities and tools involved, the actions that may occur, the credentials and approvals an agent uses, and the evidence that remains afterward."
+    },
+    {
+      "question": "Does Buckleson guarantee that AI is safe?",
+      "answer": "No. Buckleson helps reduce risk, enforce clearer boundaries, and support auditability. Organizations still need appropriate use-case decisions, evaluation, monitoring, incident response, and human oversight."
+    },
+    {
+      "question": "What does secure inference mean here?",
+      "answer": "It means protection and control around inference through data minimization, transformation, routing, permissions, and policy. It is not a claim of confidential computing or proof of model correctness."
+    },
+    {
+      "question": "Why does Buckleson use blockchain?",
+      "answer": "Hyper-0x uses Buckleson's in-house blockchain to preserve attributable, tamper-evident execution evidence for verification, audit, and settlement. It does not make private data confidential or prove model truth."
+    },
+    {
+      "question": "What is Hyper Wallet?",
+      "answer": "Hyper Wallet is an available-now agent credential wallet for identity, credentials, policy-bound permissions, and delegated approvals. It is not a digital-asset custody or payment product, and it does not guarantee secure outcomes."
+    },
+    {
+      "question": "Can Buckleson stop prompt injection?",
+      "answer": "Buckleson can constrain the tools, data, credentials, and actions available to unsafe requests and can block requests identified as disallowed by policy. It does not claim universal prompt-injection detection or prevention."
+    }
+  ]
+}

@@ -33,6 +33,7 @@ $env:NPM_CONFIG_CACHE = $cachePath
 $env:NPM_CONFIG_USERCONFIG = $userConfigPath
 $env:TEMP = $tempPath
 $env:TMP = $tempPath
+$env:PLAYWRIGHT_BROWSERS_PATH = Join-Path $workspaceRoot '.cache\ms-playwright'
 
 $commandPath = if ($IsWindows) {
     $nodeDirectory = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ProgramFiles)) 'nodejs'

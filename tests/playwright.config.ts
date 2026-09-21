@@ -1,19 +1,26 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: "./e2e",
-  outputDir: "../.artifacts/playwright",
+  testDir: './e2e',
   fullyParallel: false,
-  forbidOnly: true,
+  workers: 1,
   retries: 0,
-  reporter: [["line"]],
+  reporter: 'line',
   use: {
-    ...devices["Desktop Chrome"],
-    baseURL: process.env.TEST_BASE_URL ?? "http://127.0.0.1:4173",
-    browserName: "chromium",
-    channel: "chrome",
-    screenshot: "only-on-failure",
-    trace: "retain-on-failure",
-    video: "off",
+    baseURL: 'http://127.0.0.1:4321',
+    trace: 'retain-on-failure',
   },
+  webServer: {
+    command:
+      "pwsh -NoProfile -Command \"& './scripts/Invoke-WorkspaceNodeTool.ps1' npm run preview '--' --ignore-lock --host 127.0.0.1 --port 4321\"",
+    cwd: process.cwd(),
+    url: 'http://127.0.0.1:4321/',
+    reuseExistingServer: false,
+    timeout: 120_000,
+  },
+  projects: [
+    { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
+    { name: 'tablet', use: { viewport: { width: 768, height: 1024 } } },
+    { name: 'mobile', use: { ...devices['Pixel 5'] } },
+  ],
 });

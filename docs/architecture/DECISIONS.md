@@ -1484,6 +1484,28 @@ Copy this section for each material decision. Keep entries concise and reference
 - **Affected paths:** `src/app/`, `src/components/site-header.tsx`, `src/components/site-footer.tsx`, `src/components/brand-logo.tsx`, `src/components/reference-faq.tsx`, `src/components/spartan-motion.tsx`, `src/content/spartan-site-content.ts`, `src/app/globals.css`, `public/spartan-reference/`, `tests/`
 - **References:** `DESIGN.md`, `PRODUCT.md`, `tests/e2e/spartan-full-site.spec.ts`
 
+### D-055 — Isolate temporary Spartan references in an unlisted component lab
+
+- **Date:** 2026-09-21
+- **Status:** Accepted
+- **Context:** The next Buckleson design phase needs five specific Spartan sections available for review and later selection without changing the current production homepage, public route contract, navigation, footer, or sitemap.
+- **Decision:** Add `/component-lab/spartan/` as a `noindex,nofollow` review route with five independently exported, zero-prop React components: impact, capabilities, process, story/team, and pricing. Keep their exact temporary data beside each component, scope presentation through CSS Modules, freeze all required media locally with SHA-256 provenance, and preserve the supplied screenshots only as test references. Suppress the production shell on this route and use lab-specific interaction hooks so the global homepage enhancement script cannot mutate lab state.
+- **Rationale:** A single isolated lab is the smallest complete boundary that supports visual review and reuse decisions while avoiding a speculative component API or premature Buckleson integration.
+- **Consequences:** The static export includes one deliberately unlisted route in addition to the unchanged 16-route indexed contract. The lab hydrates only its interactive islands; the homepage and public sitemap remain unchanged. Future Buckleson work may import selected components, but content APIs are deferred until selection.
+- **Affected paths:** `src/app/component-lab/spartan/`, `src/components/component-lab/spartan/`, `public/component-lab/spartan/`, `tests/visual/reference/spartan/`, `tests/Validate-SpartanComponentLab.ps1`, `tests/e2e/spartan-component-lab.spec.ts`
+- **References:** `public/component-lab/spartan/manifest.json`, `tests/e2e/spartan-component-lab.spec.ts`
+
+### D-056 — Close verified Spartan parity and static-export gaps
+
+- **Date:** 2026-09-21
+- **Status:** Accepted
+- **Context:** A fresh live inspection of `https://spartanai.framer.website/` found that the existing replica was structurally complete but its mobile header omitted the reference disclosure menu, its mobile hero used a materially different crop and geometry, the Digital Brain caption missed the repository contrast threshold, and `out/404.html` retained unused Next runtime beyond the established 200 KB budget.
+- **Decision:** Preserve the established route and asset architecture. Add a native `details` mobile navigation to the shared server-rendered header; match the observed 390 px hero panel, copy, product-card, proof, customer-mark, and cover-image geometry with route-scoped CSS; darken only the failing caption; and extend the fail-closed postbuild runtime stripping to `out/404.html`. Align stale focused test documentation and assertions with the accepted Spartan contract.
+- **Rationale:** These are the smallest independently observed corrections that close the real gaps without rebuilding the existing replica, adding client hydration, introducing a dependency, or expanding product scope.
+- **Consequences:** Mobile navigation works with native keyboard semantics and no React client component. The root hero now matches the measured live mobile geometry. The homepage and 404 preserve JSON-LD and the local motion module while removing unused Next chunks and flight payloads. Live desktop/mobile screenshots and extraction notes are retained under the collision-resistant research namespace.
+- **Affected paths:** `src/components/site-header.tsx`, `src/components/spartan-motion.tsx`, `src/app/globals.css`, `scripts/Strip-HomepageNextRuntime.mjs`, `tests/Validate-404Performance.ps1`, `tests/e2e/spartan-full-site.spec.ts`, `tests/SPARTAN_FULL_SITE_TEST_MATRIX.md`, `tests/ANIMATED_404_PERFORMANCE_TEST_MATRIX.md`, `docs/research/spartanai-framer-website-021e3300/root-8a5edab2/`, `docs/design-references/spartanai-framer-website-021e3300/root-8a5edab2/`
+- **References:** D-054, `tests/e2e/spartan-full-site.spec.ts`, `tests/Validate-404Performance.ps1`
+
 | Path | Purpose | Status |
 | --- | --- | --- |
 | `src/content/spartan-site-content.ts` | Authoritative typed company, route relations, projects, articles, capabilities, process, engagements, FAQ, and local media registry | Active source of truth |
@@ -1498,8 +1520,42 @@ Copy this section for each material decision. Keep entries concise and reference
 | `src/components/ui/` | Installed shadcn primitives; Button, Card, Badge, and Separator are used by the active site | Active; Sheet retained but not on the initial performance path |
 | `tests/SPARTAN_FULL_SITE_TEST_MATRIX.md`, `src/content/spartan-site-content.test.ts` | Independent risk matrix and deterministic typed-content assertions | Active |
 | `tests/e2e/spartan-full-site.spec.ts` | Route, navigation, disclosure, 404, no-JS, reduced-motion, responsive, Axe, and local-request browser coverage | Active |
+| `src/app/component-lab/spartan/`, `src/components/component-lab/spartan/` | Unlisted noindex review shell and five independently importable Spartan reference sections | Active; isolated from production navigation, footer, sitemap, and homepage hooks |
+| `public/component-lab/spartan/manifest.json`, `tests/visual/reference/spartan/` | Frozen local lab media with source/hash provenance and the five supplied visual references | Active test/reference boundary; no runtime remote requests |
+| `tests/Validate-SpartanComponentLab.ps1`, `tests/e2e/spartan-component-lab.spec.ts` | Hash/export/noindex validation plus interaction, no-JS, reduced-motion, responsive, local-network, and Axe coverage | Active; zero Playwright retries |
 | `tests/Validate-ProductionWebsite.ps1`, `Validate-404Performance.ps1`, `Validate-GitHubPages.ps1` | Static content, link, SEO, 404, base-path, and deployment validators | Active |
 | `tests/lighthouserc.cjs` | Three-sample mobile budgets: category scores ≥95, LCP ≤2.5s, CLS ≤0.10, TBT ≤200ms | Active; passing |
 | `.github/workflows/deploy-pages.yml` | Main-branch static build, deterministic validation, artifact upload, and Pages deployment | Active |
 | `graft/` | Generated context graph | Refresh after this rebuild |
 | `docs/HANDOFF.md` | Session-specific completion and deployment state | Active |
+
+### D-057 — Replace the Spartan/Next.js site with Buckleson on pinned ScrewFast Astro
+
+- **Date:** 2026-09-21
+- **Status:** Accepted; supersedes D-052 through D-056 for the active application and route contract
+- **Context:** The user authorized permanent replacement of the dirty Spartan/component-lab implementation with the English ScrewFast Astro template and required Buckleson content, approved historical media, static GitHub Pages deployment, and no speculative backend capabilities.
+- **Decision:** Import ScrewFast at upstream commit `54d1daa00214deb5b97613d2a61cf9f997df2218`, retain its Astro 7 layouts and client interactions, and remove translated routes. Define four product routes, three blog entries, three insights, the retained English Starlight documentation paths, and a custom 404. Use only the byte-preserved Buckleson and Hyper-0x logos plus four approved cinematic images restored from commit `1e796f9`. Hyper Wallet is available now for agent identity, credentials, policy-bound permissions, and delegated approvals; it is not a digital-asset custody or payment product and does not guarantee secure outcomes. Keep forms demonstrative and UI-only. Build Pages URLs from `SITE_URL` and `BASE_PATH`, and validate that generated internal links and assets cannot escape the configured repository base.
+- **Rationale:** This is the smallest complete implementation of the requested template swap: it changes content, identity, media, localization, and deployment boundaries while preserving the selected template's behavior instead of inventing a new application architecture.
+- **Consequences:** The active application is Astro rather than Next.js. There are 27 generated English HTML pages and no `/fr/` output. Lenis, GSAP, Preline navigation/disclosures/tabs/modals, theme controls, Starlight, sitemap generation, and trailing slashes remain. There is no authentication, database, payment, CMS, newsletter endpoint, or form endpoint. The MIT license and upstream provenance remain in repository documentation. Light-theme accent shades are darker than upstream where required to eliminate serious Axe contrast findings.
+- **Affected paths:** `astro.config.mjs`, `package.json`, `src/`, `public/brand/`, `public/media/`, `tests/`, `.github/workflows/deploy-pages.yml`, `README.md`, `LICENSE`
+- **References:** `tests/BUCKLESON_SCREWFAST_TEST_MATRIX.md`, `tests/Validate-BucklesonScrewFast.ps1`, `tests/e2e/buckleson-screwfast.spec.ts`, `README.md`
+
+## Current compact codebase map after D-057
+
+| Path | Purpose | Status |
+| --- | --- | --- |
+| `astro.config.mjs` | Astro 7, English Starlight, sitemap, trailing-slash, site/base configuration | Active configuration |
+| `src/pages/`, `src/views/`, `src/layouts/` | Marketing indexes/details, shared layouts, metadata routes, manifest, robots, and 404 | Active route surface |
+| `src/content/products/en/` | Hyper Tern, Hyper-ABS, Hyper-0x, and Hyper Wallet | Four active product entries |
+| `src/content/blog/en/`, `src/content/insights/en/` | Six Buckleson articles mapped across Blog and Insights | Six active entries |
+| `src/content/docs/` | English product, security-boundary, deployment, and operations guidance | Eleven retained Starlight documents |
+| `src/copy/en.ts`, `src/data_files/` | English customer copy, navigation, FAQs, service and presentation data | Active content source |
+| `src/components/`, `src/assets/scripts/` | Preserved ScrewFast navigation, banner, theme, tabs, FAQ, demo modals/forms, Lenis, and product motion | Active presentation/interaction layer |
+| `src/images/buckleson/`, `public/brand/`, `public/media/` | Approved local logos and four cinematic Buckleson images | Active local media boundary |
+| `src/utils/locale.ts`, `src/utils/metadata.ts` | English routing plus base-safe canonical/schema/URL helpers | Active URL boundary |
+| `tests/Validate-BucklesonScrewFast.ps1`, `scripts/smoke.mjs` | Deterministic source, output, route, media-hash, and base-path validation | Active release gates |
+| `tests/e2e/`, `tests/playwright.config.ts` | Desktop, tablet, mobile, interaction, reduced-motion, local-request, overflow, and Axe coverage | Active; zero retries |
+| `.github/workflows/deploy-pages.yml` | Default test build, browser regression, Pages-base build, validation, artifact upload, deployment | Active publication workflow |
+| `scripts/Invoke-WorkspaceNodeTool.ps1` | Mandatory workspace-local npm/npx cache/temp wrapper | Retained operational boundary |
+| `graft/` | Generated Astro code context graph | Refreshed after replacement |
+| `docs/HANDOFF.md` | Session completion, verification, and next-step state | Active |

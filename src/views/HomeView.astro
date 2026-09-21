@@ -1,0 +1,86 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import HeroSection from '@components/sections/landing/HeroSection.astro';
+import HeroSectionAlt from '@components/sections/landing/HeroSectionAlt.astro';
+import FeaturesGeneral from '@components/sections/features/FeaturesGeneral.astro';
+import FeaturesNavs from '@components/sections/features/FeaturesNavs.astro';
+import PricingSection from '@components/sections/pricing/PricingSection.astro';
+import FAQ from '@components/sections/misc/FAQ.astro';
+import AnnouncementBanner from '@components/ui/banners/AnnouncementBanner.astro';
+import executionBoundary from '@images/buckleson/execution-boundary.avif';
+import dataShield from '@images/buckleson/data-shield.avif';
+import evidenceLedger from '@images/buckleson/evidence-ledger.avif';
+import { getCopy } from '@/copy';
+import { localePath, type MarketingLocale } from '@utils/locale';
+
+interface Props {
+  locale: MarketingLocale;
+}
+
+const { locale } = Astro.props;
+const t = getCopy(locale);
+const copy = t.home;
+---
+
+<MainLayout>
+  <AnnouncementBanner
+    btnId="dismiss-button"
+    btnTitle={copy.banner}
+    url={localePath(locale, '/welcome-to-docs/')}
+  />
+
+  <HeroSection
+    title={copy.hero.title}
+    subTitle={copy.hero.subTitle}
+    primaryBtn={copy.hero.primaryBtn}
+    primaryBtnURL={localePath(locale, '/products')}
+    secondaryBtn={copy.hero.secondaryBtn}
+    secondaryBtnURL={localePath(locale, '/contact')}
+    withReview={false}
+    src={executionBoundary}
+    alt={copy.hero.imageAlt}
+  />
+
+  <FeaturesGeneral
+    title={copy.featuresGeneral.title}
+    subTitle={copy.featuresGeneral.subTitle}
+    src={dataShield}
+    alt={copy.featuresGeneral.imageAlt}
+    features={t.data.features}
+  />
+
+  <FeaturesNavs
+    title={copy.featuresNavs.title}
+    tabs={[
+      {
+        ...copy.featuresNavs.tabs.tools,
+        svg: 'tools',
+        src: executionBoundary,
+        first: true,
+      },
+      {
+        ...copy.featuresNavs.tabs.dashboard,
+        svg: 'dashboard',
+        src: dataShield,
+        second: true,
+      },
+      {
+        ...copy.featuresNavs.tabs.features,
+        svg: 'house',
+        src: evidenceLedger,
+      },
+    ]}
+  />
+
+  <PricingSection pricing={t.data.pricing} />
+
+  <div id="faq">
+    <FAQ title={copy.faqTitle} faqs={t.data.faqs} />
+  </div>
+
+  <HeroSectionAlt
+    title={copy.heroAlt.title}
+    subTitle={copy.heroAlt.subTitle}
+    url={localePath(locale, '/contact')}
+  />
+</MainLayout>

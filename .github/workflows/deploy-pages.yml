@@ -3,6 +3,7 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -23,28 +24,54 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 22.22.2
           cache: npm
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Install dependencies
         shell: pwsh
         run: ./scripts/Invoke-WorkspaceNodeTool.ps1 npm ci
-      - name: Build static site
+      - name: Validate source contract
+        shell: pwsh
+        run: ./scripts/Invoke-WorkspaceNodeTool.ps1 npm run test:contract
+      - name: Format check
+        shell: pwsh
+        run: ./scripts/Invoke-WorkspaceNodeTool.ps1 npm run format:check
+      - name: Build test site
+        shell: pwsh
+        run: ./scripts/Invoke-WorkspaceNodeTool.ps1 npm run build
+      - name: Validate generated output
+        shell: pwsh
+        run: ./scripts/Invoke-WorkspaceNodeTool.ps1 npm run test:output
+      - name: Smoke test generated routes
+        shell: pwsh
+        run: ./scripts/Invoke-WorkspaceNodeTool.ps1 npm run test:smoke
+      - name: Install Chromium
+        shell: pwsh
+        run: ./scripts/Invoke-WorkspaceNodeTool.ps1 npx playwright install --with-deps chromium
+      - name: Browser regression
+        shell: pwsh
+        run: ./scripts/Invoke-WorkspaceNodeTool.ps1 npm run test:e2e
+      - name: Build Pages artifact
         shell: pwsh
         env:
-          SITE_URL: https://vjk7989.github.io/may-be-not-some-p0-oooorn-site
-          NEXT_PUBLIC_BASE_PATH: /may-be-not-some-p0-oooorn-site
+          SITE_URL: https://vjk7989.github.io
+          BASE_PATH: /may-be-not-some-p0-oooorn-site/
         run: ./scripts/Invoke-WorkspaceNodeTool.ps1 npm run build
-      - name: Validate static export
+      - name: Validate Pages output
         shell: pwsh
-        run: ./tests/Validate-GitHubPages.ps1 -Owner vjk7989 -Repository may-be-not-some-p0-oooorn-site -SiteUrl https://vjk7989.github.io/may-be-not-some-p0-oooorn-site -BasePath /may-be-not-some-p0-oooorn-site
+        env:
+          SITE_URL: https://vjk7989.github.io
+          BASE_PATH: /may-be-not-some-p0-oooorn-site/
+        run: ./scripts/Invoke-WorkspaceNodeTool.ps1 npm run test:output
       - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
-          path: out
+          path: dist
 
   deploy:
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

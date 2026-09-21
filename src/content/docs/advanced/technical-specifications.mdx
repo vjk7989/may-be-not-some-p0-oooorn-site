@@ -1,0 +1,48 @@
+---
+title: Technical Boundaries
+description: The interfaces and proof limits shared by Buckleson product deployments.
+sidebar:
+  label: Technical Boundaries
+  order: 1
+---
+
+import { Aside, Card, CardGrid, Steps } from '@astrojs/starlight/components';
+
+## Shared request model
+
+<CardGrid>
+  <Card title="Identity">
+    Requesting user or service, tenant, agent, workload, and session
+    correlation.
+  </Card>
+  <Card title="Intent">
+    Purpose, operation, target, data scope, expected effect, and applicable
+    limits.
+  </Card>
+  <Card title="Decision">
+    Policy version, allow or deny outcome, reason code, approval state, and
+    expiration.
+  </Card>
+  <Card title="Result">
+    Tool destination, sanitized parameters, idempotency key, status, and
+    external reference.
+  </Card>
+</CardGrid>
+
+## Integration sequence
+
+<Steps>
+
+1. Hyper Wallet supplies scoped identity and credential context.
+2. Hyper-ABS reduces and routes data before inference.
+3. The agent proposes a structured action.
+4. Hyper Tern evaluates policy and any approval immediately before execution.
+5. Hyper-0x records protected evidence for verification, audit, and settlement.
+
+</Steps>
+
+<Aside type="note">
+  These are control boundaries, not proof that a model response is true.
+  Hyper-0x is not a confidentiality mechanism, and Hyper Wallet is not a
+  digital-asset custody or payment product.
+</Aside>

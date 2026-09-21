@@ -1,0 +1,45 @@
+---
+title: Buckleson Docs
+head:
+  - tag: title
+    content: Buckleson Docs
+description: Practical guidance for deploying Buckleson controls around AI data, identity, execution, and evidence.
+template: splash
+editUrl: false
+lastUpdated: false
+next: false
+hero:
+  title: Buckleson Documentation
+  tagline: Build explicit boundaries around AI data, credentials, actions, and execution evidence.
+  actions:
+    - text: Get started
+      icon: right-arrow
+      variant: primary
+      link: ../guides/getting-started/
+    - text: Contact Buckleson
+      icon: external
+      variant: minimal
+      link: ../contact/
+---
+
+import '@styles/starlight_main.css';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+  <Card title="Start with the boundary" icon="document">
+    Map identities, data, model endpoints, tools, approvals, and downstream
+    effects before choosing controls.
+  </Card>
+  <Card title="Deploy the products" icon="seti:config">
+    Place Hyper-ABS before inference, Hyper Tern before execution, Hyper Wallet
+    around credentials, and Hyper-0x around evidence.
+  </Card>
+  <Card title="Operate safely" icon="approve-check-circle">
+    Test denials, retries, revocation, recovery, and evidence completeness
+    before expanding agent authority.
+  </Card>
+  <Card title="Understand the limits" icon="information">
+    Buckleson controls help reduce risk. They do not guarantee secure outcomes
+    or prove that model output is correct.
+  </Card>
+</CardGrid>

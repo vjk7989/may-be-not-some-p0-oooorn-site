@@ -1,0 +1,15 @@
+---
+import { Image } from 'astro:assets';
+import logo from '@images/buckleson-logo.jpg';
+
+const { class: className, ...props } = Astro.props;
+---
+
+<Image
+  src={logo}
+  alt="Buckleson"
+  class:list={['object-contain', className]}
+  width={322}
+  height={308}
+  {...props}
+/>

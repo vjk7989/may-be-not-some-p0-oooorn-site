@@ -1,15 +1,33 @@
+# build output
+dist/
+# generated types
+.astro/
+.idea/
+
+# dependencies
+node_modules/
+.cache/
+.tmp/
+.artifacts/
+.tools/
+.codex/
+.impeccable/
+test-results/
+playwright-report/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 /graft/
-
-# Workspace-local tool state and generated dependencies.
-/node_modules/
-/.cache/
-/.tmp/
-/.tools/
-/.next/
-/out/
-/.artifacts/
-/test-results/
-/.sites-runtime/
-/.lighthouseci/
-*.tsbuildinfo

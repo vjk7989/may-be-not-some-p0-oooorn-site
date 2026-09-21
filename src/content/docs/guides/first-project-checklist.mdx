@@ -1,0 +1,42 @@
+---
+title: First Project Checklist
+description: A bounded checklist for the first Buckleson deployment.
+sidebar:
+  label: First Project Checklist
+  order: 3
+---
+
+import { Card, CardGrid, Steps } from '@astrojs/starlight/components';
+
+## Before implementation
+
+<CardGrid>
+  <Card title="Workflow">
+    Name the user outcome, agent, data sources, model, tools, and downstream
+    systems.
+  </Card>
+  <Card title="Owners">
+    Assign owners for data, model behavior, policy, infrastructure, security,
+    and business outcomes.
+  </Card>
+  <Card title="Impact">
+    Document sensitive data and actions that need denial, limits, or human
+    approval.
+  </Card>
+</CardGrid>
+
+## Delivery gate
+
+<Steps>
+
+1. Start with read-only or reversible operations where possible.
+2. Create explicit allowlists for tools, resources, destinations, and operations.
+3. Issue scoped credentials through Hyper Wallet and define expiration and revocation.
+4. Evaluate proposed actions through Hyper Tern immediately before execution.
+5. Minimize inference data through Hyper-ABS and check outputs for their destination.
+6. Record policy, approval, execution, and result events for Hyper-0x evidence.
+7. Test attacks, failures, retries, recovery, and cross-tenant isolation.
+
+</Steps>
+
+Do not expand agent authority until every applicable gate has an accountable owner and a tested recovery procedure.

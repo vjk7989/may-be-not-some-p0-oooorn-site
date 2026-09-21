@@ -1,0 +1,25 @@
+---
+title: Custom AI Integrations
+description: Adapt Buckleson controls to a specific AI workflow without weakening their boundaries.
+sidebar:
+  label: Custom AI Integrations
+  order: 4
+---
+
+import { Card } from '@astrojs/starlight/components';
+
+Custom AI work begins where a workflow has a concrete requirement that the standard product boundary does not address directly.
+
+<Card title="A bounded integration defines" icon="puzzle">
+
+- the identity and tenant model;
+- the smallest required data and tool surface;
+- structured policy inputs and decision outcomes;
+- credential issuance, expiry, and revocation;
+- approval binding for consequential actions;
+- evidence events and sensitive-data exclusions; and
+- failure, retry, cancellation, and recovery behavior.
+
+</Card>
+
+Custom work does not imply unrestricted model access, a new general-purpose platform, or unsupported security guarantees. Prefer the smallest integration that satisfies the verified workflow.
